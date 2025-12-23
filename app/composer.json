@@ -1,0 +1,28 @@
+{
+  "authors": [
+    {
+      "name": "Stef Visser (ZalmoraDev)"
+    }
+  ],
+  "name": "zalmoradev/tesserarius",
+  "description": "MVC PHP task manager",
+  "type": "project",
+  "require": {
+    "vlucas/phpdotenv": "^5.6",
+    "ext-pdo": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": ".",
+      "App\\Config\\": "config/",
+      "App\\Model\\": "model/",
+      "App\\Model\\Enum\\": "model/enum/",
+      "App\\View\\": "view/",
+      "App\\View\\Components\\": "view/components/",
+      "App\\Controller\\": "controller/",
+      "App\\Controller\\API\\": "controller/api/",
+      "App\\Service\\": "service/",
+      "App\\Repository\\": "repository/"
+    }
+  }
+}

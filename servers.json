@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "tesserarius",
+      "Group": "Project",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "tesserarius",
+      "Username": "appuser",
+      "SSLMode": "prefer",
+      "SavePassword": true
+    }
+  }
+}
