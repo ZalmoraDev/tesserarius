@@ -25,9 +25,6 @@ CREATE TABLE IF NOT EXISTS projects
     description VARCHAR(256) NOT NULL,
     created_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
-INSERT INTO projects (name, description)
-VALUES ('Tesserarius', 'Task manager')
-ON CONFLICT DO NOTHING;
 -- END: Projects
 
 
