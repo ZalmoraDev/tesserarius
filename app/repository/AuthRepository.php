@@ -7,10 +7,33 @@ use PDO;
 
 class AuthRepository extends Repository
 {
+    public function createUser($username, $passwordHash, $email = null): bool
+    {
+        try {
+            // If no email provided, generate a default one
+            if ($email === null) {
+                $email = $username . '@temp.com';
+            }
+
+            $stmt = $this->connection->prepare("
+                INSERT INTO users (username, password_hash, email) 
+                VALUES (:username, :passwordHash, :email)
+            ");
+            $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+            $stmt->bindParam(':passwordHash', $passwordHash, PDO::PARAM_STR);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            error_log("Database error creating user: " . $e->getMessage());
+            return false;
+        }
+    }
+
     public function getUserByUsername($username): ?UserModel
     {
         try {
-            $stmt = $this->connection->prepare("SELECT * FROM users WHERE BINARY username = :userName");
+            $stmt = $this->connection->prepare("SELECT * FROM users WHERE username = :userName");
             $stmt->bindParam(':userName', $username, PDO::PARAM_STR);
             $stmt->execute();
 

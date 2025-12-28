@@ -4,6 +4,7 @@ SET TIMEZONE = 'Europe/Amsterdam';
 -- Admins are the same as owners, except not being able to delete the project their part of.
 CREATE TYPE role_enum AS ENUM ('member', 'admin', 'owner');
 
+
 -- START: Users
 CREATE TABLE IF NOT EXISTS users
 (
@@ -13,11 +14,8 @@ CREATE TABLE IF NOT EXISTS users
     email         VARCHAR(256) NOT NULL UNIQUE,
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
--- Default password = admin
-INSERT INTO users (username, password_hash, email)
-VALUES ('admin', 'TO BE HASHED', 'john@doe.com')
-ON CONFLICT DO NOTHING;
 -- END: Users
+
 
 -- START: Projects
 CREATE TABLE IF NOT EXISTS projects
@@ -31,6 +29,7 @@ INSERT INTO projects (name, description)
 VALUES ('Tesserarius', 'Task manager')
 ON CONFLICT DO NOTHING;
 -- END: Projects
+
 
 -- START: Project Members
 CREATE TABLE IF NOT EXISTS project_members
@@ -60,6 +59,7 @@ CREATE UNIQUE INDEX idx_one_owner_per_project
     ON project_members (project_id)
     WHERE role = 'owner';
 -- END: Project Members
+
 
 -- START: Project Invites
 CREATE TABLE IF NOT EXISTS project_invites

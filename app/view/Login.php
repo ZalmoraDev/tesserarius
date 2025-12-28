@@ -8,7 +8,8 @@ $error = $_GET['error'] ?? null;
 <body class="tess-base-body bg-">
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto">
     <div class="tess-base-container-md">
-        <img src="<?= SITE_URL ?>/assets/img/logo/logoW.svg" alt="Tesserarius logo" class="tess-base-container-sm w-30 h-30">
+        <img src="<?= SITE_URL ?>/assets/img/logo/logoW.svg" alt="Tesserarius logo"
+             class="tess-base-container-sm w-30 h-30">
         <div class="flex flex-col justify-center items-center gap-2">
             <h1 class="text-4xl">Sign in</h1>
             <p class="text-neutral-400">Welcome to Tesserarius</p>

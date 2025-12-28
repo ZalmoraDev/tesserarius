@@ -34,7 +34,7 @@ services:
       POSTGRES_PASSWORD: database123
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./seed.sql:/docker-entrypoint-initdb.d/seed.sql
+      - ./sql/seed.sql:/docker-entrypoint-initdb.d/seed.sql
     ports:
       - "5432:5432"
 
@@ -46,7 +46,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@local.dev
       PGADMIN_DEFAULT_PASSWORD: admin123
     volumes:
-      - ./servers.json:/pgadmin4/servers.json
+      - ./sql/servers.json:/pgadmin4/servers.json
     ports:
       - "8080:80"
     depends_on:

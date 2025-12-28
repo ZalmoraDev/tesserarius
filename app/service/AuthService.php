@@ -20,9 +20,15 @@ class AuthService
     {
         session_start();
 
+        // TEMPORARY: Create user with hashed password in database for debugging
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $created = $this->authRepository->createUser($username, $hashedPassword);
+        error_log("TEMP: Created user '$username' in database: " . ($created ? 'SUCCESS' : 'FAILED'));
+
         // Fetch user by username
         $user = $this->authRepository->getUserByUsername($username);
 
+        // Uses password_verify's bcrypt
         if ($user && password_verify($password, $user->getPasswordHash())) {
             $_SESSION['userId'] = $user->getId();
             $_SESSION['username'] = $user->getUsername();
