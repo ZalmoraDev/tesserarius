@@ -1,4 +1,6 @@
-@import "../../../../node_modules/tailwindcss/dist/lib.d.mts"; /* From https://tailwindcss.com/docs/installation/tailwind-cli */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @font-face {
     font-family: 'Monsterrat';
