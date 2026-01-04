@@ -27,9 +27,9 @@ class Router
         $params = array_slice($explodedUri, 2);
 
         // Set proper controller paths
-        $namespace = $isApi ? "app\\controller\\api\\" : "app\\controller\\";
+        $namespace = $isApi ? "app\\Controllers\\api\\" : "app\\Controllers\\";
         $controllerClass = $namespace . $controllerName;
-        $controllerFile = dirname(__DIR__) . "../" . str_replace("\\", "/", $controllerClass) . ".php"; // TODO: Rework this filepath to be more dynamic
+        $controllerFile = dirname(__DIR__) . "/" . str_replace("\\", "/", $controllerClass) . ".php"; // TODO: Rework this filepath to be more dynamic
 
         // Check if controller exists
         if (!file_exists($controllerFile)) {

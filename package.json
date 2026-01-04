@@ -5,7 +5,7 @@
     "dev": "npx @tailwindcss/cli -i app/public/assets/css/input.css -o app/public/assets/css/output.css --watch",
     "build": "npx @tailwindcss/cli -i app/public/assets/css/input.css -o app/public/assets/css/output.css --minify"
   },
-  "devDependencies": {
+  "dependencies": {
     "tailwindcss": "^4.1.18",
     "@tailwindcss/cli": "^4.1.18"
   }

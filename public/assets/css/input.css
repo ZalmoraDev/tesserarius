@@ -1,0 +1,49 @@
+@import "../../../node_modules/tailwindcss/dist/lib.d.mts";
+
+@font-face {
+    font-family: 'Monsterrat';
+    src: url("../fonts/Montserrat-Medium.ttf") format("truetype");
+}
+
+@layer components {
+    .tess-base-body {
+        @apply flex min-h-screen w-screen max-w-full overflow-visible text-white bg-neutral-950;
+    }
+
+    .tess-base-container-md {
+        @apply bg-neutral-900 mx-auto gap-6 flex flex-col justify-center items-center rounded-3xl p-10
+        shadow-[inset_0_4px_4px_rgba(255,255,255,0.1),0_10px_20px_rgba(0,0,0,1)];
+    }
+
+    .tess-base-container-sm {
+        @apply bg-neutral-900 mx-auto gap-6 flex flex-col justify-center items-center rounded-3xl p-2
+        shadow-[inset_0_4px_4px_rgba(255,255,255,0.1),0_10px_20px_rgba(0,0,0,1)];
+    }
+
+    .tess-input-md {
+        @apply bg-neutral-800 text-neutral-400 border-neutral-700 border-2 rounded-xl p-2;
+    }
+
+    .tess-input-sm {
+        @apply w-full px-3 py-1.5 rounded-xl text-sm text-neutral-400 bg-neutral-800 border-2 border-neutral-700;
+    }
+
+    .tess-btn-pri {
+        @apply w-full px-4 py-2 rounded-xl text-sm text-neutral-900  bg-amber-400  hover:bg-amber-500;
+    }
+
+    .tess-project-card {
+        @apply bg-neutral-800 text-neutral-400 border-neutral-700 border-2 rounded-xl p-2 w-48 h-32 overflow-hidden;
+    }
+}
+
+:root {
+    /*--tes-blue: #1e90ff;*/
+    /*--tes-white: #ffffff;*/
+
+    font-family: 'Monsterrat', sans-serif;
+
+    padding: 0;
+    border: 0;
+    margin: 0;
+}
