@@ -19,7 +19,7 @@ class LoginController
         global $title, $view;
 
         $title = "Login | Tesserarius";
-        $view = __DIR__ . '/../Views/Login.php';
-        require __DIR__ . '/../Views/skeleton/Base.php';
+        $view = __DIR__ . '/../Views/login.php';
+        require __DIR__ . '/../Views/skeleton/base.php';
     }
 }

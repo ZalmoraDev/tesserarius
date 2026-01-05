@@ -23,7 +23,7 @@ class HomeController
         global $projectsAdmins, $projectsMembers;
 
         $title = "Home | Tesserarius";
-        $view = __DIR__ . '/../Views/Home.php';
+        $view = __DIR__ . '/../Views/home.php';
 
         // Get the user ID from the session
         $userId = $_SESSION['userId'];
@@ -32,6 +32,6 @@ class HomeController
         $projectsAdmins = (array)$this->projectService->getProjectsByUserAndRole($userId, "admin");
         $projectsMembers = (array)$this->projectService->getProjectsByUserAndRole($userId, "member");
 
-        require __DIR__ . '/../Views/skeleton/Base.php'; // Base.php is the template file, it will be used to wrap the content of the view file with default markup
+        require __DIR__ . '/../Views/skeleton/base.php'; // Base.php is the template file, it will be used to wrap the content of the view file with default markup
     }
 }

@@ -17,7 +17,7 @@ $error = $_GET['error'] ?? null;
 
 <body class="tess-base-body flex flex-col">
 
-<?php include_once __DIR__ . "/../Views/skeleton/Navbar.php"; ?>
+<?php include_once __DIR__ . "/../Views/skeleton/navbar.php"; ?>
 
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto">
     <!-- Error Message -->

@@ -27,8 +27,8 @@ class ProjectController
         $allColumnTasksArray = $taskService->getAllColumnTasks($projectId);
 
         $title = $project->getName() . " | Tesserarius";
-        $view = __DIR__ . '/../Views/Project.php';
+        $view = __DIR__ . '/../Views/project.php';
 
-        require __DIR__ . '/../Views/skeleton/Base.php'; // Base.php is the template file, it will be used to wrap the content of the view file with default markup
+        require __DIR__ . '/../Views/skeleton/base.php'; // Base.php is the template file, it will be used to wrap the content of the view file with default markup
     }
 }

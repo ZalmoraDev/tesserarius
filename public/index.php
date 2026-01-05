@@ -16,6 +16,7 @@ define('SITE_URL', $_ENV['SITE_URL']);
 
 $uri = trim($_SERVER['REQUEST_URI'], '/');
 
+// Router takes over from here
 $router = new App\Router();
 $router->route($uri);
 ?>

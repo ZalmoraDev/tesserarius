@@ -16,7 +16,7 @@ $projectTask = new compProjectTask();
 
 <body class="tess-base-body flex flex-col">
 
-<?php include_once __DIR__ . "/../Views/skeleton/Navbar.php"; ?>
+<?php include_once __DIR__ . "/../Views/skeleton/navbar.php"; ?>
 
 <main class="flex-1 flex justify-center items-start px-4 py-6">
     <div class="flex gap-4 items-start">
@@ -114,8 +114,8 @@ $projectTask = new compProjectTask();
 
 <script>
     // Move tickets between columns
-    // (NOT REAL TIME FOR OTHER USERS, ONLY ON PAGE RELOAD WILL TICKETS BE MOVED FOR OTHERS)
-    document.addEventListener("DOMContentLoaded", function() {
+    // TODO: NOT REAL TIME FOR OTHER USERS, ONLY ON PAGE RELOAD WILL TICKETS BE MOVED FOR OTHERS
+    document.addEventListener("DOMContentLoaded", function () {
         console.log("DOM fully loaded and parsed");
 
         // Add event listener to all the move buttons
