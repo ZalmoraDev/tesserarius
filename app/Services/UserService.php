@@ -8,8 +8,8 @@ class UserService
 {
     private UserRepository $userRepository;
 
-    public function __construct()
+    public function __construct($userRepository)
     {
-        $this->userRepository = new UserRepository();
+        $this->userRepository = $userRepository;
     }
 }

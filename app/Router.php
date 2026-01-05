@@ -6,6 +6,15 @@ use ReflectionMethod;
 
 class Router
 {
+    private array $controllers;
+
+    public function __construct(array $controllers)
+    {
+        $this->controllers = $controllers;
+    }
+
+    // REFACTOR: This method is too long and does too many things, break it down into smaller methods
+
     public function route($uri): void
     {
         // Set default controller and method

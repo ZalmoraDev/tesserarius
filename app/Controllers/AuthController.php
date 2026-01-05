@@ -8,9 +8,9 @@ class AuthController
 {
     private AuthService $authService;
 
-    public function __construct()
+    public function __construct($authService)
     {
-        $this->authService = new AuthService();
+        $this->authService = $authService;
     }
 
     public function index(): void
@@ -23,13 +23,12 @@ class AuthController
             if ($this->authService->login($username, $password)) {
                 // Successful login -> Redirect to /home
                 header("Location: /home", true, 302);
-                exit();
             } else {
                 // Login failed -> Redirect back to /login (/) with error message
                 // /login URL is not relevant, but it's needed for the redirect to work
                 header("Location: /login?error=invalid_credentials", true, 302);
-                exit();
             }
+            exit();
         } else {
             // On GET-Request -> Go back to login page
             header("Location: /login?error=direct_url_access", true, 302);

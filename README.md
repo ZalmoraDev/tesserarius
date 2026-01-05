@@ -1,5 +1,5 @@
 <h1>
-   <img src="public/assets/img/logo/logoW.svg" alt="Tesserarius Logo" style="height: 48px; width: auto;">
+   <img src="public/assets/icons/logo/logoW.svg" alt="Tesserarius Logo" style="height: 48px; width: auto;">
    Tesserarius
 </h1>
 

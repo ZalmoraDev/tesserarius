@@ -7,10 +7,8 @@ use App\Services\UserService;
 
 class LoginController
 {
-
-    public function __construct()
+    public function __construct($authService)
     {
-        $authService = new AuthService();
         $authService->checkLoginPageIfLoggedIn(); // If not logged in, redirect to login page
     }
 

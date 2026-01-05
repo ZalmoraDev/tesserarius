@@ -8,9 +8,9 @@ class AuthService
 {
     private AuthRepository $authRepository;
 
-    public function __construct()
+    public function __construct($authRepository)
     {
-        $this->authRepository = new AuthRepository();
+        $this->authRepository = $authRepository;
     }
 
     //-----------------------------------------------------

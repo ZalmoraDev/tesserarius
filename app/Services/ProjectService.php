@@ -9,9 +9,9 @@ class ProjectService
 {
     private ProjectRepository $projectRepository;
 
-    function __construct()
+    function __construct($projectRepository)
     {
-        $this->projectRepository = new ProjectRepository();
+        $this->projectRepository = $projectRepository;
     }
 
     public function getProjectsByUserAndRole($userId, $role) : array

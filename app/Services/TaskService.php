@@ -8,9 +8,9 @@ class TaskService
 {
     private TaskRepository $taskRepository;
 
-    function __construct()
+    function __construct($taskRepository)
     {
-        $this->taskRepository = new TaskRepository();
+        $this->taskRepository = $taskRepository;
     }
 
     public function getAllColumnTasks(int $projectId): array
@@ -25,5 +25,3 @@ class TaskService
         return $this->taskRepository->moveTaskToColumn($taskId, $newColumn);
     }
 }
-
-?>
