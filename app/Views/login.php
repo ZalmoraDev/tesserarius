@@ -5,10 +5,10 @@ global $view, $title;
 $error = $_GET['error'] ?? null;
 ?>
 
-<body class="tess-base-body bg-">
+<body class="tess-base-body">
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto">
     <div class="tess-base-container-md">
-        <img src="<?= SITE_URL ?>/assets/icons/logo/logoW.svg" alt="Tesserarius logo"
+        <img src="<?= $_ENV['SITE_URL'] ?>/assets/icons/logo/logoW.svg" alt="Tesserarius logo"
              class="tess-base-container-sm w-30 h-30">
         <div class="flex flex-col justify-center items-center gap-2">
             <h1 class="text-4xl">Sign in</h1>
@@ -23,15 +23,21 @@ $error = $_GET['error'] ?? null;
             <span class="text-red-600 text-center">You must log in using an account.<br>Please try again.</span>
         <?php endif; ?>
 
-        <form action="/auth" method="POST" class="flex flex-col justify-center items-center gap-2">
-            <label>
-                <input type="text" class="tess-input-md" placeholder="Username" name="username" required>
-            </label>
-            <label>
-                <input type="password" class="tess-input-md" placeholder="Password" name="password" required>
-            </label>
-            <button type="submit" class="tess-btn-pri w-full mt-4 cursor-pointer">Login</button>
-        </form>
+        <div class="gap-4 flex flex-col w-full items-center">
+            <form action="/auth/login" method="POST" class="flex flex-col justify-center items-center gap-2">
+                <label>
+                    <input type="text" class="tess-input-md" placeholder="Username" name="username" required>
+                </label>
+                <label>
+                    <input type="password" class="tess-input-md" placeholder="Password" name="password" required>
+                </label>
+                <button type="submit" class="tess-btn-pri w-full mt-4 cursor-pointer">Login</button>
+            </form>
+            <p class="text-neutral-400">or</p>
+            <form action="/auth/signup" method="GET">
+                <button type="submit" class="tess-btn-sec w-full cursor-pointer">Signup</button>
+            </form>
+        </div>
     </div>
 </main>
 </body>

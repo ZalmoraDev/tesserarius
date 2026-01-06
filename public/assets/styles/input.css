@@ -1,4 +1,4 @@
-@import "../../../node_modules/tailwindcss/dist/lib.d.mts";
+@import "tailwindcss";
 
 @font-face {
     font-family: 'montserrat';
@@ -30,6 +30,10 @@
 
     .tess-btn-pri {
         @apply w-full px-4 py-2 rounded-xl text-sm text-neutral-900  bg-amber-400  hover:bg-amber-500;
+    }
+
+    .tess-btn-sec {
+        @apply w-full px-4 py-2 rounded-xl text-sm text-neutral-900  bg-neutral-400  hover:bg-neutral-500;
     }
 
     .tess-project-card {

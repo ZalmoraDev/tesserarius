@@ -2,9 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Services\AuthService;
-use App\Services\ProjectService;
-use App\Services\TaskService;
+use App\Services\ {
+    AuthService,
+    ProjectService,
+    TaskService
+};
 
 class ProjectController
 {
@@ -36,7 +38,6 @@ class ProjectController
 
         $title = $project->getName() . " | Tesserarius";
         $view = __DIR__ . '/../Views/project.php';
-
-        require __DIR__ . '/../Views/skeleton/base.php'; // Base.php is the template file, it will be used to wrap the content of the view file with default markup
+        require __DIR__ . '/../Views/skeleton/base.php';
     }
 }

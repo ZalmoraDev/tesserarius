@@ -11,10 +11,9 @@ global $view, $title; // Used and reachable in all sub-controllers
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
     <!-- Tailwind CSS -->
-    <script src="<?=SITE_URL?>/assets/js/app.js"></script>
+    <script src="<?=$_ENV['SITE_URL']?>/assets/js/app.js"></script>
     <link href="/dist/styles.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?=SITE_URL?>/assets/styles/output.css">
-    <link rel="icon" type="image/x-icon" href="<?= SITE_URL ?>/assets/icons/logo/favicon.svg" alt="Tesserarius logo">
+    <link rel="stylesheet" href="<?=$_ENV['SITE_URL']?>/assets/styles/output.css">
     <title><?= $title ?></title>
 </head>
 

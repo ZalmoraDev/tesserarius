@@ -44,7 +44,7 @@ class AuthService
         session_start();
         session_unset();
         session_destroy();
-        header("Location: /");
+        header("Location: /login");
         exit();
     }
 
@@ -57,7 +57,7 @@ class AuthService
 
         // Redirect to login page if not logged in
         if (!isset($_SESSION['userId'])) {
-            header("Location: /");
+            header("Location: /login");
             exit();
         }
     }
@@ -68,7 +68,7 @@ class AuthService
 
         // If the user is logged in, redirect to home
         if (isset($_SESSION['userId'])) {
-            header("Location: /home");
+            header("Location: /");
             exit();
         }
     }
@@ -80,7 +80,7 @@ class AuthService
 
         if (!$this->authRepository->shouldProjectBeAccessible($_SESSION['userId'], $projectId)) {
             // Redirect to login page if not a member/admin of the project
-            header("Location: /home?error=access_denied");
+            header("Location: /login?error=access_denied");
             exit();
         }
     }

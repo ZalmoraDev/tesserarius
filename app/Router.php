@@ -2,77 +2,63 @@
 
 namespace App;
 
-use ReflectionMethod;
+use FastRoute;
 
 class Router
 {
-    private array $controllers;
+    private array $c;
 
-    public function __construct(array $controllers)
+    public function __construct(array $constrollers)
     {
-        $this->controllers = $controllers;
+        $this->c = $constrollers;
     }
 
-    // REFACTOR: This method is too long and does too many things, break it down into smaller methods
-
-    public function route($uri): void
+    /// @nikic/fast-route | https://packagist.org/packages/nikic/fast-route
+    /// Uses basic usage implementation from documentation, with changes to correctly calling class methods as handlers
+    public function dispatch(): void
     {
-        // Set default controller and method
-        $DEFAULT_CONTROLLER = 'LoginController';
-        $DEFAULT_METHOD = 'index';
 
-        // Check if the request is an API request
-        $isApi = false;
-        if ($isApi = str_starts_with($uri, "api/")) {
-            $uri = substr($uri, 4);
+        $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
+            // homepage for logged in users, default to URL '/'
+            $r->addRoute('GET', '/', [$this->c['home'], 'index']);
+
+            $r->addRoute('POST', '/auth/login', [$this->c['auth'], 'login']);
+            $r->addRoute('GET', '/auth/logout', [$this->c['auth'], 'logout']);
+            $r->addRoute('GET', '/auth/signup', [$this->c['auth'], 'signup']);
+
+            $r->addRoute('GET', '/login', [$this->c['login'], 'index']);
+
+            $r->addRoute('GET', '/project/{id:\d+}', [$this->c['auth'], 'view']);
+        });
+
+        // Fetch method and URI from somewhere
+        $httpMethod = $_SERVER['REQUEST_METHOD'];
+        $uri = $_SERVER['REQUEST_URI'];
+
+        // Strip query string (?foo=bar) and decode URI
+        if (false !== $pos = strpos($uri, '?')) {
+            $uri = substr($uri, 0, $pos);
         }
+        $uri = rawurldecode($uri);
 
-        $uri = $this->stripParameters($uri);
-        $explodedUri = explode('/', trim($uri, '/'));
+        $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 
-        // Set controller and method
-        $controllerName = !empty($explodedUri[0]) ? ucfirst(strtolower($explodedUri[0])) . "Controller" : $DEFAULT_CONTROLLER;
-        $methodName = $explodedUri[1] ?? $DEFAULT_METHOD;
-        $params = array_slice($explodedUri, 2);
+        $errorController = new Controllers\ErrorController();
+        switch ($routeInfo[0]) {
+            case FastRoute\Dispatcher::NOT_FOUND:
+                $errorController->notFound();
+                exit;
+            case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+                $errorController->methodNotAllowed();
+                exit;
+            case FastRoute\Dispatcher::FOUND:
+                $handler = $routeInfo[1];
+                $vars = $routeInfo[2];
 
-        // Set proper controller paths
-        $namespace = $isApi ? "app\\Controllers\\api\\" : "app\\Controllers\\";
-        $controllerClass = $namespace . $controllerName;
-        $controllerFile = dirname(__DIR__) . "/" . str_replace("\\", "/", $controllerClass) . ".php"; // TODO: Rework this filepath to be more dynamic
-
-        // Check if controller exists
-        if (!file_exists($controllerFile)) {
-            http_response_code(404);
-            var_dump($controllerFile);
-            die("ROUTER: controller `{$controllerFile}` not found");
+                // ... call $handler with $vars
+                // METHOD + URI → handler + params
+                call_user_func_array($handler, $vars);
+                break;
         }
-        require_once $controllerFile;
-
-        // Check if the controllers method exists
-        if (!class_exists($controllerClass) || !method_exists($controllerClass, $methodName)) {
-            http_response_code(404);
-            die("ROUTER: Method `{$controllerFile} -> {$methodName}(...)`not found");
-        }
-        $controllerObj = new $controllerClass();
-
-        try {
-            $reflectionMethod = new ReflectionMethod($controllerObj, $methodName);
-            $expectedParams = $reflectionMethod->getNumberOfParameters();
-
-            if ($expectedParams > count($params)) {
-                http_response_code(400);
-                die("ROUTER: Missing parameters");
-            }
-
-            call_user_func_array([$controllerObj, $methodName], $params);
-        } catch (\Throwable $e) {
-            http_response_code(500);
-            die("ROUTER: Internal Server Error: " . $e->getMessage());
-        }
-    }
-
-    private function stripParameters($uri): string
-    {
-        return strtok($uri, '?');
     }
 }

@@ -13,7 +13,8 @@ class AuthController
         $this->authService = $authService;
     }
 
-    public function index(): void
+    /// POST
+    public function login(): void
     {
         // On POST-Request -> Try matching login credentials
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -21,8 +22,8 @@ class AuthController
             $password = $_POST['password'] ?? '';
 
             if ($this->authService->login($username, $password)) {
-                // Successful login -> Redirect to /home
-                header("Location: /home", true, 302);
+                // Successful login -> Redirect to home '/'
+                header("Location: /", true, 302);
             } else {
                 // Login failed -> Redirect back to /login (/) with error message
                 // /login URL is not relevant, but it's needed for the redirect to work
@@ -36,8 +37,20 @@ class AuthController
         }
     }
 
+    public function signup(): void
+    {
+        global $title, $view;
+        $title = "Home | Tesserarius";
+        $view = __DIR__ . '/../Views/signup.php';
+        require __DIR__ . '/../Views/skeleton/base.php';
+    }
+
     public function logout(): void
     {
+        global $title, $view;
+        $title = "Login | Tesserarius";
+        $view = __DIR__ . '/../Views/login.php';
+
         $this->authService->logout();
     }
 }

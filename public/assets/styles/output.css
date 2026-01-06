@@ -12,6 +12,7 @@
     --color-amber-400: oklch(82.8% 0.189 84.429);
     --color-amber-500: oklch(76.9% 0.188 70.08);
     --color-neutral-400: oklch(70.8% 0 0);
+    --color-neutral-500: oklch(55.6% 0 0);
     --color-neutral-600: oklch(43.9% 0 0);
     --color-neutral-700: oklch(37.1% 0 0);
     --color-neutral-800: oklch(26.9% 0 0);
@@ -27,6 +28,8 @@
     --text-lg--line-height: calc(1.75 / 1.125);
     --text-xl: 1.25rem;
     --text-xl--line-height: calc(1.75 / 1.25);
+    --text-2xl: 1.5rem;
+    --text-2xl--line-height: calc(2 / 1.5);
     --text-4xl: 2.25rem;
     --text-4xl--line-height: calc(2.5 / 2.25);
     --text-6xl: 3.75rem;
@@ -199,6 +202,15 @@
   .mt-4 {
     margin-top: calc(var(--spacing) * 4);
   }
+  .mb-2 {
+    margin-bottom: calc(var(--spacing) * 2);
+  }
+  .mb-4 {
+    margin-bottom: calc(var(--spacing) * 4);
+  }
+  .mb-6 {
+    margin-bottom: calc(var(--spacing) * 6);
+  }
   .line-clamp-3 {
     overflow: hidden;
     display: -webkit-box;
@@ -286,6 +298,9 @@
   .justify-start {
     justify-content: flex-start;
   }
+  .gap-1 {
+    gap: calc(var(--spacing) * 1);
+  }
   .gap-2 {
     gap: calc(var(--spacing) * 2);
   }
@@ -346,6 +361,10 @@
   }
   .text-center {
     text-align: center;
+  }
+  .text-2xl {
+    font-size: var(--text-2xl);
+    line-height: var(--tw-leading, var(--text-2xl--line-height));
   }
   .text-4xl {
     font-size: var(--text-4xl);
@@ -435,7 +454,7 @@
   }
 }
 @font-face {
-  font-family: 'Monsterrat';
+  font-family: 'montserrat';
   src: url("../fonts/montserrat-medium.ttf") format("truetype");
 }
 @layer components {
@@ -511,6 +530,21 @@
       }
     }
   }
+  .tess-btn-sec {
+    width: 100%;
+    border-radius: var(--radius-xl);
+    background-color: var(--color-neutral-400);
+    padding-inline: calc(var(--spacing) * 4);
+    padding-block: calc(var(--spacing) * 2);
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+    color: var(--color-neutral-900);
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-neutral-500);
+      }
+    }
+  }
   .tess-project-card {
     height: calc(var(--spacing) * 32);
     width: calc(var(--spacing) * 48);
@@ -525,7 +559,7 @@
   }
 }
 :root {
-  font-family: 'Monsterrat', sans-serif;
+  font-family: 'montserrat', sans-serif;
   padding: 0;
   border: 0;
   margin: 0;

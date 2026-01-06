@@ -3,17 +3,20 @@
 namespace App\Controllers;
 
 use App\Services\AuthService;
-use App\Services\UserService;
 
 class LoginController
 {
+    private AuthService $authService;
+
     public function __construct($authService)
     {
-        $authService->checkLoginPageIfLoggedIn(); // If not logged in, redirect to login page
+        $this->authService = $authService;
     }
 
     public function index()
     {
+        $this->authService->checkLoginPageIfLoggedIn(); // If not logged in, redirect to login page
+
         global $title, $view;
 
         $title = "Login | Tesserarius";

@@ -21,23 +21,18 @@ use App\Controllers\{
     ProjectController
 };
 
-use Dotenv\Dotenv;
-
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-header("Access-Control-Allow-Origin: *"); // Allows any website (*) to access this API (useful for public APIs).
+// TODO: Consider moving this to middleware / API router
+header("Access-Control-Allow-Methods: GET, POST"); // Only allow GET and POST requests.
+header("Access-Control-Allow-Origin: *"); // TODO: Change this to localhost
 header("Access-Control-Allow-Headers: *"); // Allows all HTTP request headers (useful for handling JSON requests, auth tokens, etc.).
 
-// Set up environment variables
-$dotenv = Dotenv::createImmutable(dirname('/'));
+// @vlucas/phpdotenv | https://packagist.org/packages/vlucas/phpdotenv
+// Set up environment variables, autoload /.env file
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
-
-$dotenv->required(['SITE_URL']);
-
-$serverIp = $_SERVER['SERVER_ADDR'];
-define('SITE_URL', $_ENV['SITE_URL']);
-
-$uri = trim($_SERVER['REQUEST_URI'], '/');
+$dotenv->required(['SITE_URL', 'DB_TYPE', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD']);
 
 // -------------------- DI Container setup --------------------
 // Repositories
@@ -60,12 +55,12 @@ $projectController = new ProjectController($authService, $projectService, $taskS
 
 // Controller map for router
 $controllers = [
-    'LoginController' => $loginController,
-    'HomeController' => $homeController,
-    'ProjectController' => $projectController,
-    'AuthController' => $authService
+    'auth' => $authController,
+    'home' => $homeController,
+    'login' => $loginController,
+    'project' => $projectController
 ];
 
 // Pass controller map to router to handle Dependency Injection (DI)
 $router = new App\Router($controllers);
-$router->route($uri);
+$router->dispatch();

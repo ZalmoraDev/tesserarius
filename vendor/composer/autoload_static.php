@@ -10,6 +10,7 @@ class ComposerStaticInit108be68e4e2b97fed51d36a10eed0849
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
+        '253c157292f75eb38082b5acb06f3f01' => __DIR__ . '/..' . '/nikic/fast-route/src/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -27,21 +28,16 @@ class ComposerStaticInit108be68e4e2b97fed51d36a10eed0849
         array (
             'GrahamCampbell\\ResultType\\' => 26,
         ),
+        'F' =>
+        array (
+            'FastRoute\\' => 10,
+        ),
         'D' =>
         array (
             'Dotenv\\' => 7,
         ),
         'A' =>
         array (
-            'App\\Views\\Components\\' => 21,
-            'App\\Views\\' => 10,
-            'App\\Services\\' => 13,
-            'App\\Repositories\\' => 17,
-            'App\\Models\\Enum\\' => 16,
-            'App\\Models\\' => 11,
-            'App\\Controllers\\Api\\' => 20,
-            'App\\Controllers\\' => 16,
-            'App\\Config\\' => 11,
             'App\\' => 4,
         ),
     );
@@ -67,45 +63,13 @@ class ComposerStaticInit108be68e4e2b97fed51d36a10eed0849
         array (
             0 => __DIR__ . '/..' . '/graham-campbell/result-type/src',
         ),
+        'FastRoute\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/nikic/fast-route/src',
+        ),
         'Dotenv\\' =>
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
-        ),
-        'App\\Views\\Components\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/app/Views/Components',
-        ),
-        'App\\Views\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/app/Views',
-        ),
-        'App\\Services\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/app/Services',
-        ),
-        'App\\Repositories\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/app/Repositories',
-        ),
-        'App\\Models\\Enum\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/app/Models/Enums',
-        ),
-        'App\\Models\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/app/Models',
-        ),
-        'App\\Controllers\\Api\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/app/Controllers/Api',
-        ),
-        'App\\Controllers\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/app/Controllers',
-        ),
-        'App\\Config\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/app/Config',
         ),
         'App\\' =>
         array (
