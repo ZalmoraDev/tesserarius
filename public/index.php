@@ -1,5 +1,7 @@
 <?php
 
+use App\CsrfService;
+
 use App\Repositories\{
     AuthRepository,
     ProjectRepository,
@@ -21,12 +23,23 @@ use App\Controllers\{
     ProjectController
 };
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
-
+// -------------------- headers, session & .env config --------------------
 // TODO: Consider moving this to middleware / API router
 header("Access-Control-Allow-Methods: GET, POST"); // Only allow GET and POST requests.
 header("Access-Control-Allow-Origin: *"); // TODO: Change this to localhost
 header("Access-Control-Allow-Headers: *"); // Allows all HTTP request headers (useful for handling JSON requests, auth tokens, etc.).
+
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    // https://www.php.net/manual/en/session.configuration.php
+    session_start([
+        'use_strict_mode' => true, // prevent CSRF & uninitialized session IDs
+        'cookie_httponly' => true, // prevent JS access to cookies (XSS)
+        'cookie_samesite' => 'Strict', // prevent cross-site usage
+    ]);
+}
+
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 // @vlucas/phpdotenv | https://packagist.org/packages/vlucas/phpdotenv
 // Set up environment variables, autoload /.env file
@@ -61,6 +74,7 @@ $controllers = [
     'project' => $projectController
 ];
 
-// Pass controller map to router to handle Dependency Injection (DI)
+// Pass controller map to router to serve as handlers
+
 $router = new App\Router($controllers);
 $router->dispatch();

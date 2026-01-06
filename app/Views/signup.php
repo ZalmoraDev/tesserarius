@@ -24,7 +24,7 @@ $error = $_GET['error'] ?? null;
         <?php endif; ?>
 
         <div class="gap-4 flex flex-col w-full items-center">
-            <form action="/auth/login" method="POST" class="flex flex-col justify-center items-center gap-2">
+            <form action="/auth/signup" method="POST" class="flex flex-col justify-center items-center gap-2">
                 <label>
                     <input type="text" class="tess-input-md" placeholder="Username" name="username" required>
                 </label>

@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use App\Repositories\AuthRepository;
 
-class AuthService
+final class AuthService
 {
     private AuthRepository $authRepository;
 
@@ -16,72 +17,57 @@ class AuthService
     //-----------------------------------------------------
     // Login & Logout methods -----------------------------
     //-----------------------------------------------------
-    public function login($username, $password)
+
+    /// Attempt to log fetch user model by username and verify password
+    public function authenticate($username, $password): ?User
     {
-        session_start();
-
         // TEMPORARY: Create user with hashed password in database for debugging
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $created = $this->authRepository->createUser($username, $hashedPassword);
-        error_log("TEMP: Created user '$username' in database: " . ($created ? 'SUCCESS' : 'FAILED'));
-
-        // Fetch user by username
+//        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+//        $created = $this->authRepository->createUser($username, $hashedPassword);
+//        error_log("TEMP: Created user '$username' in database: " . ($created ? 'SUCCESS' : 'FAILED'));
+        // TEMPORARY: END ------------------------------------------------------
         $user = $this->authRepository->getUserByUsername($username);
 
-        // Uses password_verify's bcrypt
-        if ($user && password_verify($password, $user->getPasswordHash())) {
-            $_SESSION['userId'] = $user->getId();
-            $_SESSION['username'] = $user->getUsername();
-            return true;
-        }
-        return false;
+        if (!$user)
+            return null;
+
+        // Uses php's built-in BCrypt password hashing functions
+        if (!password_verify($password, $user->getPasswordHash()))
+            return null;
+
+        return $user;
     }
 
+    /// Use User model to set session data for logged-in user
+    public function login(User $user): void
+    {
+        session_regenerate_id(true);
+
+        $_SESSION['auth'] = [
+            'userId' => $user->getId(),
+            'username' => $user->getUsername(),
+            'ts' => time(),
+        ];
+    }
 
     public function logout(): void
     {
-        // Clear session & redirect to login after logout
-        session_start();
-        session_unset();
-        session_destroy();
-        header("Location: /login");
-        exit();
+        // Only unset auth session data, regen session ID for csrf protection
+        unset($_SESSION['auth']);
+        session_regenerate_id(true);
     }
 
-    //-----------------------------------------------------
-    // Access control methods -----------------------------
-    //-----------------------------------------------------
-    public function checkIfLoggedIn(): void
+    public function isAuthenticated(): bool
     {
-        session_start(); // Make sure session is initiated
-
-        // Redirect to login page if not logged in
-        if (!isset($_SESSION['userId'])) {
-            header("Location: /login");
-            exit();
-        }
+        return isset($_SESSION['auth']['userId']);
     }
-
-    public function checkLoginPageIfLoggedIn(): void
-    {
-        session_start(); // Make sure session is initiated
-
-        // If the user is logged in, redirect to home
-        if (isset($_SESSION['userId'])) {
-            header("Location: /");
-            exit();
-        }
-    }
-
 
     public function shouldProjectBeAccessible($projectId): void
     {
-        session_start(); // Make sure session is initiated
-
         if (!$this->authRepository->shouldProjectBeAccessible($_SESSION['userId'], $projectId)) {
             // Redirect to login page if not a member/admin of the project
+            // TODO: header redirects should be handled in controllers, not services
             header("Location: /login?error=access_denied");
-            exit();
         }
     }
 }

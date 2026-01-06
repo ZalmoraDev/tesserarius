@@ -10,7 +10,7 @@ class ErrorController
         global $title, $view;
 
         http_response_code(404);
-        $title = "Page Not Found";
+        $title = "404 Not Found";
         $view = __DIR__ . '/../Views/errors/404.html';
         require __DIR__ . '/../Views/skeleton/base.php';
     }
@@ -21,7 +21,7 @@ class ErrorController
         global $title, $view;
 
         http_response_code(405);
-        $title = "Method Not Allowed";
+        $title = "405 Not Allowed";
         $view = __DIR__ . '/../Views/errors/405.html';
         require __DIR__ . '/../Views/skeleton/base.php';
     }
