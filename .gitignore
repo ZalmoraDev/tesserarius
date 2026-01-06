@@ -1,3 +1,4 @@
 # Generated
 .idea/
 node_modules/
+vendor/
