@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Enums\UserRole;
 use App\Models\User;
 use PDO;
 
@@ -30,7 +31,7 @@ class AuthRepository extends Repository
         }
     }
 
-    public function getUserByUsername($username): ?User
+    public function getUserByUsername(string $username): ?User
     {
         try {
             $stmt = $this->connection->prepare("SELECT * FROM users WHERE username = :userName");
@@ -53,23 +54,28 @@ class AuthRepository extends Repository
         return null; // No user found
     }
 
-    public function shouldProjectBeAccessible($userAccessing, $projectIdAccessed): bool
+    /// Retrieve the role of a user in a specific project, for router access control
+    public function getUserProjectRole(int $projectId, int $userId): ?string
     {
         try {
             $stmt = $this->connection->prepare("
                 SELECT pm.role
                 FROM project_members pm
-                WHERE pm.user_id = :userId AND pm.project_id = :projectId
+                WHERE pm.user_id = :userId
+                  AND pm.project_id = :projectId
             ");
-            $stmt->bindParam(':userId', $userAccessing, PDO::PARAM_STR);
-            $stmt->bindParam(':projectId', $projectIdAccessed, PDO::PARAM_INT);
-            $stmt->execute();
 
-            return $stmt->rowCount() > 0; // Return true if the user has access to the project
+            $stmt->execute([
+                ':userId' => $userId,
+                ':projectId' => $projectId,
+            ]);
+
+            $role = $stmt->fetchColumn();
+            return $role ?: null;
+
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());
+            return false;
         }
-
-        return false; // No access found
     }
 }

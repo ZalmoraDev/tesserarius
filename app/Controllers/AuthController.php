@@ -13,6 +13,16 @@ class AuthController
         $this->authService = $authService;
     }
 
+    /// GET, acts as login page
+    public function index()
+    {
+        global $title, $view;
+
+        $title = "Login | Tesserarius";
+        $view = __DIR__ . '/../Views/login.php';
+        require __DIR__ . '/../Views/skeleton/base.php';
+    }
+
     /// POST
     public function login(): void
     {

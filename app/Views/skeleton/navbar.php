@@ -17,7 +17,7 @@
 
     <!-- Right -->
     <div class="flex flex-1 gap-4 justify-end items-center">
-        <p><?= $_SESSION['username'] ?? "NO_USER"; ?></p>
+        <p><?= $_SESSION['auth']['username'] ?? "NO_USER"; ?></p>
         <form action="<?= $_ENV['SITE_URL'] ?>/auth/logout" method="post">
             <!-- TODO: Add CSRF token & fix padding/margin -->
         <button type="submit" class="transition-colors cursor-pointer">

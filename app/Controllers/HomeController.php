@@ -7,24 +7,20 @@ use App\Services\ProjectService;
 
 class HomeController
 {
-    private AuthService $authService;
     private ProjectService $projectService;
 
-    public function __construct($authService, $projectService)
+    public function __construct($projectService)
     {
-        $this->authService = $authService;
         $this->projectService = $projectService;
     }
 
     public function index()
     {
-        $this->authService->checkIfLoggedIn(); // If not logged in, redirect to login page
-
         global $title, $view;
         global $projectsAdmins, $projectsMembers;
 
         // Get the user ID from the session
-        $userId = $_SESSION['userId'];
+        $userId = $_SESSION['auth']['userId'];
 
         // Fetch the projects where the user is an admin & member
         $projectsAdmins = $this->projectService->getProjectsByUserAndRole($userId, "admin");

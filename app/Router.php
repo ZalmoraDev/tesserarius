@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Models\Enums\AccessRole;
+use App\Models\Enums\UserRole;
+
 use App\Repositories\AuthRepository;
 use App\Services\AuthService;
 use FastRoute;
@@ -30,16 +33,15 @@ final class Router
         // Uses alias for route definitions instead of $r->addRoute(METHOD, ...)
         // Handler contains added optional auth boolean, evaluated when dispatching below
         $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
+            $r->get('/login', $this->routeObj([$this->c['auth'], 'index'], AccessRole::Anyone));
+            $r->get('/auth/signup', $this->routeObj([$this->c['auth'], 'signup'], AccessRole::Anyone));
+            $r->post('/auth/login', $this->routeObj([$this->c['auth'], 'login'], AccessRole::Anyone));
+            $r->post('/auth/logout', $this->routeObj([$this->c['auth'], 'logout'], AccessRole::Anyone));
+
             // default page for logged-in users, default to URL '/'
-            $r->get('/', $this->routeObj([$this->c['home'], 'index']));
+            $r->get('/', $this->routeObj([$this->c['home'], 'index'], AccessRole::Authenticated));
 
-            $r->get('/login', $this->routeObj([$this->c['login'], 'index'], false));
-
-            $r->get('/auth/signup', $this->routeObj([$this->c['auth'], 'signup'], false));
-            $r->post('/auth/login', $this->routeObj([$this->c['auth'], 'login'], false));
-            $r->post('/auth/logout', $this->routeObj([$this->c['auth'], 'logout'], false));
-
-            $r->get('/project/{id:\d+}', $this->routeObj([$this->c['auth'], 'view']));
+            $r->get('/project/{projectId:\d+}', $this->routeObj([$this->c['auth'], 'view'], AccessRole::Member));
         });
 
         // Fetch method and URI from somewhere
@@ -65,28 +67,42 @@ final class Router
                 $handler = $routeInfo[1];
                 $vars = $routeInfo[2];
 
-                // auth guard
-                // If route requires authentication, but user isn't authenticated -> redirect to /login
-                // TODO: Pass this AuthService object more gracefully regarding dependency injection fomr index.php
+                // TODO: Pass this AuthService object more gracefully regarding dependency injection from index.php
                 $authService = new AuthService(new AuthRepository());
-                if (($handler['auth'] ?? false) && $authService->isAuthenticated()) {
-                    // TODO: Find better way of handling error back to user
+
+                $required = $handler['accessRole'];
+
+                // AUTHENTICATION: If route requires authenticated user, but user is not authenticated, redirect to /login
+                if ($required >= AccessRole::Authenticated &&
+                    $authService->isAuthenticated() === false) {
                     header('Location: /login?error=requires_login', true, 302);
                     exit;
                 }
 
-                // call $handler with $vars
+                // TODO: If any other type of authorization besides $vars['$projectId'] is needed, create more guards here
+
+                // AUTHORIZATION: If route requires higher role then is accessing, redirect to / (homepage)
+                if ($required >= AccessRole::Member &&
+                    $authService->isAccessAuthorized($vars['projectId']) === false) {
+                    header('Location: /?error=you_are_not_authorized_to_access_this_page', true, 403);
+                    exit;
+                }
+
+                // If no authentication was required, or user passed auth guards, call handler
                 // METHOD + URI → handler + params
                 call_user_func_array($handler['handler'], $vars);
                 break;
         }
     }
 
-    /// Helper to create route definition objects
-    /// Also makes unintended page unauthorization less likely by the default: $auth = true
-    private function routeObj(array $handler, bool $auth = true): array
+/// Helper-object to create route auth guard definition objects.
+    private
+    function routeObj(array $handler, AccessRole $minRole): array
     {
-        return ['handler' => $handler, 'auth' => $auth];
+        return [
+            'handler' => $handler,
+            'accessRole' => $minRole
+        ];
     }
 
 }

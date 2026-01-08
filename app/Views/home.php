@@ -6,7 +6,7 @@ use App\Views\components\compProjectHomeTab;
 
 $projectTab = new compProjectHomeTab();
 
-$sessionUserId = $_SESSION['username']; // TODO: Get user ID from session
+$sessionUserId = $_SESSION['auth']['username']; // TODO: Get user ID from session
 
 $yourProjectsAmount = count($projectsAdmins);
 $memberProjectsAmount = count($projectsMembers);

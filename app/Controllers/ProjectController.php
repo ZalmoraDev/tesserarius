@@ -10,13 +10,11 @@ use App\Services\ {
 
 class ProjectController
 {
-    private AuthService $authService;
     private ProjectService $projectService;
     private TaskService $taskService;
 
-    public function __construct($authService, $projectService, $taskService)
+    public function __construct($projectService, $taskService)
     {
-        $this->authService = $authService;
         $this->projectService = $projectService;
         $this->taskService = $taskService;
     }
@@ -25,9 +23,6 @@ class ProjectController
     {
         global $title, $view;
         global $allColumnTasksArray; // 2D array of tasks, holding columns and their tasks, gets split in view/Project.php
-
-        // Check if authorized. If not member/admin -> redirect to login page
-        $this->authService->shouldProjectBeAccessible($projectId);
 
         // Get project name to set the title
         // TODO: Unnecessary double project retrieval in controller and view

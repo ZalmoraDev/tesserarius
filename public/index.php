@@ -62,15 +62,13 @@ $userService = new UserService($userRepo);
 
 // Controllers
 $authController = new AuthController($authService);
-$homeController = new HomeController($authService, $projectService);
-$loginController = new LoginController($authService);
-$projectController = new ProjectController($authService, $projectService, $taskService);
+$homeController = new HomeController($projectService);
+$projectController = new ProjectController($projectService, $taskService);
 
 // Controller map for router
 $controllers = [
     'auth' => $authController,
     'home' => $homeController,
-    'login' => $loginController,
     'project' => $projectController
 ];
 

@@ -2,7 +2,7 @@ SET TIMEZONE = 'Europe/Amsterdam';
 
 -- Owners can administrate and delete their project, 1 owner per project.
 -- Admins are the same as owners, except not being able to delete the project their part of.
-CREATE TYPE role_enum AS ENUM ('member', 'admin', 'owner');
+CREATE TYPE role_enum AS ENUM ('Member', 'Admin', 'Owner');
 
 
 -- START: Users
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS project_members
 (
     project_id INT         NOT NULL,
     user_id    INT         NOT NULL,
-    role       role_enum   NOT NULL DEFAULT 'member',
+    role       role_enum   NOT NULL DEFAULT 'Member',
     joined_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     PRIMARY KEY (project_id, user_id),
@@ -54,7 +54,7 @@ CREATE INDEX idx_project_members_user_role
 
 CREATE UNIQUE INDEX idx_one_owner_per_project
     ON project_members (project_id)
-    WHERE role = 'owner';
+    WHERE role = 'Owner';
 -- END: Project Members
 
 

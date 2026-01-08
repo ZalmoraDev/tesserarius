@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Enums\UserRole;
+use App\Models\Enums\AccessRole;
 use App\Models\User;
 use App\Repositories\AuthRepository;
 
@@ -62,12 +64,23 @@ final class AuthService
         return isset($_SESSION['auth']['userId']);
     }
 
-    public function shouldProjectBeAccessible($projectId): void
+    /** Checks if the currently authenticated user meets the minimum
+     * access role required for a given project.
+     *
+     * Enum comparison is done via their integer values.
+     * The higher the enum-value, the more privileges the role has,
+     * Member < Admin < Owner */
+    public function isAccessAuthorized(int $projectId, AccessRole $requiredRole): bool
     {
-        if (!$this->authRepository->shouldProjectBeAccessible($_SESSION['userId'], $projectId)) {
-            // Redirect to login page if not a member/admin of the project
-            // TODO: header redirects should be handled in controllers, not services
-            header("Location: /login?error=access_denied");
+        $roleString = $this->authRepository->getUserProjectRole($_SESSION['auth']['userId'], $projectId);
+
+        // Should not happen, means user has no role in this project
+        if ($roleString === null) {
+            return false;
         }
+
+        // Convert role string to UserRole enum, which gets converted into it's int value for comparison.
+        $userRole = UserRole::from($roleString);
+        return $userRole->value >= $requiredRole->value;
     }
 }
