@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Services\ {
-    AuthService,
     ProjectService,
     TaskService
 };
@@ -19,6 +18,7 @@ class ProjectController
         $this->taskService = $taskService;
     }
 
+    /** GET, View a specified project by its ID */
     public function view($projectId): void
     {
         global $title, $view;

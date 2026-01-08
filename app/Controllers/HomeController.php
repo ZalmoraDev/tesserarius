@@ -2,11 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Services\AuthService;
 use App\Services\ProjectService;
 
 class HomeController
 {
+    // TODO: Maybe change name to DashboardController? And make index method 'homePage'?
+    //       Add other methods for editing user settings, etc.
     private ProjectService $projectService;
 
     public function __construct($projectService)
@@ -14,6 +15,8 @@ class HomeController
         $this->projectService = $projectService;
     }
 
+    // TODO: Change to dashboardPage()?
+    /** GET, Home page for logged-in users */
     public function index()
     {
         global $title, $view;

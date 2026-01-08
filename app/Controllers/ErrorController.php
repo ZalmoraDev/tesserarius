@@ -3,7 +3,7 @@ namespace App\Controllers;
 
 class ErrorController
 {
-    /// 404 Not Found
+    /** 404 Not Found */
     public function notFound(): void
     {
         // TODO: Fix this horrible global variable hell
@@ -15,7 +15,7 @@ class ErrorController
         require __DIR__ . '/../Views/skeleton/base.php';
     }
 
-    /// 405 Method Not Allowed
+    /** 405 Method Not Allowed */
     public function methodNotAllowed(): void
     {
         global $title, $view;

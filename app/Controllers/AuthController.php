@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Services\AuthService;
 
-class AuthController
+final class AuthController
 {
     private AuthService $authService;
 
@@ -13,8 +13,15 @@ class AuthController
         $this->authService = $authService;
     }
 
-    /// GET, acts as login page
-    public function index()
+    /** Used by router to authenticate and authorize access to routes */
+    public function getAuthService(): AuthService
+    {
+        return $this->authService;
+    }
+
+    // -------------------- GET Actions --------------------
+    /** GET, acts as login page */
+    public function loginPage()
     {
         global $title, $view;
 
@@ -23,8 +30,19 @@ class AuthController
         require __DIR__ . '/../Views/skeleton/base.php';
     }
 
-    /// POST
-    public function login(): void
+
+    /** GET, serves signup page */
+    public function signupPage(): void
+    {
+        global $title, $view;
+        $title = "Signup | Tesserarius";
+        $view = __DIR__ . '/../Views/signup.php';
+        require __DIR__ . '/../Views/skeleton/base.php';
+    }
+
+    // -------------------- POST Actions --------------------
+    /** POST, processes login form submission */
+    public function loginAuth(): void
     {
         // Attempts to authenticate user with provided credentials
         $user = $this->authService->authenticate(
@@ -44,28 +62,19 @@ class AuthController
         //$this->redirect('/');
     }
 
-    /// GET
-    public function signup(): void
+    /** POST, processes signup form submission */
+    public function signupAuth(): void
     {
-        global $title, $view;
-        $title = "Home | Tesserarius";
-        $view = __DIR__ . '/../Views/signup.php';
-        require __DIR__ . '/../Views/skeleton/base.php';
+        // TODO: Implement signupAuth method
+
+        // After successful signup, redirect to login page
+        $this->loginAuth();
     }
 
-    /// GET
+    /** POST, serves logout action */
     public function logout(): void
     {
-        global $title, $view;
-        $title = "Login | Tesserarius";
-        $view = __DIR__ . '/../Views/login.php';
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
-            exit;
-        }
-
         $this->authService->logout();
-        header("Location: /login");
+        header("Location: /login", true, 302);
     }
 }

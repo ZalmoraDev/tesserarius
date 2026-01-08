@@ -1,4 +1,9 @@
 <?php
+
+use App\Middleware\CsrfService;
+
+$csrfService = new CsrfService();
+
 global $view, $title;
 
 // Get error message from URL (if present)
@@ -25,6 +30,7 @@ $error = $_GET['error'] ?? null;
 
         <div class="gap-4 flex flex-col w-full items-center">
             <form action="/auth/login" method="POST" class="flex flex-col justify-center items-center gap-2">
+                <input type="hidden" name="csrf" value="<?= $csrfService->token() ?>">
                 <label>
                     <input type="text" class="tess-input-md" placeholder="Username" name="username" required>
                 </label>
@@ -34,9 +40,7 @@ $error = $_GET['error'] ?? null;
                 <button type="submit" class="tess-btn-pri w-full mt-4 cursor-pointer">Login</button>
             </form>
             <p class="text-neutral-400">or</p>
-            <form action="/auth/signup" method="GET">
-                <button type="submit" class="tess-btn-sec w-full cursor-pointer">Signup</button>
-            </form>
+            <a href="/signup" class="tess-btn-sec w-full cursor-pointer">Signup</a>
         </div>
     </div>
 </main>

@@ -24,9 +24,9 @@ final class AuthService
     public function authenticate($username, $password): ?User
     {
         // TEMPORARY: Create user with hashed password in database for debugging
-//        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-//        $created = $this->authRepository->createUser($username, $hashedPassword);
-//        error_log("TEMP: Created user '$username' in database: " . ($created ? 'SUCCESS' : 'FAILED'));
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $created = $this->authRepository->createUser($username, $hashedPassword);
+        error_log("TEMP: Created user '$username' in database: " . ($created ? 'SUCCESS' : 'FAILED'));
         // TEMPORARY: END ------------------------------------------------------
         $user = $this->authRepository->getUserByUsername($username);
 
@@ -68,8 +68,8 @@ final class AuthService
      * access role required for a given project.
      *
      * Enum comparison is done via their integer values.
-     * The higher the enum-value, the more privileges the role has,
-     * Member < Admin < Owner */
+     * The higher the enum-value, the more privileged the role,
+     * Member=1 < Admin=2 < Owner=3 */
     public function isAccessAuthorized(int $projectId, AccessRole $requiredRole): bool
     {
         $roleString = $this->authRepository->getUserProjectRole($_SESSION['auth']['userId'], $projectId);

@@ -3,45 +3,43 @@
 namespace App;
 
 use App\Models\Enums\AccessRole;
-use App\Models\Enums\UserRole;
-
-use App\Repositories\AuthRepository;
 use App\Services\AuthService;
-use FastRoute;
+use App\Repositories\AuthRepository;
+
 use App\Middleware\CsrfService;
+use FastRoute;
 
 final class Router
 {
     // Abbreviated for route verbosity
-    private array $c;
+    private array $controllers;
 
     public function __construct(array $controllers)
     {
-        $this->c = $controllers;
+        $this->controllers = $controllers;
     }
 
-    /// @nikic/fast-route | https://packagist.org/packages/nikic/fast-route
-    /// Uses basic usage implementation from documentation, with changes to correctly calling class methods as handlers
+    /** nikic/fast-route | https://packagist.org/packages/nikic/fast-route.
+     * Modification on the basic usage implementation from docs, contains additional header data regarding route Access rights. */
     public function dispatch(): void
     {
-        // Upon POST requests, verify CSRF token. If not valid, exit with 403
-        $csrfService = new CsrfService();
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $csrfService->verify($_POST['csrf'] ?? null);
-        }
-
-        // Uses alias for route definitions instead of $r->addRoute(METHOD, ...)
-        // Handler contains added optional auth boolean, evaluated when dispatching below
+        // Uses route aliases instead of full $r->addRoute(METHOD, ...)
         $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-            $r->get('/login', $this->routeObj([$this->c['auth'], 'index'], AccessRole::Anyone));
-            $r->get('/auth/signup', $this->routeObj([$this->c['auth'], 'signup'], AccessRole::Anyone));
-            $r->post('/auth/login', $this->routeObj([$this->c['auth'], 'login'], AccessRole::Anyone));
-            $r->post('/auth/logout', $this->routeObj([$this->c['auth'], 'logout'], AccessRole::Anyone));
+            // Retrieve controllers and use them as conciser abbreviations in route handler definitions
+            $auth = $this->controllers['auth'];
+            $home = $this->controllers['home'];
+            $project = $this->controllers['project'];
+
+            $r->get('/login', $this->route([$auth, 'loginPage'], AccessRole::Anyone));
+            $r->get('/signup', $this->route([$auth, 'signupPage'], AccessRole::Anyone));
+            $r->post('/auth/login', $this->route([$auth, 'loginAuth'], AccessRole::Anyone));
+            $r->post('/auth/signup', $this->route([$auth, 'signupAuth'], AccessRole::Anyone));
+            $r->post('/auth/logout', $this->route([$auth, 'logout'], AccessRole::Anyone));
 
             // default page for logged-in users, default to URL '/'
-            $r->get('/', $this->routeObj([$this->c['home'], 'index'], AccessRole::Authenticated));
+            $r->get('/', $this->route([$home, 'index'], AccessRole::Authenticated));
 
-            $r->get('/project/{projectId:\d+}', $this->routeObj([$this->c['auth'], 'view'], AccessRole::Member));
+            $r->get('/project/{projectId:\d+}', $this->route([$project, 'view'], AccessRole::Member));
         });
 
         // Fetch method and URI from somewhere
@@ -67,10 +65,9 @@ final class Router
                 $handler = $routeInfo[1];
                 $vars = $routeInfo[2];
 
-                // TODO: Pass this AuthService object more gracefully regarding dependency injection from index.php
-                $authService = new AuthService(new AuthRepository());
-
+                // Abbreviate required access role for this route AND retrieve auth service
                 $required = $handler['accessRole'];
+                $authService = $this->controllers['auth']->getAuthService();
 
                 // AUTHENTICATION: If route requires authenticated user, but user is not authenticated, redirect to /login
                 if ($required >= AccessRole::Authenticated &&
@@ -79,8 +76,6 @@ final class Router
                     exit;
                 }
 
-                // TODO: If any other type of authorization besides $vars['$projectId'] is needed, create more guards here
-
                 // AUTHORIZATION: If route requires higher role then is accessing, redirect to / (homepage)
                 if ($required >= AccessRole::Member &&
                     $authService->isAccessAuthorized($vars['projectId']) === false) {
@@ -88,16 +83,21 @@ final class Router
                     exit;
                 }
 
-                // If no authentication was required, or user passed auth guards, call handler
+                // Upon POST requests, verify CSRF token. If not valid, exit with 403
+                $csrfService = new CsrfService();
+                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                    $csrfService->verify($_POST['csrf'] ?? null);
+                }
+
+                // (If no authentication was required OR user passed auth guards) & CSRF token is validated -> call handler
                 // METHOD + URI → handler + params
                 call_user_func_array($handler['handler'], $vars);
                 break;
         }
     }
 
-/// Helper-object to create route auth guard definition objects.
-    private
-    function routeObj(array $handler, AccessRole $minRole): array
+    /** Helper-object to create more concise route auth guard objects. */
+    private function route(array $handler, AccessRole $minRole): array
     {
         return [
             'handler' => $handler,

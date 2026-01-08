@@ -1,3 +1,9 @@
+<?php
+use App\Middleware\CsrfService;
+
+$csrfService = new CsrfService();
+?>
+
 <nav class="w-full bg-neutral-900 gap-2 p-2
         shadow-[0_5px_10px_rgba(0,0,0,1)] flex justify-between">
     <!-- Left -->
@@ -18,14 +24,14 @@
     <!-- Right -->
     <div class="flex flex-1 gap-4 justify-end items-center">
         <p><?= $_SESSION['auth']['username'] ?? "NO_USER"; ?></p>
-        <form action="<?= $_ENV['SITE_URL'] ?>/auth/logout" method="post">
-            <!-- TODO: Add CSRF token & fix padding/margin -->
-        <button type="submit" class="transition-colors cursor-pointer">
-            <img src="<?= $_ENV['SITE_URL'] ?>/assets/icons/logout-32dp.svg"
-                 alt="logout"
-                 height="32" width="32"
-                 class="w-8 h-8 hover:brightness-50">
-        </button>
+        <form action="/auth/logout" method="POST">
+            <input type="hidden" name="csrf" value="<?= $csrfService->token() ?>">
+            <button type="submit" class="transition-colors cursor-pointer">
+                <img src="<?= $_ENV['SITE_URL'] ?>/assets/icons/logout-32dp.svg"
+                     alt="logout"
+                     height="32" width="32"
+                     class="w-8 h-8 hover:brightness-50">
+            </button>
         </form>
     </div>
 </nav>
