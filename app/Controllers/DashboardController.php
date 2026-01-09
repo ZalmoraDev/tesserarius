@@ -3,13 +3,13 @@
 namespace App\Controllers;
 
 use App\Core\View;
-use App\Services\ProjectService;
+use App\Services\ProjectServiceInterface;
 
 final class DashboardController
 {
-    private ProjectService $projectService;
+    private ProjectServiceInterface $projectService;
 
-    public function __construct($projectService)
+    public function __construct(ProjectServiceInterface $projectService)
     {
         $this->projectService = $projectService;
     }

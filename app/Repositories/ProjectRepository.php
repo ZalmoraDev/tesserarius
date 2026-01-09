@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Project;
 use PDO;
 
-final class ProjectBaseRepository extends BaseRepository
+final class ProjectRepository extends BaseRepository implements ProjectRepositoryInterface
 {
     public function getProjectByProjectId(int $projectId) : ?Project
     {

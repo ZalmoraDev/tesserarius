@@ -6,7 +6,7 @@ use App\Models\Project;
 use App\Models\Task;
 use PDO;
 
-final class TaskBaseRepository extends BaseRepository
+final class TaskRepository extends BaseRepository implements TaskRepositoryInterface
 {
     public function getAllColumnTasks(int $projectId): array
     {

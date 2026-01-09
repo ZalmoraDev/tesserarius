@@ -2,26 +2,26 @@
 
 namespace App\Services;
 
-use App\Repositories\TaskBaseRepository;
+use App\Repositories\TaskRepositoryInterface;
 
-final class TaskService
+final class TaskService implements TaskServiceInterface
 {
-    private TaskBaseRepository $taskRepository;
+    private TaskRepositoryInterface $taskRepo;
 
-    function __construct($taskRepository)
+    function __construct(TaskRepositoryInterface $taskRepo)
     {
-        $this->taskRepository = $taskRepository;
+        $this->taskRepo = $taskRepo;
     }
 
     public function getAllColumnTasks(int $projectId): array
     {
         // column = backlog, to-do, doing, review, done
         // TODO: Implement existing TaskColumn.php enum
-        return $this->taskRepository->getAllColumnTasks($projectId);
+        return $this->taskRepo->getAllColumnTasks($projectId);
     }
 
     public function moveTaskToColumn(int $taskId, string $newColumn): bool
     {
-        return $this->taskRepository->moveTaskToColumn($taskId, $newColumn);
+        return $this->taskRepo->moveTaskToColumn($taskId, $newColumn);
     }
 }

@@ -2,19 +2,21 @@
 
 namespace App\Routing;
 
-use App\Controllers;
 use App\Core\Csrf;
+
 use App\Models\Enums\AccessRole;
-use App\Services\AuthService;
+use App\Controllers;
+use App\Services\AuthServiceInterface;
+
 use FastRoute;
 
 final class Router
 {
     // Dependency Injection of FastRoute dispatcher routes, created in Routes.php
     private FastRoute\Dispatcher $dispatcher;
-    private AuthService $authService;
+    private AuthServiceInterface $authService;
 
-    public function __construct(FastRoute\Dispatcher $dispatcher, AuthService $authService)
+    public function __construct(FastRoute\Dispatcher $dispatcher, AuthServiceInterface $authService)
     {
         $this->dispatcher = $dispatcher;
         $this->authService = $authService;

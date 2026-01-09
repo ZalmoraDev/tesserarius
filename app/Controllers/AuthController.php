@@ -3,19 +3,19 @@
 namespace App\Controllers;
 
 use App\Core\View;
-use App\Services\AuthService;
+use App\Services\AuthServiceInterface;
 
 final class AuthController
 {
-    private AuthService $authService;
+    private AuthServiceInterface $authService;
 
-    public function __construct($authService)
+    public function __construct(AuthServiceInterface $authService)
     {
         $this->authService = $authService;
     }
 
     /** Getter for AuthService, only used in Router to check authentication and authorization */
-    public function getAuthService(): AuthService
+    public function getAuthService(): AuthServiceInterface
     {
         return $this->authService;
     }

@@ -2,20 +2,15 @@
 
 namespace App\Repositories;
 
-use App\Models\Enums\UserRole;
 use App\Models\User;
 use PDO;
 
-final class AuthBaseRepository extends BaseRepository
+final class AuthRepository extends BaseRepository implements AuthRepositoryInterface
 {
-    public function createUser($username, $passwordHash, $email = null): bool
+    public function createUser(string $username, string $passwordHash, string $email): bool
     {
         try {
-            // If no email provided, generate a default one
-            if ($email === null) {
-                $email = $username . '@temp.com';
-            }
-
+            // TODO: Redo for new postgres schema and fields
             $stmt = $this->connection->prepare("
                 INSERT INTO users (username, password_hash, email) 
                 VALUES (:username, :passwordHash, :email)

@@ -3,17 +3,14 @@
 namespace App\Controllers;
 
 use App\Core\View;
-use App\Services\ {
-    ProjectService,
-    TaskService
-};
+use App\Services\{ProjectServiceInterface, TaskServiceInterface};
 
 final class ProjectController
 {
-    private ProjectService $projectService;
-    private TaskService $taskService;
+    private ProjectServiceInterface $projectService;
+    private TaskServiceInterface $taskService;
 
-    public function __construct($projectService, $taskService)
+    public function __construct(ProjectServiceInterface $projectService, TaskServiceInterface $taskService)
     {
         $this->projectService = $projectService;
         $this->taskService = $taskService;

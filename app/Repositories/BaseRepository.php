@@ -4,10 +4,10 @@ namespace App\Repositories;
 
 use PDO;
 
-class BaseRepository
+/** Establishes database connection using PDO */
+abstract class BaseRepository
 {
     protected PDO $connection;
-
     function __construct()
     {
         try {

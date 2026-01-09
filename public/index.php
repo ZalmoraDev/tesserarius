@@ -1,9 +1,10 @@
 <?php
 
 use App\Routing\{Routes, Router};
+
 use App\Controllers\ {AuthController, DashboardController, ProjectController};
-use App\Services\{AuthService, ProjectService, TaskService, UserService};
-use App\Repositories\{AuthBaseRepository, ProjectBaseRepository, TaskBaseRepository, UserBaseRepository};
+use App\Services\{AuthService, ProjectService, TaskService};
+use App\Repositories\{AuthRepository, ProjectRepository, TaskRepository};
 
 // -------------------- headers, session & .env config --------------------
 // TODO: Consider moving this to middleware / API router
@@ -27,20 +28,21 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 // Set up environment variables, autoload /.env file
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
-$dotenv->required(['SITE_URL', 'DB_TYPE', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD']);
+$dotenv->required([
+    'SITE_NAME', 'SITE_URL',
+    'DB_TYPE', 'DB_HOST', 'DB_PORT', 'DB_DATABASE',
+    'DB_USERNAME', 'DB_PASSWORD']);
 
 // -------------------- DI Container setup --------------------
 // Repositories
-$authRepo = new AuthBaseRepository();
-$projectRepo = new ProjectBaseRepository();
-$taskRepo = new TaskBaseRepository();
-$userRepo = new UserBaseRepository();
+$authRepo = new AuthRepository();
+$projectRepo = new ProjectRepository();
+$taskRepo = new TaskRepository();
 
 // Services
 $authService = new AuthService($authRepo);
 $projectService = new ProjectService($projectRepo);
 $taskService = new TaskService($taskRepo);
-$userService = new UserService($userRepo);
 
 // Controllers
 $authController = new AuthController($authService);

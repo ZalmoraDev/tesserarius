@@ -3,28 +3,24 @@
 namespace App\Services;
 
 use App\Models\Project;
-use App\Repositories\ProjectBaseRepository;
+use App\Repositories\ProjectRepositoryInterface;
 
-final class ProjectService
+final class ProjectService implements ProjectServiceInterface
 {
-    private ProjectBaseRepository $projectRepository;
+    private ProjectRepositoryInterface $projectRepo;
 
-    function __construct($projectRepository)
+    function __construct(ProjectRepositoryInterface $projectRepo)
     {
-        $this->projectRepository = $projectRepository;
+        $this->projectRepo = $projectRepo;
     }
 
-    public function getProjectsByUserAndRole($userId, $role) : array
+    public function getProjectsByUserAndRole(int $userId, string $role): array
     {
-        // Role = admin OR member
-        // TODO: Implement existing enum
-        return $this->projectRepository->getProjectsByUserAndRole($userId, $role);
+        return $this->projectRepo->getProjectsByUserAndRole($userId, $role);
     }
 
-    public function getProjectByProjectId($projectId) : ?Project
+    public function getProjectByProjectId(int $projectId): ?Project
     {
-        return $this->projectRepository->getProjectByProjectId($projectId);
+        return $this->projectRepo->getProjectByProjectId($projectId);
     }
 }
-
-?>

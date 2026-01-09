@@ -6,26 +6,26 @@ use App\Models\User;
 use App\Models\Enums\UserRole;
 use App\Models\Enums\AccessRole;
 
-use App\Repositories\AuthBaseRepository;
+use App\Repositories\AuthRepositoryInterface;
 
-final class AuthService
+final class AuthService implements AuthServiceInterface
 {
-    private AuthBaseRepository $authRepository;
+    private AuthRepositoryInterface $authRepo;
 
-    public function __construct($authRepository)
+    public function __construct(AuthRepositoryInterface $authRepo)
     {
-        $this->authRepository = $authRepository;
+        $this->authRepo = $authRepo;
     }
 
     /** Verifies user credentials, returns User model if successful, null if not */
-    public function authenticate($username, $password): ?User
+    public function authenticate(string $username, string $password): ?User
     {
         // TEMPORARY: Create user with hashed password in database for debugging
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $created = $this->authRepository->createUser($username, $hashedPassword);
+        $created = $this->authRepo->createUser($username, $hashedPassword, $username . "@temp.com");
         error_log("TEMP: Created user '$username' in database: " . ($created ? 'SUCCESS' : 'FAILED'));
         // TEMPORARY: END ------------------------------------------------------
-        $user = $this->authRepository->getUserByUsername($username);
+        $user = $this->authRepo->getUserByUsername($username);
 
         if (!$user)
             return null;
@@ -75,12 +75,11 @@ final class AuthService
      * Used by Router.php*/
     public function isAccessAuthorized(int $projectId, AccessRole $requiredRole): bool
     {
-        $roleString = $this->authRepository->getUserProjectRole($_SESSION['auth']['userId'], $projectId);
+        $roleString = $this->authRepo->getUserProjectRole($_SESSION['auth']['userId'], $projectId);
 
         // Should not happen, means user has no role in this project
-        if ($roleString === null) {
+        if ($roleString === null)
             return false;
-        }
 
         // Convert role string to UserRole enum, which gets converted into it's int value for comparison.
         $userRole = UserRole::from($roleString);
