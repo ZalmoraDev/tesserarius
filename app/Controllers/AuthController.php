@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\View;
 use App\Services\AuthService;
 
 final class AuthController
@@ -13,34 +14,28 @@ final class AuthController
         $this->authService = $authService;
     }
 
-    /** Used by router to authenticate and authorize access to routes */
+    /** Getter for AuthService, only used in Router to check authentication and authorization */
     public function getAuthService(): AuthService
     {
         return $this->authService;
     }
 
-    // -------------------- GET Actions --------------------
+    // -------------------- GET Requests --------------------
+
     /** GET, acts as login page */
-    public function loginPage()
+    public function loginPage(): void
     {
-        global $title, $view;
-
-        $title = "Login | Tesserarius";
-        $view = __DIR__ . '/../Views/login.php';
-        require __DIR__ . '/../Views/skeleton/base.php';
+        View::render('login.php', "Login" . View::getSiteName());
     }
-
 
     /** GET, serves signup page */
     public function signupPage(): void
     {
-        global $title, $view;
-        $title = "Signup | Tesserarius";
-        $view = __DIR__ . '/../Views/signup.php';
-        require __DIR__ . '/../Views/skeleton/base.php';
+        View::render('signup.php', "Signup" . View::getSiteName());
     }
 
-    // -------------------- POST Actions --------------------
+    // -------------------- POST Requests --------------------
+
     /** POST, processes login form submission */
     public function loginAuth(): void
     {
@@ -52,14 +47,12 @@ final class AuthController
 
         // Authentication failed -> Redirect back to /login with error message
         if (!$user) {
-            //$this->redirect('/login?error=invalid_credentials');
             header("Location: /login?error=invalid_credentials", true, 302);
         }
 
         // Sets session data for logged-in user
         $this->authService->login($user);
         header("Location: /", true, 302);
-        //$this->redirect('/');
     }
 
     /** POST, processes signup form submission */

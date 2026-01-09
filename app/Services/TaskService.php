@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Repositories\TaskRepository;
+use App\Repositories\TaskBaseRepository;
 
-class TaskService
+final class TaskService
 {
-    private TaskRepository $taskRepository;
+    private TaskBaseRepository $taskRepository;
 
     function __construct($taskRepository)
     {

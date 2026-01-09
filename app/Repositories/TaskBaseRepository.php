@@ -6,7 +6,7 @@ use App\Models\Project;
 use App\Models\Task;
 use PDO;
 
-class TaskRepository extends Repository
+final class TaskBaseRepository extends BaseRepository
 {
     public function getAllColumnTasks(int $projectId): array
     {
@@ -67,6 +67,3 @@ class TaskRepository extends Repository
         }
     }
 }
-
-
-?>

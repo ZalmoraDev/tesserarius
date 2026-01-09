@@ -5,7 +5,7 @@ namespace App\Models;
 use DateTime;
 use JsonSerializable;
 
-class Task implements JsonSerializable
+final class Task implements JsonSerializable
 {
     private int $id;
     private int $projectId;

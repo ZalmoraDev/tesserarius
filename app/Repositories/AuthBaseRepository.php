@@ -6,7 +6,7 @@ use App\Models\Enums\UserRole;
 use App\Models\User;
 use PDO;
 
-class AuthRepository extends Repository
+final class AuthBaseRepository extends BaseRepository
 {
     public function createUser($username, $passwordHash, $email = null): bool
     {

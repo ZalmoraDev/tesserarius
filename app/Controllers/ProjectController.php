@@ -2,12 +2,13 @@
 
 namespace App\Controllers;
 
+use App\Core\View;
 use App\Services\ {
     ProjectService,
     TaskService
 };
 
-class ProjectController
+final class ProjectController
 {
     private ProjectService $projectService;
     private TaskService $taskService;
@@ -21,7 +22,7 @@ class ProjectController
     /** GET, View a specified project by its ID */
     public function view($projectId): void
     {
-        global $title, $view;
+        // REFACTOR: Move global variable usage out of controller
         global $allColumnTasksArray; // 2D array of tasks, holding columns and their tasks, gets split in view/Project.php
 
         // Get project name to set the title
@@ -31,8 +32,6 @@ class ProjectController
         // Get all tasks for the project (2D array of tasks, holding columns and their tasks)
         $allColumnTasksArray = $this->taskService->getAllColumnTasks($projectId);
 
-        $title = $project->getName() . " | Tesserarius";
-        $view = __DIR__ . '/../Views/project.php';
-        require __DIR__ . '/../Views/skeleton/base.php';
+        View::render('project.php', $project->getName() . View::getSiteName());
     }
 }

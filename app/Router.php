@@ -4,7 +4,7 @@ namespace App;
 
 use App\Models\Enums\AccessRole;
 use App\Services\AuthService;
-use App\Repositories\AuthRepository;
+use App\Repositories\AuthBaseRepository;
 
 use App\Middleware\CsrfService;
 use FastRoute;
@@ -27,7 +27,7 @@ final class Router
         $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
             // Retrieve controllers and use them as conciser abbreviations in route handler definitions
             $auth = $this->controllers['auth'];
-            $home = $this->controllers['home'];
+            $dashboard = $this->controllers['dashboard'];
             $project = $this->controllers['project'];
 
             $r->get('/login', $this->route([$auth, 'loginPage'], AccessRole::Anyone));
@@ -37,7 +37,7 @@ final class Router
             $r->post('/auth/logout', $this->route([$auth, 'logout'], AccessRole::Anyone));
 
             // default page for logged-in users, default to URL '/'
-            $r->get('/', $this->route([$home, 'index'], AccessRole::Authenticated));
+            $r->get('/', $this->route([$dashboard, 'homePage'], AccessRole::Authenticated));
 
             $r->get('/project/{projectId:\d+}', $this->route([$project, 'view'], AccessRole::Member));
         });
@@ -76,7 +76,7 @@ final class Router
                     exit;
                 }
 
-                // AUTHORIZATION: If route requires higher role then is accessing, redirect to / (homepage)
+                // AUTHORIZATION: If route requires higher role then is accessing, redirect to / (homePage)
                 if ($required >= AccessRole::Member &&
                     $authService->isAccessAuthorized($vars['projectId']) === false) {
                     header('Location: /?error=you_are_not_authorized_to_access_this_page', true, 403);

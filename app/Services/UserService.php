@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Repositories\UserRepository;
+use App\Repositories\UserBaseRepository;
 
-class UserService
+final class UserService
 {
-    private UserRepository $userRepository;
+    private UserBaseRepository $userRepository;
 
     public function __construct($userRepository)
     {

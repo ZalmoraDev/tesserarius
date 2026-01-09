@@ -2,25 +2,22 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use App\Models\Enums\UserRole;
 use App\Models\Enums\AccessRole;
-use App\Models\User;
-use App\Repositories\AuthRepository;
+
+use App\Repositories\AuthBaseRepository;
 
 final class AuthService
 {
-    private AuthRepository $authRepository;
+    private AuthBaseRepository $authRepository;
 
     public function __construct($authRepository)
     {
         $this->authRepository = $authRepository;
     }
 
-    //-----------------------------------------------------
-    // Login & Logout methods -----------------------------
-    //-----------------------------------------------------
-
-    /// Attempt to log fetch user model by username and verify password
+    /** Verifies user credentials, returns User model if successful, null if not */
     public function authenticate($username, $password): ?User
     {
         // TEMPORARY: Create user with hashed password in database for debugging
@@ -40,7 +37,7 @@ final class AuthService
         return $user;
     }
 
-    /// Use User model to set session data for logged-in user
+    /** Sets session data for logged-in user */
     public function login(User $user): void
     {
         session_regenerate_id(true);
@@ -52,13 +49,17 @@ final class AuthService
         ];
     }
 
+    /** Logs out by unsetting session auth data */
     public function logout(): void
     {
-        // Only unset auth session data, regen session ID for csrf protection
+        // Only unset auth session data, regen session ID for CSRF protection.
         unset($_SESSION['auth']);
         session_regenerate_id(true);
     }
 
+    /** Checks if a user is currently authenticated (logged in)
+     *
+     * Used by Router.php */
     public function isAuthenticated(): bool
     {
         return isset($_SESSION['auth']['userId']);
@@ -69,7 +70,9 @@ final class AuthService
      *
      * Enum comparison is done via their integer values.
      * The higher the enum-value, the more privileged the role,
-     * Member=1 < Admin=2 < Owner=3 */
+     * Member=1 < Admin=2 < Owner=3
+     *
+     * Used by Router.php*/
     public function isAccessAuthorized(int $projectId, AccessRole $requiredRole): bool
     {
         $roleString = $this->authRepository->getUserProjectRole($_SESSION['auth']['userId'], $projectId);

@@ -3,11 +3,11 @@
 namespace App\Services;
 
 use App\Models\Project;
-use App\Repositories\ProjectRepository;
+use App\Repositories\ProjectBaseRepository;
 
-class ProjectService
+final class ProjectService
 {
-    private ProjectRepository $projectRepository;
+    private ProjectBaseRepository $projectRepository;
 
     function __construct($projectRepository)
     {

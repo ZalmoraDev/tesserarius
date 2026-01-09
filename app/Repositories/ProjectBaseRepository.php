@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Project;
 use PDO;
 
-class ProjectRepository extends Repository
+final class ProjectBaseRepository extends BaseRepository
 {
     public function getProjectByProjectId(int $projectId) : ?Project
     {
@@ -70,6 +70,3 @@ class ProjectRepository extends Repository
         }
     }
 }
-
-
-?>

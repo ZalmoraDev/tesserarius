@@ -4,7 +4,7 @@ namespace App\Models;
 
 use JsonSerializable;
 
-class Project implements JsonSerializable
+final class Project implements JsonSerializable
 {
     private int $id; 
     private string $inviteCode;

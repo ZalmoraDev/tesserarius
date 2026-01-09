@@ -3,10 +3,10 @@
 use App\CsrfService;
 
 use App\Repositories\{
-    AuthRepository,
-    ProjectRepository,
-    TaskRepository,
-    UserRepository
+    AuthBaseRepository,
+    ProjectBaseRepository,
+    TaskBaseRepository,
+    UserBaseRepository
 };
 
 use App\Services\{
@@ -19,7 +19,7 @@ use App\Services\{
 use App\Controllers\{
     AuthController,
     LoginController,
-    HomeController,
+    DashboardController,
     ProjectController
 };
 
@@ -49,10 +49,10 @@ $dotenv->required(['SITE_URL', 'DB_TYPE', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', '
 
 // -------------------- DI Container setup --------------------
 // Repositories
-$authRepo = new AuthRepository();
-$projectRepo = new ProjectRepository();
-$taskRepo = new TaskRepository();
-$userRepo = new UserRepository();
+$authRepo = new AuthBaseRepository();
+$projectRepo = new ProjectBaseRepository();
+$taskRepo = new TaskBaseRepository();
+$userRepo = new UserBaseRepository();
 
 // Services
 $authService = new AuthService($authRepo);
@@ -62,13 +62,13 @@ $userService = new UserService($userRepo);
 
 // Controllers
 $authController = new AuthController($authService);
-$homeController = new HomeController($projectService);
+$dashboardController = new DashboardController($projectService);
 $projectController = new ProjectController($projectService, $taskService);
 
 // Controller map for router
 $controllers = [
     'auth' => $authController,
-    'home' => $homeController,
+    'dashboard' => $dashboardController,
     'project' => $projectController
 ];
 

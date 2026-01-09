@@ -4,7 +4,7 @@ namespace App\Models;
 
 use JsonSerializable;
 
-class User implements JsonSerializable
+final class User implements JsonSerializable
 {
     private int $id;
     private string $username;
