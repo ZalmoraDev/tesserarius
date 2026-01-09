@@ -1,8 +1,8 @@
 <?php
 
-use App\MiddleWare\CsrfService;
+use App\Core\Csrf;
 
-$csrfService = new CsrfService();
+$csrfService = new Csrf();
 
 global $view, $title;
 
@@ -14,7 +14,7 @@ $error = $_GET['error'] ?? null;
 <body class="tess-base-body">
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto">
     <div class="tess-base-container-md">
-        <img src="<?= $_ENV['SITE_URL'] ?>/assets/icons/logo/logoW.svg" alt="Tesserarius logo"
+        <img src="<?= $_ENV['SITE_URL'] ?>/assets/icons/logo/logoW.svg" alt="<?php $_ENV['SITE_NAME'] ?> logo"
              class="tess-base-container-sm w-30 h-30">
         <div class="flex flex-col justify-center items-center gap-2">
             <h1 class="text-4xl">Sign in</h1>

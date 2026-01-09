@@ -1,27 +1,9 @@
 <?php
 
-use App\CsrfService;
-
-use App\Repositories\{
-    AuthBaseRepository,
-    ProjectBaseRepository,
-    TaskBaseRepository,
-    UserBaseRepository
-};
-
-use App\Services\{
-    AuthService,
-    ProjectService,
-    TaskService,
-    UserService
-};
-
-use App\Controllers\{
-    AuthController,
-    LoginController,
-    DashboardController,
-    ProjectController
-};
+use App\Routing\{Routes, Router};
+use App\Controllers\ {AuthController, DashboardController, ProjectController};
+use App\Services\{AuthService, ProjectService, TaskService, UserService};
+use App\Repositories\{AuthBaseRepository, ProjectBaseRepository, TaskBaseRepository, UserBaseRepository};
 
 // -------------------- headers, session & .env config --------------------
 // TODO: Consider moving this to middleware / API router
@@ -65,6 +47,7 @@ $authController = new AuthController($authService);
 $dashboardController = new DashboardController($projectService);
 $projectController = new ProjectController($projectService, $taskService);
 
+// -------------------- Routing setup & dispatch --------------------
 // Controller map for router
 $controllers = [
     'auth' => $authController,
@@ -72,7 +55,6 @@ $controllers = [
     'project' => $projectController
 ];
 
-// Pass controller map to router to serve as handlers
-
-$router = new App\Router($controllers);
+$routes = new Routes($controllers);
+$router = new Router($routes->dispatcher(), $authService);
 $router->dispatch();

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Middleware;
+namespace App\Core;
 use Random\RandomException;
 
-final class CsrfService
+final class Csrf
 {
     /** Generate or retrieve existing CSRF token.
      * Used by HTML forms.

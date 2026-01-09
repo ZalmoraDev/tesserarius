@@ -1,7 +1,8 @@
 <?php
-use App\Middleware\CsrfService;
 
-$csrfService = new CsrfService();
+use App\Core\Csrf;
+
+$csrfService = new Csrf();
 ?>
 
 <nav class="w-full bg-neutral-900 gap-2 p-2
@@ -12,7 +13,7 @@ $csrfService = new CsrfService();
             <img src="<?= $_ENV['SITE_URL'] ?>/assets/icons/logo/logoW.svg"
                  alt="" height="32" width="32"
                  class="w-8 h-8"/>
-            <h1 class="text-xl">Tesserarius</h1>
+            <h1 class="text-xl"><?= $_ENV['SITE_NAME'] ?></h1>
         </a>
     </div>
 
