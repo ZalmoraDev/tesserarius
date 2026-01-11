@@ -2,7 +2,6 @@
 
 use App\Core\Csrf;
 
-$csrfService = new Csrf();
 ?>
 
 <nav class="w-full bg-neutral-900 gap-2 p-2
@@ -26,7 +25,7 @@ $csrfService = new Csrf();
     <div class="flex flex-1 gap-4 justify-end items-center">
         <p><?= $_SESSION['auth']['username'] ?? "NO_USER"; ?></p>
         <form action="/auth/logout" method="POST">
-            <input type="hidden" name="csrf" value="<?= $csrfService->token() ?>">
+            <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
             <button type="submit" class="transition-colors cursor-pointer">
                 <img src="<?= $_ENV['SITE_URL'] ?>/assets/icons/logout-32dp.svg"
                      alt="logout"

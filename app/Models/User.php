@@ -4,66 +4,19 @@ namespace App\Models;
 
 use JsonSerializable;
 
-final class User implements JsonSerializable
+final readonly class User implements JsonSerializable
 {
-    private int $id;
-    private string $username;
-    private string $passwordHash;
-    private string $createdAt; //TODO: Change to DateTime
-
-    /**
-     * @param int $id
-     * @param string $username
-     * @param string $passwordHash
-     * @param string $createdAt
-     */
-    public function __construct(int $id, string $username, string $passwordHash, string $createdAt)
+    public function __construct(
+        public int    $id,
+        public string $username,
+        public string $passwordHash,
+        public string $createdAt //TODO: Change to DateTime
+    )
     {
-        $this->id = $id;
-        $this->username = $username;
-        $this->passwordHash = $passwordHash;
-        $this->createdAt = $createdAt;
     }
 
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): void
-    {
-        $this->username = $username;
-    }
-
-    public function getPasswordHash(): string
-    {
-        return $this->passwordHash;
-    }
-
-    public function setPasswordHash(string $passwordHash): void
-    {
-        $this->passwordHash = $passwordHash;
-    }
-
-    public function getCreatedAt(): string
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(string $createdAt): void
-    {
-        $this->createdAt = $createdAt;
-    }
-
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return get_object_vars($this);
     }
 }
-
-?>

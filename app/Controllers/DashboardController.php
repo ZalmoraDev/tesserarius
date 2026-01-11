@@ -28,6 +28,6 @@ final class DashboardController
         $projectsAdmins = $this->projectService->getProjectsByUserAndRole($userId, "Admin");
         $projectsMembers = $this->projectService->getProjectsByUserAndRole($userId, "Member");
 
-        View::render('home.php', "Home" . View::getSiteName());
+        View::render('home.php', "Home" . View::addSiteName());
     }
 }

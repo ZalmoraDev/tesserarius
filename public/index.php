@@ -6,8 +6,7 @@ use App\Controllers\ {AuthController, DashboardController, ProjectController};
 use App\Services\{AuthService, ProjectService, TaskService};
 use App\Repositories\{AuthRepository, ProjectRepository, TaskRepository};
 
-// -------------------- headers, session & .env config --------------------
-// TODO: Consider moving this to middleware / API router
+// -------------------- Headers, Session & .env config --------------------
 header("Access-Control-Allow-Methods: GET, POST"); // Only allow GET and POST requests.
 header("Access-Control-Allow-Origin: *"); // TODO: Change this to localhost
 header("Access-Control-Allow-Headers: *"); // Allows all HTTP request headers (useful for handling JSON requests, auth tokens, etc.).
@@ -49,7 +48,7 @@ $authController = new AuthController($authService);
 $dashboardController = new DashboardController($projectService);
 $projectController = new ProjectController($projectService, $taskService);
 
-// -------------------- Routing setup & dispatch --------------------
+// -------------------- Routing setup & Router dispatch --------------------
 // Controller map for router
 $controllers = [
     'auth' => $authController,

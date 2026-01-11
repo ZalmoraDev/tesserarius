@@ -7,7 +7,7 @@
     <!-- Tailwind CSS -->
     <script src="<?= $_ENV['SITE_URL'] ?>/assets/js/app.js"></script>
     <link rel="stylesheet" href="<?= $_ENV['SITE_URL'] ?>/assets/styles/output.css">
-    <title><?= htmlspecialchars($title ?? '') ?></title>
+    <title><?= htmlspecialchars($titleRender ?? '') ?></title>
 </head>
 
 <?php
@@ -16,7 +16,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require $view; // Ignore error, $view is always set in controllers by View::render()
+require $viewRender; // Ignore error, $viewRender is always set in controllers by View::render()
 ?>
 
 

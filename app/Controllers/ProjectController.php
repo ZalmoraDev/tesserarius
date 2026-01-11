@@ -29,6 +29,6 @@ final class ProjectController
         // Get all tasks for the project (2D array of tasks, holding columns and their tasks)
         $allColumnTasksArray = $this->taskService->getAllColumnTasks($projectId);
 
-        View::render('project.php', $project->getName() . View::getSiteName());
+        View::render('project.php', $project->name . View::addSiteName());
     }
 }

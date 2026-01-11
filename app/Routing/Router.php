@@ -69,10 +69,9 @@ final class Router
                     exit;
                 }
 
-                // POST CSRF: Upon POST -> verify CSRF token. If not valid, exit with 403
-                $csrfService = new Csrf();
+                // POST CSRF: Upon POST -> verify CSRF token. If not valid, exit with 403 (handled in Csrf::Verify)
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                    $csrfService->verify($_POST['csrf'] ?? null);
+                    Csrf::Verify($_POST['csrf'] ?? null);
                 }
 
                 // (If no authentication was required OR user passed auth guards) & CSRF token is validated -> call handler

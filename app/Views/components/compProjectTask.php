@@ -8,9 +8,9 @@ class compProjectTask
 {
     public function printProjectTask(Task $task): string
     {
-        $title = htmlspecialchars($task->getTitle() ?? "");
-        $description = htmlspecialchars($task->getDescription() ?? "");
-        $taskId = htmlspecialchars($task->getId() ?? "");
+        $title = htmlspecialchars($task->title ?? "");
+        $description = htmlspecialchars($task->description ?? "");
+        $taskId = htmlspecialchars($task->id ?? "");
 
         return "
     <div class='tess-project-card flex flex-col justify-between h-44' data-task-id='$taskId'>

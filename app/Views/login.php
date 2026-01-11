@@ -2,10 +2,6 @@
 
 use App\Core\Csrf;
 
-$csrfService = new Csrf();
-
-global $view, $title;
-
 // Get error message from URL (if present)
 $error = $_GET['error'] ?? null;
 ?>
@@ -30,7 +26,7 @@ $error = $_GET['error'] ?? null;
 
         <div class="gap-4 flex flex-col w-full items-center">
             <form action="/auth/login" method="POST" class="flex flex-col justify-center items-center gap-2">
-                <input type="hidden" name="csrf" value="<?= $csrfService->token() ?>">
+                <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
                 <label>
                     <input type="text" class="tess-input-md" placeholder="Username" name="username" required>
                 </label>

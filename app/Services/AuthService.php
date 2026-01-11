@@ -31,7 +31,7 @@ final class AuthService implements AuthServiceInterface
             return null;
 
         // Uses php's built-in BCrypt password hashing functions
-        if (!password_verify($password, $user->getPasswordHash()))
+        if (!password_verify($password, $user->passwordHash))
             return null;
 
         return $user;
@@ -43,8 +43,8 @@ final class AuthService implements AuthServiceInterface
         session_regenerate_id(true);
 
         $_SESSION['auth'] = [
-            'userId' => $user->getId(),
-            'username' => $user->getUsername(),
+            'userId' => $user->id,
+            'username' => $user->username,
             'ts' => time(),
         ];
     }

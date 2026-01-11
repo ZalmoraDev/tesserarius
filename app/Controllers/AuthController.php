@@ -25,13 +25,13 @@ final class AuthController
     /** GET, acts as login page */
     public function loginPage(): void
     {
-        View::render('login.php', "Login" . View::getSiteName());
+        View::render('login.php', "Login" . View::addSiteName());
     }
 
     /** GET, serves signup page */
     public function signupPage(): void
     {
-        View::render('signup.php', "Signup" . View::getSiteName());
+        View::render('signup.php', "Signup" . View::addSiteName());
     }
 
     // -------------------- POST Requests --------------------
