@@ -22,7 +22,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                 WHERE project_id = :projectId AND column_name = :columnName
             ");
                 $stmt->bindParam(':projectId', $projectId, PDO::PARAM_INT);
-                $stmt->bindParam(':columnName', $columnName, PDO::PARAM_STR);
+                $stmt->bindParam(':columnName', $columnName);
                 $stmt->execute();
 
                 $columnTasks = [];
@@ -57,8 +57,8 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
         try {
             // Directly use the string column names like 'backlog', 'todo', etc.
             $stmt = $this->connection->prepare("UPDATE tasks SET column_name = :newColumn WHERE id = :taskId");
-            $stmt->bindParam(':newColumn', $newColumn, \PDO::PARAM_STR);
-            $stmt->bindParam(':taskId', $taskId, \PDO::PARAM_INT);
+            $stmt->bindParam(':newColumn', $newColumn);
+            $stmt->bindParam(':taskId', $taskId, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());

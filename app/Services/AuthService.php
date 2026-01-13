@@ -8,6 +8,8 @@ use App\Models\Enums\AccessRole;
 
 use App\Repositories\AuthRepositoryInterface;
 
+use App\Exceptions\AuthException;
+
 final class AuthService implements AuthServiceInterface
 {
     private AuthRepositoryInterface $authRepo;
@@ -17,36 +19,43 @@ final class AuthService implements AuthServiceInterface
         $this->authRepo = $authRepo;
     }
 
-    /** Verifies user credentials, returns User model if successful, null if not */
-    public function authenticate(string $username, string $password): ?User
+    /** Attempts to log in a user with provided email and password. */
+    public function login(string $email, string $password): void
     {
-        // TEMPORARY: Create user with hashed password in database for debugging
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $created = $this->authRepo->createUser($username, $hashedPassword, $username . "@temp.com");
-        error_log("TEMP: Created user '$username' in database: " . ($created ? 'SUCCESS' : 'FAILED'));
-        // TEMPORARY: END ------------------------------------------------------
-        $user = $this->authRepo->getUserByUsername($username);
+        // TODO: Prevent code injection.
+        $user = $this->authRepo->getUserByEmail($email);
 
-        if (!$user)
-            return null;
+        if ($user === null)
+            throw new AuthException(AuthException::INVALID_CREDENTIALS);
 
-        // Uses php's built-in BCrypt password hashing functions
         if (!password_verify($password, $user->passwordHash))
-            return null;
+            throw new AuthException(AuthException::INVALID_CREDENTIALS);
 
-        return $user;
+        $this->setSessionAuthData($user);
     }
 
-    /** Sets session data for logged-in user */
-    public function login(User $user): void
+    /** Attempt to register a new user with provided username, email and password. */
+    public function signup(string $username, string $email, string $password, string $passwordConfirm): void
     {
-        session_regenerate_id(true);
+        // TODO: Validate email format.
+        // TODO: Validate password strength.
+        // TODO: Validate if every field is filled.
+        // TODO: Check if 2x passwords match.
+        // TODO: check if email username already exist.
+        // TODO: check if email already exist.
+        // TODO: Prevent code injection.
 
-        $_SESSION['auth'] = [
-            'userId' => $user->id,
-            'username' => $user->username,
-            'ts' => time(),
-        ];
+        // First attempt to create the user
+        $userId = $this->authRepo->createUser($username, $email, password_hash($password, PASSWORD_DEFAULT));
+        if ($userId === null)
+            throw new AuthException(AuthException::REGISTRATION_FAILED);
+
+        // Upon successful creation, use their ID to fetch full user data.
+        $user = $this->authRepo->getUserById($userId);
+        if ($user === null)
+            throw new AuthException(AuthException::REGISTRATION_FAILED);
+
+        $this->setSessionAuthData($user);
     }
 
     /** Logs out by unsetting session auth data */
@@ -84,5 +93,17 @@ final class AuthService implements AuthServiceInterface
         // Convert role string to UserRole enum, which gets converted into it's int value for comparison.
         $userRole = UserRole::from($roleString);
         return $userRole->value >= $requiredRole->value;
+    }
+
+    /** Sets session auth data for logged in or newly registered user */
+    private function setSessionAuthData(User $user): void
+    {
+        session_regenerate_id(true);
+        $_SESSION['auth'] = [
+            'userId' => $user->id,
+            'userEmail' => $user->email,
+            'username' => $user->username,
+            'ts' => time() // Currently not used for session expiration
+        ];
     }
 }

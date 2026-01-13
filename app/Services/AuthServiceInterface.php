@@ -8,9 +8,8 @@ use App\Models\Enums\AccessRole;
 
 interface AuthServiceInterface
 {
-    public function authenticate(string $username, string $password): ?User;
-
-    public function login(User $user): void;
+    public function login(string $email, string $password): void;
+    public function signup(string $username, string $email, string $password, string $passwordConfirm): void;
 
     public function logout(): void;
 

@@ -7,70 +7,96 @@ use PDO;
 
 final class AuthRepository extends BaseRepository implements AuthRepositoryInterface
 {
-    public function createUser(string $username, string $passwordHash, string $email): bool
+    /** Create a new user in the database, after the service has validated the data */
+    public function createUser(string $username, string $email, string $passwordHash): ?int
     {
-        try {
-            // TODO: Redo for new postgres schema and fields
-            $stmt = $this->connection->prepare("
+        $stmt = $this->connection->prepare("
                 INSERT INTO users (username, password_hash, email) 
                 VALUES (:username, :passwordHash, :email)
             ");
-            $stmt->bindParam(':username', $username, PDO::PARAM_STR);
-            $stmt->bindParam(':passwordHash', $passwordHash, PDO::PARAM_STR);
-            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
 
-            return $stmt->execute();
-        } catch (\PDOException $e) {
-            error_log("Database error creating user: " . $e->getMessage());
-            return false;
+        $stmt->execute([
+            'username' => $username,
+            'passwordHash' => $passwordHash,
+            'email' => $email
+        ]);
+
+        // Only this PDO connection is referenced,
+        // so there is no risk of fetching other user's data.
+        // If lastInsertId fails, return null to indicate failure.
+        $id = $this->connection->lastInsertId();
+        if ($id === false) {
+            return null;
+            //throw new AuthException('Insert succeeded but no ID returned');
         }
+
+        return (int) $id;
     }
 
-    public function getUserByUsername(string $username): ?User
+    /** Retrieve a user by their username, returns User model or null if not found */
+    public function getUserByEmail(string $email): ?User
     {
-        try {
-            $stmt = $this->connection->prepare("SELECT * FROM users WHERE username = :userName");
-            $stmt->bindParam(':userName', $username, PDO::PARAM_STR);
-            $stmt->execute();
+        $stmt = $this->connection->prepare('
+                SELECT * FROM users WHERE email = :email'
+        );
 
-            $data = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($data) {
-                return new User(
-                    $data["id"],
-                    $data["username"],
-                    $data["password_hash"], // This is the password hash from the DB
-                    $data["created_at"]
-                );
-            }
-        } catch (\PDOException $e) {
-            error_log("Database error: " . $e->getMessage());
-        }
+        $stmt->execute([
+            'email' => $email
+        ]);
 
-        return null; // No user found
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Ternary to return User model or null
+        return $data ? new User(
+            $data['id'],
+            $data['username'],
+            $data['password_hash'],
+            $data['email'],
+            $data['created_at']
+        ) : null;
     }
 
-    /// Retrieve the role of a user in a specific project, for router access control
+    /** Retrieve a user by their id, returns User model or null if not found */
+    public function getUserById(int $id): ?User
+    {
+        $stmt = $this->connection->prepare('
+                SELECT * FROM users WHERE id = :id'
+        );
+
+        $stmt->execute([
+            'id' => $id
+        ]);
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Ternary to return User model or null
+        return $data ? new User(
+            $data['id'],
+            $data['username'],
+            $data['password_hash'],
+            $data['email'],
+            $data['created_at']
+        ) : null;
+    }
+
+
+    // TODO: Validate this method, also no idea where this is used
+
+    /** Retrieve the role of a user in a specific project, for router access control */
     public function getUserProjectRole(int $projectId, int $userId): ?string
     {
-        try {
-            $stmt = $this->connection->prepare("
+        $stmt = $this->connection->prepare('
                 SELECT pm.role
                 FROM project_members pm
                 WHERE pm.user_id = :userId
                   AND pm.project_id = :projectId
-            ");
+            ');
 
-            $stmt->execute([
-                ':userId' => $userId,
-                ':projectId' => $projectId,
-            ]);
+        $stmt->execute([
+            'userId' => $userId,
+            'projectId' => $projectId
+        ]);
 
-            $role = $stmt->fetchColumn();
-            return $role ?: null;
-
-        } catch (\PDOException $e) {
-            error_log("Database error: " . $e->getMessage());
-            return false;
-        }
+        return $stmt->fetchColumn() ?: null;
     }
 }

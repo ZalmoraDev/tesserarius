@@ -44,7 +44,7 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
                 WHERE pm.user_id = :userId AND pm.role = :role
             ");
             $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+            $stmt->bindParam(':role', $role);
             $stmt->execute();
 
             $projects = []; // Initialize projects array

@@ -10,6 +10,7 @@ final readonly class User implements JsonSerializable
         public int    $id,
         public string $username,
         public string $passwordHash,
+        public string $email,
         public string $createdAt //TODO: Change to DateTime
     )
     {

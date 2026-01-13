@@ -3,6 +3,7 @@ SET TIMEZONE = 'Europe/Amsterdam';
 -- Owners can administrate and delete their project, 1 owner per project.
 -- Admins are the same as owners, except not being able to delete the project their part of.
 CREATE TYPE role_enum AS ENUM ('Member', 'Admin', 'Owner');
+CREATE TYPE task_status_enum AS ENUM ('Backlog', 'ToDo', 'Doing', 'Review', 'Done');
 
 
 -- START: Users
@@ -86,3 +87,34 @@ CREATE INDEX idx_project_invites_expires
     ON project_invites (expires_at)
     WHERE used_at IS NULL;
 -- END: Project Invites
+
+-- START: Project Tasks
+CREATE TABLE IF NOT EXISTS project_tasks
+(
+    task_id     SERIAL PRIMARY KEY,
+    project_id  INT              NOT NULL,
+
+    description TEXT             NOT NULL,
+    status      task_status_enum NOT NULL DEFAULT 'Backlog',
+
+    created_by  INT              NOT NULL,
+    created_at  TIMESTAMPTZ      NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_project FOREIGN KEY (project_id)
+        REFERENCES projects (id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_creator FOREIGN KEY (created_by)
+        REFERENCES users (id)
+        ON DELETE CASCADE
+);
+CREATE INDEX idx_project_members_user
+    ON project_members (user_id);
+
+CREATE INDEX idx_project_members_user_role
+    ON project_members (user_id, role);
+
+CREATE UNIQUE INDEX idx_one_owner_per_project
+    ON project_members (project_id)
+    WHERE role = 'Owner';
+-- END: Project Members

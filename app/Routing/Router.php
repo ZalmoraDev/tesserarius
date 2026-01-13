@@ -58,14 +58,18 @@ final class Router
                 // AUTHENTICATION: If route requires authenticated user, but user is not authenticated, redirect to /login
                 if ($requiredAccess >= AccessRole::Authenticated &&
                     $this->authService->isAuthenticated() === false) {
-                    header('Location: /login?error=requires_login', true, 302);
+                    $_SESSION['flash_errors'][] = 'requires_login';
+                    header('Location: /login', true, 302);
                     exit;
                 }
+
+                // TODO: Validate if this actually works as intended
 
                 // AUTHORIZATION: If route requires higher role then is accessing, redirect to / (homePage)
                 if ($requiredAccess >= AccessRole::Member &&
                     $this->authService->isAccessAuthorized($vars['projectId']) === false) {
-                    header('Location: /?error=you_are_not_authorized_to_access_this_page', true, 403);
+                    $_SESSION['flash_errors'][] = 'not_authorized';
+                    header('Location: /', true, 403);
                     exit;
                 }
 

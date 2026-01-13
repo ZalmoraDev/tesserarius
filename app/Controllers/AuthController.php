@@ -5,7 +5,9 @@ namespace App\Controllers;
 use App\Core\View;
 use App\Services\AuthServiceInterface;
 
-final class AuthController
+use App\Exceptions\AuthException;
+
+final readonly class AuthController
 {
     private AuthServiceInterface $authService;
 
@@ -14,21 +16,15 @@ final class AuthController
         $this->authService = $authService;
     }
 
-    /** Getter for AuthService, only used in Router to check authentication and authorization */
-    public function getAuthService(): AuthServiceInterface
-    {
-        return $this->authService;
-    }
-
     // -------------------- GET Requests --------------------
 
-    /** GET, acts as login page */
+    /** GET /login, acts as login page */
     public function loginPage(): void
     {
         View::render('login.php', "Login" . View::addSiteName());
     }
 
-    /** GET, serves signup page */
+    /** GET /signup, serves signup page */
     public function signupPage(): void
     {
         View::render('signup.php', "Signup" . View::addSiteName());
@@ -36,35 +32,43 @@ final class AuthController
 
     // -------------------- POST Requests --------------------
 
-    /** POST, processes login form submission */
+    /** POST /auth/login, processes login form submission */
     public function loginAuth(): void
     {
-        // Attempts to authenticate user with provided credentials
-        $user = $this->authService->authenticate(
-            $_POST['username'] ?? '',
-            $_POST['password'] ?? ''
-        );
-
-        // Authentication failed -> Redirect back to /login with error message
-        if (!$user) {
-            header("Location: /login?error=invalid_credentials", true, 302);
+        try {
+            $this->authService->login(
+                $_POST['email'] ?? '',
+                $_POST['password'] ?? ''
+            );
+            header("Location: /", true, 302);
+            exit;
+        } catch (AuthException $e) {
+            $_SESSION['flash_errors'][] = $e->getMessage();
+            header("Location: /login", true, 302);
+            exit;
         }
-
-        // Sets session data for logged-in user
-        $this->authService->login($user);
-        header("Location: /", true, 302);
     }
 
-    /** POST, processes signup form submission */
+    /** POST /auth/signup, processes signup form submission */
     public function signupAuth(): void
     {
-        // TODO: Implement signupAuth method
-
-        // After successful signup, redirect to login page
-        $this->loginAuth();
+        try {
+            $this->authService->signup(
+                $_POST['username'] ?? '',
+                $_POST['email'] ?? '',
+                $_POST['password'] ?? '',
+                $_POST['password_confirm'] ?? ''
+            );
+            header("Location: /", true, 302);
+            exit;
+        } catch (AuthException $e) {
+            $_SESSION['flash_errors'][] = $e->getMessage();
+            header("Location: /signup", true, 302);
+            exit;
+        }
     }
 
-    /** POST, serves logout action */
+    /** POST /auth/logout, serves logout action */
     public function logout(): void
     {
         $this->authService->logout();
