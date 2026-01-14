@@ -33,29 +33,6 @@ final class AuthRepository extends BaseRepository implements AuthRepositoryInter
         return (int) $id;
     }
 
-    /** Retrieve a user by their username, returns User model or null if not found */
-    public function getUserByEmail(string $email): ?User
-    {
-        $stmt = $this->connection->prepare('
-                SELECT * FROM users WHERE email = :email'
-        );
-
-        $stmt->execute([
-            'email' => $email
-        ]);
-
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Ternary to return User model or null
-        return $data ? new User(
-            $data['id'],
-            $data['username'],
-            $data['password_hash'],
-            $data['email'],
-            $data['created_at']
-        ) : null;
-    }
-
     /** Retrieve a user by their id, returns User model or null if not found */
     public function getUserById(int $id): ?User
     {
@@ -79,6 +56,52 @@ final class AuthRepository extends BaseRepository implements AuthRepositoryInter
         ) : null;
     }
 
+
+    /** Retrieve a user by their email, returns User model or null if not found */
+    public function getUserByEmail(string $email): ?User
+    {
+        $stmt = $this->connection->prepare('
+                SELECT * FROM users WHERE email = :email'
+        );
+
+        $stmt->execute([
+            'email' => $email
+        ]);
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Ternary to return User model or null
+        return $data ? new User(
+            $data['id'],
+            $data['username'],
+            $data['password_hash'],
+            $data['email'],
+            $data['created_at']
+        ) : null;
+    }
+
+    /** Retrieve a user by their username, returns User model or null if not found */
+    public function getUserByUsername(string $username): ?User
+    {
+        $stmt = $this->connection->prepare('
+                SELECT * FROM users WHERE username = :username'
+        );
+
+        $stmt->execute([
+            'username' => $username
+        ]);
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Ternary to return User model or null
+        return $data ? new User(
+            $data['id'],
+            $data['username'],
+            $data['password_hash'],
+            $data['email'],
+            $data['created_at']
+        ) : null;
+    }
 
     // TODO: Validate this method, also no idea where this is used
 

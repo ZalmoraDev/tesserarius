@@ -6,11 +6,13 @@ $flash_errors = $_SESSION['flash_errors'] ?? [];
 unset($_SESSION['flash_errors']);
 
 $errorMessages = [
-        'invalid_credentials' => 'Invalid username or password.<br>Please try again.',
-        'requires_login' => 'You must log in using an account.<br>Please try again.',
+        'invalid_credentials' => 'Invalid username or password,<br>
+                                  please try again.',
+        'requires_login' => 'You must log in using an account,<br>
+                             please try again.',
 ];
 ?>
-<!-- TODO: Validate fields before submission -->
+
 <body class="tess-base-body">
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto">
     <div class="tess-base-container-md">
@@ -36,7 +38,7 @@ $errorMessages = [
         <div class="gap-4 flex flex-col w-full items-center">
             <form action="/auth/login" method="POST" class="flex flex-col justify-center items-center gap-2">
                 <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
-                <input type="text" class="tess-input-md" placeholder="Email" name="email" required>
+                <input type="email" class="tess-input-md" placeholder="Email" name="email" required>
                 <input type="password" class="tess-input-md" placeholder="Password" name="password" required>
                 <button type="submit" class="tess-btn-pri w-full mt-4 cursor-pointer">Login</button>
             </form>

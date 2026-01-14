@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\View;
+use App\Exceptions\ValidationException;
 use App\Services\AuthServiceInterface;
 
 use App\Exceptions\AuthException;
@@ -61,7 +62,7 @@ final readonly class AuthController
             );
             header("Location: /", true, 302);
             exit;
-        } catch (AuthException $e) {
+        } catch (ValidationException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
             header("Location: /signup", true, 302);
             exit;
