@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions;
+namespace App\Services\Exceptions;
 
 final class NotFoundException extends \RuntimeException
 {

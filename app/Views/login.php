@@ -37,7 +37,7 @@ $errorMessages = [
 
         <div class="gap-4 flex flex-col w-full items-center">
             <form action="/auth/login" method="POST" class="flex flex-col justify-center items-center gap-2">
-                <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+                <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                 <input type="email" class="tess-input-md" placeholder="Email" name="email" required>
                 <input type="password" class="tess-input-md" placeholder="Password" name="password" required>
                 <button type="submit" class="tess-btn-pri w-full mt-4 cursor-pointer">Login</button>

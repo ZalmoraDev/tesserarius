@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions;
+namespace App\Services\Exceptions;
 
 final class ValidationException extends \RuntimeException
 {
@@ -17,4 +17,5 @@ final class ValidationException extends \RuntimeException
     public const string PASSWORD_INVALID = 'password_invalid';
     public const string PASSWORD_MISMATCH = 'password_mismatch';
 
+    public const string REGISTRATION_FAILED = 'registration_failed';
 }

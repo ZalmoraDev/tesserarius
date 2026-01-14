@@ -13,7 +13,7 @@ interface AuthServiceInterface
 
     public function logout(): void;
 
-    public function isAuthenticated(): bool;
+    public function requireAuthentication(AccessRole $routeReqRole): void;
 
-    public function isAccessAuthorized(int $projectId, AccessRole $requiredRole): bool;
+    public function requireProjectAccess(int $projectId, AccessRole $routeReqRole): void;
 }

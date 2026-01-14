@@ -2,23 +2,25 @@
 
 namespace App\Core;
 
+use App\Services\Exceptions\AuthException;
+
 final class Csrf
 {
     // TODO: Use : ?string, and redirect upon NULL or invalid token
 
     /** Generate or retrieve existing CSRF token. */
-    public static function token(): string
+    public static function getToken(): string
     {
         $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
         return $_SESSION['csrf'];
     }
 
-    /** Verify provided CSRF token against session token. */
-    public static function verify(?string $token): void
+    /** Verify provided CSRF token against session token.
+     * @throws AuthException if token is missing or does not match. */
+    public static function requireVerification(?string $token): void
     {
         if (!$token || !hash_equals($_SESSION['csrf'], $token)) {
-            http_response_code(403);
-            exit('CSRF validation failed');
+            throw new AuthException(AuthException::CSRF_TOKEN_MISMATCH);
         }
     }
 }

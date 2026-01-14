@@ -8,6 +8,7 @@ use App\Models\Enums\AccessRole;
 use App\Controllers;
 use App\Services\AuthServiceInterface;
 
+use App\Services\Exceptions\AuthException;
 use FastRoute;
 
 final class Router
@@ -23,7 +24,7 @@ final class Router
     }
 
     /** nikic/fast-route | https://packagist.org/packages/nikic/fast-route.
-     * Modification on the basic usage implementation from docs, contains additional header data regarding route Access rights. */
+     * Modification on the basic usage implementation from docs, contains additional header data regarding route access rights. */
     public function dispatch(): void
     {
         // Fetch method and URI from somewhere
@@ -49,39 +50,45 @@ final class Router
                 $errorController->methodNotAllowed();
                 exit;
             case FastRoute\Dispatcher::FOUND:
-                $handler = $routeInfo[1];
-                $vars = $routeInfo[2];
+                try {
+                    $handler = $routeInfo[1];
+                    $pathParams = $routeInfo[2];
+                    $routeReqAccess = $handler['accessRole'];
 
-                // Abbreviate required access role for this route AND retrieve auth service
-                $requiredAccess = $handler['accessRole'];
+                    // Checks if logged in
+                    $this->authService->requireAuthentication($routeReqAccess);
 
-                // AUTHENTICATION: If route requires authenticated user, but user is not authenticated, redirect to /login
-                if ($requiredAccess >= AccessRole::Authenticated &&
-                    $this->authService->isAuthenticated() === false) {
-                    $_SESSION['flash_errors'][] = 'requires_login';
-                    header('Location: /login', true, 302);
+                    // Checks when accessing a project-related route, if user has access to it with required role or higher
+                    if ($pathParams['projectId'] ?? false) {
+                        $pathParams['projectId'] = (int)$pathParams['projectId'];
+                        $this->authService->requireProjectAccess($pathParams['projectId'], $routeReqAccess);
+                    }
+
+                    // Upon POST -> verify CSRF token. If not valid, exit with 403 (handled in Csrf::Verify)
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST')
+                        Csrf::requireVerification($_POST['csrf'] ?? null);
+
+                    // If no auth was required OR user passed project auth guards
+                    // AND CSRF token on POST is validated -> call handler
+                    call_user_func_array($handler['handler'], $pathParams);
+                    break;
+                } catch (AuthException $e) {
+                    $_SESSION['flash_errors'][] = $e->getMessage();
+                    // Retrieve reason for exception and redirect between /login or / (home) depending on case
+                    switch ($e->reason()) {
+                        case AuthException::REQUIRES_AUTHENTICATION:
+                        case AuthException::CSRF_TOKEN_MISMATCH:
+                            header('Location: /login', true, 302);
+                            break;
+                        case AuthException::PROJECT_ACCESS_DENIED:
+                        case AuthException::PROJECT_INSUFFICIENT_PERMISSIONS:
+                            header('Location: /', true, 302);
+                            break;
+                        default:
+                            header('Location: /login', true, 302);
+                    }
                     exit;
                 }
-
-                // TODO: Validate if this actually works as intended
-
-                // AUTHORIZATION: If route requires higher role then is accessing, redirect to / (homePage)
-                if ($requiredAccess >= AccessRole::Member &&
-                    $this->authService->isAccessAuthorized($vars['projectId']) === false) {
-                    $_SESSION['flash_errors'][] = 'not_authorized';
-                    header('Location: /', true, 403);
-                    exit;
-                }
-
-                // POST CSRF: Upon POST -> verify CSRF token. If not valid, exit with 403 (handled in Csrf::Verify)
-                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                    Csrf::Verify($_POST['csrf'] ?? null);
-                }
-
-                // (If no authentication was required OR user passed auth guards) & CSRF token is validated -> call handler
-                // METHOD + URI → handler + params
-                call_user_func_array($handler['handler'], $vars);
-                break;
         }
     }
 }

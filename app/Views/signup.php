@@ -22,6 +22,8 @@ $errorMessages = [
                                please try again.',
         'password_mismatch' => 'Your passwords did not match,<br>
                                 please try again.',
+        'registration_failed' => 'Registration failed due to a server error,<br>
+                                  please try again later.',
 ];
 ?>
 
@@ -47,9 +49,10 @@ $errorMessages = [
         <?php endif; ?>
         <!-- END Error Messages -->
 
+        <!-- TODO: Give username/email/password requirements hints -->
         <div class="gap-4 flex flex-col w-full items-center">
             <form action="/auth/signup" method="POST" class="flex flex-col justify-center items-center gap-2">
-                <input type="hidden" name="csrf" value="<?= Csrf::token() ?>">
+                <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                 <input type="text" class="tess-input-md" placeholder="Username" name="username" required>
                 <input type="email" class="tess-input-md mb-4" placeholder="Email" name="email" required>
                 <input type="password" class="tess-input-md" placeholder="Password" name="password" required

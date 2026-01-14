@@ -5,7 +5,7 @@ namespace App\Routing;
 use FastRoute;
 use App\Models\Enums\AccessRole;
 
-/** Seperation of routes from router dispatching logic.
+/** Separation of routes from router dispatching logic.
  * Defines all routes with their handlers and required access roles to be evalualted in router. */
 final class Routes
 {
@@ -17,7 +17,7 @@ final class Routes
     }
 
     /** nikic/fast-route | https://packagist.org/packages/nikic/fast-route.
-     * Route definitions with additional Access rights to be evalualted by router. */
+     * Route definitions with additional access rights to be evaluated by router. */
     public function dispatcher(): FastRoute\Dispatcher
     {
         return FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
@@ -40,7 +40,7 @@ final class Routes
         });
     }
 
-    /** Helper-object to create more concise route auth guard objects. */
+    /** Helper-object to create conciser route auth guard objects. */
     private function route(array $handler, AccessRole $accessRole): array
     {
         return [

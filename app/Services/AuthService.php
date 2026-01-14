@@ -2,14 +2,12 @@
 
 namespace App\Services;
 
-use App\Exceptions\ValidationException;
 use App\Models\User;
-use App\Models\Enums\UserRole;
 use App\Models\Enums\AccessRole;
-
+use App\Models\Enums\UserRole;
+use App\Services\Exceptions\AuthException;
+use App\Services\Exceptions\ValidationException;
 use App\Repositories\AuthRepositoryInterface;
-
-use App\Exceptions\AuthException;
 
 final class AuthService implements AuthServiceInterface
 {
@@ -22,7 +20,8 @@ final class AuthService implements AuthServiceInterface
 
     // -------------------- Public Methods START --------------------
 
-    /** Attempts to log in a user with provided email and password. */
+    /** Attempts to log in a user with provided credentials.
+     * @throws AuthException if credentials are invalid. */
     public function login(string $email, string $password): void
     {
         $user = $this->authRepo->getUserByEmail($email);
@@ -36,7 +35,8 @@ final class AuthService implements AuthServiceInterface
         $this->setSessionAuthData($user);
     }
 
-    /** Attempt to register a new user with provided username, email and password. */
+    /** Attempts to register a new user with provided data.
+     * @throws ValidationException if any validation fails. */
     public function signup(string $username, string $email, string $password, string $passwordConfirm): void
     {
         $username = trim($username);
@@ -65,15 +65,15 @@ final class AuthService implements AuthServiceInterface
         if ($this->authRepo->getUserByEmail($email))
             throw new ValidationException(ValidationException::EMAIL_TAKEN);
 
-        // First attempt to create the user
+        // failed attempt creating the new user
         $userId = $this->authRepo->createUser($username, $email, password_hash($password, PASSWORD_DEFAULT));
         if ($userId === null)
-            throw new AuthException(AuthException::REGISTRATION_FAILED);
+            throw new ValidationException(ValidationException::REGISTRATION_FAILED);
 
         // Upon successful creation, use their ID to fetch full user data.
         $user = $this->authRepo->getUserById($userId);
         if ($user === null)
-            throw new AuthException(AuthException::REGISTRATION_FAILED);
+            throw new ValidationException(ValidationException::REGISTRATION_FAILED);
 
         $this->setSessionAuthData($user);
     }
@@ -86,33 +86,32 @@ final class AuthService implements AuthServiceInterface
         session_regenerate_id(true);
     }
 
-    /** Checks if a user is currently authenticated (logged in)
+    /** Checks if the current user is authenticated (logged in) if the route requires it
      *
-     * Used by Router.php */
-    public function isAuthenticated(): bool
+     * Used by Router.php
+     * @throws AuthException if route requires authentication but user is not authenticated */
+    public function requireAuthentication($routeReqRole): void
     {
-        return isset($_SESSION['auth']['userId']);
+        // AUTHENTICATION: If route requires authenticated user, but user is not authenticated, redirect to /login
+        if ($routeReqRole >= AccessRole::Authenticated && !isset($_SESSION['auth']['userId']))
+            throw new AuthException(AuthException::REQUIRES_AUTHENTICATION);
     }
 
-    /** Checks if the currently authenticated user meets the minimum
-     * access role required for a given project.
+    /** Checks if the currently authenticated user has access to the specified project with required role or higher
      *
-     * Enum comparison is done via their integer values.
-     * The higher the enum-value, the more privileged the role,
-     * Member=1 < Admin=2 < Owner=3
-     *
-     * Used by Router.php*/
-    public function isAccessAuthorized(int $projectId, AccessRole $requiredRole): bool
+     * Used by Router.php
+     * @throws AuthException if user is not part of project or has insufficient permissions */
+    public function requireProjectAccess(int $projectId, AccessRole $routeReqRole): void
     {
+        // User is not part of this project
         $roleString = $this->authRepo->getUserProjectRole($_SESSION['auth']['userId'], $projectId);
-
-        // Should not happen, means user has no role in this project
         if ($roleString === null)
-            return false;
+            throw new AuthException(AuthException::PROJECT_ACCESS_DENIED);
 
-        // Convert role string to UserRole enum, which gets converted into it's int value for comparison.
+        // User's role in project is lower than required by route (member < admin < owner)
         $userRole = UserRole::from($roleString);
-        return $userRole->value >= $requiredRole->value;
+        if ($routeReqRole->value > $userRole->value)
+            throw new AuthException(AuthException::PROJECT_INSUFFICIENT_PERMISSIONS);
     }
     // -------------------- Public Methods END --------------------
 

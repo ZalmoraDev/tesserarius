@@ -3,10 +3,10 @@
 namespace App\Controllers;
 
 use App\Core\View;
-use App\Exceptions\ValidationException;
-use App\Services\AuthServiceInterface;
 
-use App\Exceptions\AuthException;
+use App\Services\AuthServiceInterface;
+use App\Services\Exceptions\AuthException;
+use App\Services\Exceptions\ValidationException;
 
 final readonly class AuthController
 {
