@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\User;
+use App\Dto\UserIdentityDto;
 use App\Models\Enums\AccessRole;
 use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
@@ -23,15 +23,12 @@ final class AuthService implements AuthServiceInterface
      * @throws AuthException if credentials are invalid. */
     public function login(string $email, string $password): void
     {
-        $user = $this->authRepo->getUserByEmail($email);
-
-        if ($user === null)
+        $auth = $this->authRepo->getUserPasswordByEmail($email);
+        if (!password_verify($password, $auth->passwordHash))
             throw new AuthException(AuthException::INVALID_CREDENTIALS);
 
-        if (!password_verify($password, $user->passwordHash))
-            throw new AuthException(AuthException::INVALID_CREDENTIALS);
-
-        $this->setSessionAuthData($user);
+        $identity = $this->authRepo->getUserIdentityById($auth->id);
+        $this->setSessionData($identity);
     }
 
     /** Attempts to register a new user with provided data.
@@ -59,9 +56,9 @@ final class AuthService implements AuthServiceInterface
             throw new ValidationException(ValidationException::PASSWORD_INVALID);
 
         // username/email are already taken
-        if ($this->authRepo->getUserByUsername($username))
+        if ($this->authRepo->getUserIdentityByUsername($username))
             throw new ValidationException(ValidationException::USERNAME_TAKEN);
-        if ($this->authRepo->getUserByEmail($email))
+        if ($this->authRepo->getUserIdentityByEmail($email))
             throw new ValidationException(ValidationException::EMAIL_TAKEN);
 
         // failed attempt creating the new user
@@ -70,11 +67,11 @@ final class AuthService implements AuthServiceInterface
             throw new ValidationException(ValidationException::REGISTRATION_FAILED);
 
         // Upon successful creation, use their ID to fetch full user data.
-        $user = $this->authRepo->getUserById($userId);
+        $user = $this->authRepo->getUserIdentityById($userId);
         if ($user === null)
             throw new ValidationException(ValidationException::REGISTRATION_FAILED);
 
-        $this->setSessionAuthData($user);
+        $this->setSessionData($user);
     }
 
     /** Logs out by unsetting session auth data */
@@ -118,7 +115,7 @@ final class AuthService implements AuthServiceInterface
     // -------------------- Private Methods START --------------------
 
     /** Sets session auth data for logged in or newly registered user */
-    private function setSessionAuthData(User $user): void
+    private function setSessionData(UserIdentityDto $user): void
     {
         session_regenerate_id(true);
         $_SESSION['auth'] = [

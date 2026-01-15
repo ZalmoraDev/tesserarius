@@ -22,7 +22,7 @@ final class DashboardController
         // Owner        = owned  = "Your Projects"
         // Member/Admin = member = "Member Projects"
         $projects = $this->projectService->getDashboardProjects((int)$_SESSION['auth']['userId']);
-        View::render('home.php', "Home" . View::addSiteName(), ['projects' => $projects]);
+        View::render('/Dashboard/home.php', "Home" . View::addSiteName(), ['projects' => $projects]);
     }
 
     /* GET /dashboard/create, serves project creation page */

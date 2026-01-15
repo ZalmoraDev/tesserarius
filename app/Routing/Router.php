@@ -4,7 +4,6 @@ namespace App\Routing;
 
 use App\Core\Csrf;
 
-use App\Models\Enums\AccessRole;
 use App\Controllers;
 use App\Services\AuthServiceInterface;
 

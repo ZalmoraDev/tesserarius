@@ -2,14 +2,14 @@
 
 namespace App\Repositories;
 
-use App\Models\User;
+use App\Dto\UserIdentityDto;
 
 interface AuthRepositoryInterface
 {
     public function createUser(string $username, string $email, string $passwordHash): ?int;
 
-    public function getUserByEmail(string $email): ?User;
-    public function getUserByUsername(string $username): ?User;
+    public function getUserIdentityByEmail(string $email): ?UserIdentityDto;
+    public function getUserIdentityByUsername(string $username): ?UserIdentityDto;
 
     // TODO: Change to ?User return type?
     public function getUserProjectRole(int $projectId, int $userId): ?string;

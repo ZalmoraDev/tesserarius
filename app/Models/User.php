@@ -4,6 +4,7 @@ namespace App\Models;
 
 use JsonSerializable;
 
+/** 1:1 correlation to 'users' table in the database */
 final readonly class User implements JsonSerializable
 {
     public function __construct(

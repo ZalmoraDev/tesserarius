@@ -2,7 +2,8 @@
 
 namespace App\Repositories;
 
-use App\Models\User;
+use App\Dto\UserAuthDto;
+use App\Dto\UserIdentityDto;
 use PDO;
 
 final class AuthRepository extends BaseRepository implements AuthRepositoryInterface
@@ -30,8 +31,9 @@ final class AuthRepository extends BaseRepository implements AuthRepositoryInter
         return (int)$id;
     }
 
-    /** Retrieve a user by their id, returns User model or null if not found */
-    public function getUserById(int $id): ?User
+    /** Retrieve a user by their id, returns UserSessionDto or null if not found
+     * Used for verifying new signups, and using that data for setting session info */
+    public function getUserIdentityById(int $id): ?UserIdentityDto
     {
         $stmt = $this->connection->prepare('
                 SELECT * FROM users WHERE id = :id'
@@ -44,18 +46,37 @@ final class AuthRepository extends BaseRepository implements AuthRepositoryInter
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         // Ternary to return User model or null
-        return $data ? new User(
+        return $data ? new UserIdentityDto(
             $data['id'],
             $data['username'],
-            $data['password_hash'],
             $data['email'],
-            $data['created_at']
         ) : null;
     }
 
+    /** Retrieve a user by their email, returns User model or null if not found */
+    public function getUserPasswordByEmail(string $email): ?UserAuthDto
+    {
+        $stmt = $this->connection->prepare('
+                SELECT *
+                FROM users
+                WHERE email = :email'
+        );
+
+        $stmt->execute([
+            'email' => $email
+        ]);
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Ternary to return User model or null
+        return $data ? new UserAuthDto(
+            $data['id'],
+            $data['password_hash']
+        ) : null;
+    }
 
     /** Retrieve a user by their email, returns User model or null if not found */
-    public function getUserByEmail(string $email): ?User
+    public function getUserIdentityByEmail(string $email): ?UserIdentityDto
     {
         $stmt = $this->connection->prepare('
                 SELECT * FROM users WHERE email = :email'
@@ -68,17 +89,15 @@ final class AuthRepository extends BaseRepository implements AuthRepositoryInter
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         // Ternary to return User model or null
-        return $data ? new User(
+        return $data ? new UserIdentityDto(
             $data['id'],
             $data['username'],
-            $data['password_hash'],
-            $data['email'],
-            $data['created_at']
+            $data['email']
         ) : null;
     }
 
     /** Retrieve a user by their username, returns User model or null if not found */
-    public function getUserByUsername(string $username): ?User
+    public function getUserIdentityByUsername(string $username): ?UserIdentityDto
     {
         $stmt = $this->connection->prepare('
                 SELECT * FROM users WHERE username = :username'
@@ -91,12 +110,10 @@ final class AuthRepository extends BaseRepository implements AuthRepositoryInter
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         // Ternary to return User model or null
-        return $data ? new User(
+        return $data ? new UserIdentityDto(
             $data['id'],
             $data['username'],
-            $data['password_hash'],
-            $data['email'],
-            $data['created_at']
+            $data['email']
         ) : null;
     }
 
