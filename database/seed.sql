@@ -117,4 +117,4 @@ CREATE INDEX idx_project_members_user_role
 CREATE UNIQUE INDEX idx_one_owner_per_project
     ON project_members (project_id)
     WHERE role = 'Owner';
--- END: Project Members
+-- END: Project Tasks

@@ -14,9 +14,24 @@ final class ProjectService implements ProjectServiceInterface
         $this->projectRepo = $projectRepo;
     }
 
-    public function getProjectsByUserAndRole(int $userId, string $role): array
+    public function getDashboardProjects(int $userId): array
     {
-        return $this->projectRepo->getProjectsByUserAndRole($userId, $role);
+        $projects = $this->projectRepo->getProjectListItemsByUserId($userId);
+
+        // Owned = owner | Member = Admin + Member
+        $owned = [];
+        $member = [];
+        foreach ($projects as $project) {
+            if ($project->role === 'Owner')
+                $owned[] = $project;
+            else
+                $member[] = $project;
+        }
+
+        return [
+            'owned' => $owned,
+            'member' => $member,
+        ];
     }
 
     public function getProjectByProjectId(int $projectId): ?Project

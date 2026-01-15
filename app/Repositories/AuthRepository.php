@@ -23,14 +23,11 @@ final class AuthRepository extends BaseRepository implements AuthRepositoryInter
 
         // Only this PDO connection is referenced,
         // so there is no risk of fetching other user's data.
-        // If lastInsertId fails, return null to indicate failure.
         $id = $this->connection->lastInsertId();
-        if ($id === false) {
+        if ($id === false)
             return null;
-            //throw new AuthException('Insert succeeded but no ID returned');
-        }
 
-        return (int) $id;
+        return (int)$id;
     }
 
     /** Retrieve a user by their id, returns User model or null if not found */

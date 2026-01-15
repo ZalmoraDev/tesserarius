@@ -14,20 +14,27 @@ final class DashboardController
         $this->projectService = $projectService;
     }
 
-    /** GET, Home page for logged-in users */
+    // -------------------- GET Requests --------------------
+
+    /** GET /, Home page for logged-in users */
     public function homePage()
     {
-        // REFACTOR: Change the usage of globals, maybe give them as params?
-        global $projectsAdmins, $projectsMembers;
+        // Owner        = owned  = "Your Projects"
+        // Member/Admin = member = "Member Projects"
+        $projects = $this->projectService->getDashboardProjects((int)$_SESSION['auth']['userId']);
+        View::render('home.php', "Home" . View::addSiteName(), ['projects' => $projects]);
+    }
 
-        // Get the user ID from the sessions
-        $userId = $_SESSION['auth']['userId'];
+    /* GET /dashboard/create, serves project creation page */
+    public function createProjectPage()
+    {
+        View::render('create_project.php', "Create Project" . View::addSiteName());
+    }
 
-        // Fetch the projects where the user is an admin & member
-        // TODO: Refactor, can easily be 1 method
-        $projectsAdmins = $this->projectService->getProjectsByUserAndRole($userId, "Admin");
-        $projectsMembers = $this->projectService->getProjectsByUserAndRole($userId, "Member");
+    // -------------------- POST Requests --------------------
 
-        View::render('home.php', "Home" . View::addSiteName());
+    /** POST /dashboard/create, handles project creation form submission */
+    public function createProject() {
+
     }
 }

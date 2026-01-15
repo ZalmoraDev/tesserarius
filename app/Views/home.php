@@ -1,16 +1,17 @@
 <?php
-global $projectsAdmins, $projectsMembers;
 
-// Components
 use App\Views\components\compProjectHomeTab;
 
 $projectTab = new compProjectHomeTab();
 
-$sessionUserId = $_SESSION['auth']['username']; // TODO: Get user ID from session
+// Ignore error $projects (injected by View::render)
+$projectsOwned = $projects['owned'];
+$projectsMember = $projects['member'];
 
-$yourProjectsAmount = count($projectsAdmins);
-$memberProjectsAmount = count($projectsMembers);
+$yourProjectsAmount = count($projectsOwned);
+$memberProjectsAmount = count($projectsMember);
 
+// TODO: Rework to new flash message system, maybe a toast notification?
 // Get error message from URL (if present)
 $error = $_GET['error'] ?? null;
 ?>
@@ -22,7 +23,7 @@ $error = $_GET['error'] ?? null;
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto">
     <!-- Error Message -->
     <?php if ($error === "access_denied"): ?>
-        <span class="text-red-300 text-center">You don't have access to this project.<br></span>
+        <span class="text-red-600 text-center">You don't have access to this project.<br></span>
     <?php endif; ?>
 
     <div class=" gap-4 flex flex-col">
@@ -32,7 +33,7 @@ $error = $_GET['error'] ?? null;
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
             <?php // Generate location cards based on HistoryLocationsGrid->generateLocationHTML()
-            foreach ($projectsAdmins as $projectAdmin) {
+            foreach ($projectsOwned as $projectAdmin) {
                 echo $projectTab->printProjectsTabs($projectAdmin);
             }
             echo $projectTab->printAddProjectTab();
@@ -48,7 +49,7 @@ $error = $_GET['error'] ?? null;
         <div id="projectGridContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
             <?php // Generate location cards based on HistoryLocationsGrid->generateLocationHTML()
-            foreach ($projectsMembers as $projectMember) {
+            foreach ($projectsMember as $projectMember) {
                 echo $projectTab->printProjectsTabs($projectMember);
             }
             echo $projectTab->printJoinProjectTab();

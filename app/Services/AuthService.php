@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Enums\AccessRole;
-use App\Models\Enums\UserRole;
 use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
 use App\Repositories\AuthRepositoryInterface;
@@ -94,7 +93,7 @@ final class AuthService implements AuthServiceInterface
     {
         // AUTHENTICATION: If route requires authenticated user, but user is not authenticated, redirect to /login
         if ($routeReqRole >= AccessRole::Authenticated && !isset($_SESSION['auth']['userId']))
-            throw new AuthException(AuthException::REQUIRES_AUTHENTICATION);
+            throw new AuthException(AuthException::REQUIRES_LOGIN);
     }
 
     /** Checks if the currently authenticated user has access to the specified project with required role or higher
@@ -109,8 +108,8 @@ final class AuthService implements AuthServiceInterface
             throw new AuthException(AuthException::PROJECT_ACCESS_DENIED);
 
         // User's role in project is lower than required by route (member < admin < owner)
-        $userRole = UserRole::from($roleString);
-        if ($routeReqRole->value > $userRole->value)
+        $accessRole = AccessRole::from($roleString);
+        if ($routeReqRole->value > $accessRole->value)
             throw new AuthException(AuthException::PROJECT_INSUFFICIENT_PERMISSIONS);
     }
     // -------------------- Public Methods END --------------------

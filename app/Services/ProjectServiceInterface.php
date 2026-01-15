@@ -6,6 +6,6 @@ use App\Models\Project;
 
 interface ProjectServiceInterface
 {
-    public function getProjectsByUserAndRole(int $userId, string $role): array;
+    public function getDashboardProjects(int $userId): array;
     public function getProjectByProjectId(int $projectId): ?Project;
 }

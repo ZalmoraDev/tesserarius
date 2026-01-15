@@ -10,6 +10,8 @@ $errorMessages = [
                                   please try again.',
         'requires_login' => 'You must log in using an account,<br>
                              please try again.',
+        'csrf_token_mismatch' => 'Session expired,<br>
+                                  please try again.'
 ];
 ?>
 

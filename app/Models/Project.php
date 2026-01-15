@@ -13,7 +13,6 @@ final readonly class Project implements JsonSerializable
         public string  $name,
         public ?string $description,
         public string  $createdAt, // TODO: Change to DateTime
-        public ?string $admin = null // Retrieved through the repository join statements
     )
     {
     }

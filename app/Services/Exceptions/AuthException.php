@@ -7,7 +7,7 @@ final class AuthException extends \RuntimeException
 {
     // Not logged in
     public const string INVALID_CREDENTIALS = 'invalid_credentials';
-    public const string REQUIRES_AUTHENTICATION = 'requires_authentication';
+    public const string REQUIRES_LOGIN = 'requires_authentication';
 
     // Login not known
     public const string CSRF_TOKEN_MISMATCH = 'csrf_token_mismatch';

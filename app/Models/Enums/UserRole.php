@@ -1,7 +1,9 @@
 <?php
 namespace App\Models\Enums;
-enum UserRole: int {
-    case Member = 1;
-    case Admin = 2;
-    case Owner = 3;
+
+/** User roles within a project context */
+enum UserRole: string {
+    case Member = 'Member';
+    case Admin = 'Admin';
+    case Owner = 'Owner';
 }

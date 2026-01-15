@@ -16,8 +16,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require $viewRender; // Ignore error, $viewRender is always set in controllers by View::render()
+require $viewRender; // Ignore error, $viewRender is always set in controllers View::render() calls
 ?>
-
-
 </html>

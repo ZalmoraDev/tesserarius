@@ -8,5 +8,5 @@ interface ProjectRepositoryInterface
 {
     public function getProjectByProjectId(int $projectId): ?Project;
 
-    public function getProjectsByUserAndRole(int $userId, string $role): array;
+    public function getProjectListItemsByUserId(int $userId): array;
 }
