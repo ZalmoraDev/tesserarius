@@ -22,7 +22,7 @@ final class UserController
 
         // Owner        = owned  = "Your Projects"
         // Member/Admin = member = "Member Projects"
-        $projects = $this->projectService->getDashboardProjects((int)$_SESSION['auth']['userId']);
+        $projects = $this->projectService->getHomeProjects((int)$_SESSION['auth']['userId']);
         View::render('/User/home.php', "Home" . View::addSiteName(), ['projects' => $projects]);
     }
 

@@ -16,15 +16,16 @@ final class ProjectService implements ProjectServiceInterface
         $this->projectRepo = $projectRepo;
     }
 
-    public function getDashboardProjects(int $userId): array
+    /** Returns an array of projects owned by or shared with the specified user.
+     * This is then split into 'Your' and 'Member' projects for display on the home page. */
+    public function getHomeProjects(int $userId): array
     {
         $projects = $this->projectRepo->findProjectListItemsByUserId($userId);
 
-        // Owned = owner | Member = Admin + Member
-        $owned = [];
-        $member = [];
+        $owned = [];  // Owner
+        $member = []; // Admin + Member
         foreach ($projects as $project) {
-            if ($project->userRole === 'Owner')
+            if ($project->userRole === UserRole::Owner)
                 $owned[] = $project;
             else
                 $member[] = $project;

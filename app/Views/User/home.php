@@ -32,7 +32,7 @@ $error = $_GET['error'] ?? null;
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
-            <?php // Generate location cards based on HistoryLocationsGrid->generateLocationHTML()
+            <?php // Generate 'Your Projects' tabs (User = UserRole::Owner)
             foreach ($projectsOwned as $projectAdmin) {
                 echo $projectTab->printProjectsTabs($projectAdmin);
             }
@@ -48,7 +48,7 @@ $error = $_GET['error'] ?? null;
         </div>
         <div id="projectGridContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
-            <?php // Generate location cards based on HistoryLocationsGrid->generateLocationHTML()
+            <?php // Generate 'Member Projects' tabs (User = UserRole::Admin | UserRole::Member)
             foreach ($projectsMember as $projectMember) {
                 echo $projectTab->printProjectsTabs($projectMember);
             }

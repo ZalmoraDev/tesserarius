@@ -94,6 +94,8 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
         return $projects;
     }
 
+    /** Creates a new project for the currently logged-in user.
+     * Returns the new project's ID for the controller to redirect to the new project page. */
     public function createProject(string $name, string $description): ?int
     {
         // A user must be logged in at this point, retrieve their user ID to set the owner_id
