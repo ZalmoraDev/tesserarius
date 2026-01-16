@@ -27,7 +27,7 @@ use App\Core\Csrf;
         <form action="/auth/logout" method="POST">
             <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
             <button type="submit" class="transition-colors cursor-pointer">
-                <img src="<?= $_ENV['SITE_URL'] ?>/assets/icons/logout-32dp.svg"
+                <img src="<?= $_ENV['SITE_URL'] ?>/assets/icons/logout-FFF.svg"
                      alt="logout"
                      height="32" width="32"
                      class="w-8 h-8 hover:brightness-50">

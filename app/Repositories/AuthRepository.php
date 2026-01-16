@@ -12,10 +12,10 @@ final class AuthRepository extends BaseRepository implements AuthRepositoryInter
     /** Create a new user in the database, after the service has validated the data */
     public function createUser(string $username, string $email, string $passwordHash): ?UserIdentityDto
     {
-        $stmt = $this->connection->prepare("
+        $stmt = $this->connection->prepare('
                 INSERT INTO users (username, password_hash, email) 
-                VALUES (:username, :passwordHash, :email)
-            ");
+                VALUES (:username, :passwordHash, :email)'
+        );
 
         $stmt->execute([
             'username' => $username,
@@ -62,14 +62,14 @@ final class AuthRepository extends BaseRepository implements AuthRepositoryInter
                 SELECT pm.role
                 FROM project_members pm
                 WHERE pm.user_id = :userId
-                  AND pm.project_id = :projectId
-            ');
+                  AND pm.project_id = :projectId'
+        );
 
-        $stmt->execute([
-            'userId' => $userId,
-            'projectId' => $projectId
-        ]);
+        $role = $stmt->fetchColumn();
 
-        return AccessRole::from($stmt->fetchColumn()) ?: null;
+        if ($role === false)
+            return null;
+
+        return AccessRole::from($role);
     }
 }

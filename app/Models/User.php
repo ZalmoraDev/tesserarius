@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use JsonSerializable;
-
-/** 1:1 correlation to 'users' table in the database */
-final readonly class User implements JsonSerializable
+/** 1:1 correlation to 'users' table in the database, */
+final readonly class User
 {
     public function __construct(
         public int    $id,
@@ -15,10 +13,5 @@ final readonly class User implements JsonSerializable
         public string $createdAt //TODO: Change to DateTime
     )
     {
-    }
-
-    public function jsonSerialize(): array
-    {
-        return get_object_vars($this);
     }
 }

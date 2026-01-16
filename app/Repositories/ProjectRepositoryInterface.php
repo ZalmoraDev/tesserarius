@@ -6,7 +6,10 @@ use App\Models\Project;
 
 interface ProjectRepositoryInterface
 {
-    public function getProjectByProjectId(int $projectId): ?Project;
+    public function findProjectByProjectId(int $projectId): ?Project; // TODO: Replace with DTO
+    public function findProjectByName(string $name): ?Project; // TODO: Replace with DTO
 
-    public function getProjectListItemsByUserId(int $userId): array;
+    public function findProjectListItemsByUserId(int $userId): array;
+
+    public function createProject(string $name, string $description): ?int;
 }

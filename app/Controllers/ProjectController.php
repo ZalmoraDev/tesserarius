@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\View;
-use App\Services\{ProjectServiceInterface, TaskServiceInterface};
+use App\Services\{Exceptions\ProjectException, ProjectServiceInterface, TaskServiceInterface};
 
 final class ProjectController
 {
@@ -16,8 +16,16 @@ final class ProjectController
         $this->taskService = $taskService;
     }
 
-    /** GET, View a specified project by its ID */
-    public function viewPage($projectId): void
+    // -------------------- GET Requests --------------------
+
+    /** GET /projects/create, serves project creation page */
+    public function showCreate()
+    {
+        View::render('/Project/projectsCreate.php', "Create Project" . View::addSiteName());
+    }
+
+    /** GET /projects/{projectId}, View a specified project by its ID */
+    public function showPage($projectId): void
     {
         // REFACTOR: Move global variable usage out of controller
         global $allColumnTasksArray; // 2D array of tasks, holding columns and their tasks, gets split in view/Project.php
@@ -30,5 +38,23 @@ final class ProjectController
         $allColumnTasksArray = $this->taskService->getAllColumnTasks($projectId);
 
         View::render('project.php', $project->name . View::addSiteName());
+    }
+
+    // -------------------- POST Requests --------------------
+
+    /** POST /projects, handles project creation form submission */
+    public function handleCreate() {
+        try {
+            $id = $this->projectService->createProject(
+                $_POST['name'] ?? '',
+                $_POST['description'] ?? ''
+            );
+            header("Location: /project/" . $id, true, 302);
+            exit;
+        } catch (ProjectException $e) {
+            $_SESSION['flash_errors'][] = $e->getMessage();
+            header("Location: /", true, 302);
+            exit;
+        }
     }
 }

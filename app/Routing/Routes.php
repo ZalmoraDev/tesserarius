@@ -23,10 +23,11 @@ final class Routes
         return FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
             // Retrieve controllers and use them as conciser abbreviations in route handler definitions
             $auth = $this->controllers['auth'];
-            $dashboard = $this->controllers['dashboard'];
+            $user = $this->controllers['user'];
             $project = $this->controllers['project'];
 
             // Uses route aliases instead of full $r->addRoute(METHOD, ...)
+            // AuthController routes
             $r->get('/login', $this->route([$auth, 'loginPage'], AccessRole::Anyone));
             $r->get('/signup', $this->route([$auth, 'signupPage'], AccessRole::Anyone));
             $r->post('/auth/login', $this->route([$auth, 'login'], AccessRole::Anyone));
@@ -34,9 +35,13 @@ final class Routes
             $r->post('/auth/logout', $this->route([$auth, 'logout'], AccessRole::Anyone));
 
             // default page for logged-in users, default to URL '/'
-            $r->get('/', $this->route([$dashboard, 'homePage'], AccessRole::Authenticated));
+            // UserController routes
+            $r->get('/', $this->route([$user, 'homePage'], AccessRole::Authenticated));
 
-            $r->get('/project/{projectId:\d+}', $this->route([$project, 'viewPage'], AccessRole::Member));
+            // ProjectController routes
+            $r->get('/project/create', $this->route([$project, 'showCreate'], AccessRole::Authenticated));
+            $r->post('/project/create', $this->route([$project, 'handleCreate'], AccessRole::Authenticated));
+            $r->get('/project/{projectId:\d+}', $this->route([$project, 'showPage'], AccessRole::Member));
         });
     }
 

@@ -108,8 +108,6 @@ $projectTask = new compProjectTask();
         </div>
     </div>
 </main>
-
-
 </body>
 
 <script>

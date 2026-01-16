@@ -4,7 +4,7 @@ namespace App\Controllers\Api;
 
 use App\Services\TaskService;
 
-class TaskController
+class TaskControllerApi
 {
     private TaskService $taskService;
 

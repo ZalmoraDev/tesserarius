@@ -2,8 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Enums\AccessRole;
+use App\Models\Enums\UserRole;
 use App\Models\Project;
+use App\Repositories\ProjectMemberRepositoryInterface;
 use App\Repositories\ProjectRepositoryInterface;
+use App\Services\Exceptions\ProjectException;
 
 final class ProjectService implements ProjectServiceInterface
 {
@@ -16,7 +20,7 @@ final class ProjectService implements ProjectServiceInterface
 
     public function getDashboardProjects(int $userId): array
     {
-        $projects = $this->projectRepo->getProjectListItemsByUserId($userId);
+        $projects = $this->projectRepo->findProjectListItemsByUserId($userId);
 
         // Owned = owner | Member = Admin + Member
         $owned = [];
@@ -34,8 +38,42 @@ final class ProjectService implements ProjectServiceInterface
         ];
     }
 
+    /** Creates a new project for the currently logged-in user.
+     * Returns the new project's ID for the controller to redirect to the new project page. */
+    public function createProject(string $name, string $description): ?int {
+        $name = trim($name);
+        $description = trim($description);
+
+        // required fields are empty
+        if (empty($name) || empty($description))
+            throw new ProjectException(ProjectException::FIELDS_REQUIRED);
+
+        // name/description do not meet format requirements
+        if (!preg_match('/^.{3,32}$/', $name))
+            throw new ProjectException(ProjectException::NAME_INVALID);
+        if (!preg_match('/^.{0,128}$/', $description))
+            throw new ProjectException(ProjectException::DESCRIPTION_INVALID);
+
+        // username already has a project by this name
+        if ($this->projectRepo->findProjectByName($name) !== null)
+            throw new ProjectException(ProjectException::NAME_TAKEN);
+
+        // failed attempt creating the new project
+        $newProjectId = $this->projectRepo->createProject($name, $description);
+        if ($newProjectId === null)
+            throw new ProjectException(ProjectException::REGISTRATION_FAILED);
+
+        // If no exceptions were thrown, then the project was created successfully
+        // adding the owner as a member
+        $this->projectRepo->addProjectMember((int)$newProjectId, (int)$_SESSION['auth']['userId'], UserRole::Owner);
+
+        return $newProjectId;
+    }
+
     public function getProjectByProjectId(int $projectId): ?Project
     {
-        return $this->projectRepo->getProjectByProjectId($projectId);
+        return $this->projectRepo->findProjectByProjectId($projectId);
     }
+
+
 }

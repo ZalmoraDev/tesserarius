@@ -2,7 +2,7 @@
 
 use App\Routing\{Routes, Router};
 
-use App\Controllers\ {AuthController, DashboardController, ProjectController};
+use App\Controllers\ {AuthController, UserController, ProjectController};
 use App\Services\{AuthService, ProjectService, TaskService};
 use App\Repositories\{AuthRepository, ProjectRepository, TaskRepository, UserRepository};
 
@@ -46,14 +46,14 @@ $taskService = new TaskService($taskRepo);
 
 // Controllers
 $authController = new AuthController($authService);
-$dashboardController = new DashboardController($projectService);
 $projectController = new ProjectController($projectService, $taskService);
+$userController = new UserController($projectService);
 
 // -------------------- Routing setup & Router dispatch --------------------
 // Controller map for router
 $controllers = [
     'auth' => $authController,
-    'dashboard' => $dashboardController,
+    'user' => $userController,
     'project' => $projectController
 ];
 
