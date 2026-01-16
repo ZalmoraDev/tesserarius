@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Dto\UserIdentityDto;
 use App\Models\Enums\AccessRole;
+use App\Repositories\UserRepositoryInterface;
 use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
 use App\Repositories\AuthRepositoryInterface;
@@ -11,28 +12,40 @@ use App\Repositories\AuthRepositoryInterface;
 final class AuthService implements AuthServiceInterface
 {
     private AuthRepositoryInterface $authRepo;
+    private UserRepositoryInterface $userRepo;
 
-    public function __construct(AuthRepositoryInterface $authRepo)
+    public function __construct(AuthRepositoryInterface $authRepo, UserRepositoryInterface $userRepo)
     {
         $this->authRepo = $authRepo;
+        $this->userRepo = $userRepo;
     }
 
     // -------------------- Public Methods START --------------------
 
     /** Attempts to log in a user with provided credentials.
-     * @throws AuthException if credentials are invalid. */
+     * @throws AuthException if credentials are invalid.
+     */
     public function login(string $email, string $password): void
     {
-        $auth = $this->authRepo->getUserPasswordByEmail($email);
+        $auth = $this->authRepo->findAuthByEmail($email);
         if (!password_verify($password, $auth->passwordHash))
             throw new AuthException(AuthException::INVALID_CREDENTIALS);
 
-        $identity = $this->authRepo->getUserIdentityById($auth->id);
+        $identity = $this->userRepo->findUserIdentityById($auth->id);
         $this->setSessionData($identity);
     }
 
+    /** Logs out by unsetting session auth data */
+    public function logout(): void
+    {
+        // Only unset auth session data, regen session ID for CSRF protection.
+        unset($_SESSION['auth']);
+        session_regenerate_id(true);
+    }
+
     /** Attempts to register a new user with provided data.
-     * @throws ValidationException if any validation fails. */
+     * @throws ValidationException if any validation fails.
+     */
     public function signup(string $username, string $email, string $password, string $passwordConfirm): void
     {
         $username = trim($username);
@@ -56,36 +69,24 @@ final class AuthService implements AuthServiceInterface
             throw new ValidationException(ValidationException::PASSWORD_INVALID);
 
         // username/email are already taken
-        if ($this->authRepo->getUserIdentityByUsername($username))
+        if ($this->userRepo->findUserIdentityByUsername($username))
             throw new ValidationException(ValidationException::USERNAME_TAKEN);
-        if ($this->authRepo->getUserIdentityByEmail($email))
+        if ($this->userRepo->findUserIdentityByEmail($email))
             throw new ValidationException(ValidationException::EMAIL_TAKEN);
 
         // failed attempt creating the new user
-        $userId = $this->authRepo->createUser($username, $email, password_hash($password, PASSWORD_DEFAULT));
-        if ($userId === null)
+        $identity = $this->authRepo->createUser($username, $email, password_hash($password, PASSWORD_DEFAULT));
+        if ($identity === null)
             throw new ValidationException(ValidationException::REGISTRATION_FAILED);
 
-        // Upon successful creation, use their ID to fetch full user data.
-        $user = $this->authRepo->getUserIdentityById($userId);
-        if ($user === null)
-            throw new ValidationException(ValidationException::REGISTRATION_FAILED);
-
-        $this->setSessionData($user);
-    }
-
-    /** Logs out by unsetting session auth data */
-    public function logout(): void
-    {
-        // Only unset auth session data, regen session ID for CSRF protection.
-        unset($_SESSION['auth']);
-        session_regenerate_id(true);
+        $this->setSessionData($identity);
     }
 
     /** Checks if the current user is authenticated (logged in) if the route requires it
      *
      * Used by Router.php
-     * @throws AuthException if route requires authentication but user is not authenticated */
+     * @throws AuthException if route requires authentication but user is not authenticated
+     */
     public function requireAuthentication($routeReqRole): void
     {
         // AUTHENTICATION: If route requires authenticated user, but user is not authenticated, redirect to /login
@@ -96,16 +97,15 @@ final class AuthService implements AuthServiceInterface
     /** Checks if the currently authenticated user has access to the specified project with required role or higher
      *
      * Used by Router.php
-     * @throws AuthException if user is not part of project or has insufficient permissions */
+     * @throws AuthException if user is not part of project or has insufficient permissions
+     */
     public function requireProjectAccess(int $projectId, AccessRole $routeReqRole): void
     {
         // User is not part of this project
-        $roleString = $this->authRepo->getUserProjectRole($_SESSION['auth']['userId'], $projectId);
-        if ($roleString === null)
+        $accessRole = $this->authRepo->findUserAccessRole($_SESSION['auth']['userId'], $projectId);
+        if ($accessRole === null)
             throw new AuthException(AuthException::PROJECT_ACCESS_DENIED);
 
-        // User's role in project is lower than required by route (member < admin < owner)
-        $accessRole = AccessRole::from($roleString);
         if ($routeReqRole->value > $accessRole->value)
             throw new AuthException(AuthException::PROJECT_INSUFFICIENT_PERMISSIONS);
     }

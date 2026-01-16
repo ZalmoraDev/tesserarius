@@ -4,7 +4,7 @@ use App\Routing\{Routes, Router};
 
 use App\Controllers\ {AuthController, DashboardController, ProjectController};
 use App\Services\{AuthService, ProjectService, TaskService};
-use App\Repositories\{AuthRepository, ProjectRepository, TaskRepository};
+use App\Repositories\{AuthRepository, ProjectRepository, TaskRepository, UserRepository};
 
 // -------------------- Headers, Session & .env config --------------------
 header("Access-Control-Allow-Methods: GET, POST"); // Only allow GET and POST requests.
@@ -37,9 +37,10 @@ $dotenv->required([
 $authRepo = new AuthRepository();
 $projectRepo = new ProjectRepository();
 $taskRepo = new TaskRepository();
+$userRepo = new UserRepository();
 
 // Services
-$authService = new AuthService($authRepo);
+$authService = new AuthService($authRepo, $userRepo);
 $projectService = new ProjectService($projectRepo);
 $taskService = new TaskService($taskRepo);
 

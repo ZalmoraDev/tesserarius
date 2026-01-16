@@ -34,7 +34,7 @@ final readonly class AuthController
     // -------------------- POST Requests --------------------
 
     /** POST /auth/login, processes login form submission */
-    public function loginAuth(): void
+    public function login(): void
     {
         try {
             $this->authService->login(
@@ -51,7 +51,7 @@ final readonly class AuthController
     }
 
     /** POST /auth/signup, processes signup form submission */
-    public function signupAuth(): void
+    public function signup(): void
     {
         try {
             $this->authService->signup(

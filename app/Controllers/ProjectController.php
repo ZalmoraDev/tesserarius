@@ -17,7 +17,7 @@ final class ProjectController
     }
 
     /** GET, View a specified project by its ID */
-    public function view($projectId): void
+    public function viewPage($projectId): void
     {
         // REFACTOR: Move global variable usage out of controller
         global $allColumnTasksArray; // 2D array of tasks, holding columns and their tasks, gets split in view/Project.php

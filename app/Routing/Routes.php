@@ -29,14 +29,14 @@ final class Routes
             // Uses route aliases instead of full $r->addRoute(METHOD, ...)
             $r->get('/login', $this->route([$auth, 'loginPage'], AccessRole::Anyone));
             $r->get('/signup', $this->route([$auth, 'signupPage'], AccessRole::Anyone));
-            $r->post('/auth/login', $this->route([$auth, 'loginAuth'], AccessRole::Anyone));
-            $r->post('/auth/signup', $this->route([$auth, 'signupAuth'], AccessRole::Anyone));
+            $r->post('/auth/login', $this->route([$auth, 'login'], AccessRole::Anyone));
+            $r->post('/auth/signup', $this->route([$auth, 'signup'], AccessRole::Anyone));
             $r->post('/auth/logout', $this->route([$auth, 'logout'], AccessRole::Anyone));
 
             // default page for logged-in users, default to URL '/'
             $r->get('/', $this->route([$dashboard, 'homePage'], AccessRole::Authenticated));
 
-            $r->get('/project/{projectId:\d+}', $this->route([$project, 'view'], AccessRole::Member));
+            $r->get('/project/{projectId:\d+}', $this->route([$project, 'viewPage'], AccessRole::Member));
         });
     }
 
