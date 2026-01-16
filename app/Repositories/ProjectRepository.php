@@ -62,15 +62,18 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
 
     /** Retrieve projects for a user based on their roles.
      *
-     * Used for populating the dashboard with projects the user is involved in.
+     * Used for populating the homepage with projects the user is involved in.
      */
     public function findProjectListItemsByUserId(int $userId): array
     {
         $stmt = $this->connection->prepare('
-                SELECT p.id, p.name, p.description, pm.role
-                FROM projects p
-                INNER JOIN project_members pm ON p.id = pm.project_id
-                WHERE pm.user_id = :userId'
+        SELECT p.id, p.name, p.description, u.username AS owner_name, pm.role
+        FROM projects p
+            INNER JOIN project_members pm
+                ON p.id = pm.project_id
+            INNER JOIN users u
+                ON p.owner_id = u.id
+        WHERE pm.user_id = :userId'
         );
 
         $stmt->execute([
@@ -83,6 +86,7 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
                 $row['id'],
                 $row['name'],
                 $row['description'],
+                $row['owner_name'],
                 UserRole::from($row['role']) // Convert string to UserRole enum
             );
             $projects[] = $project;

@@ -2,10 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Enums\AccessRole;
 use App\Models\Enums\UserRole;
 use App\Models\Project;
-use App\Repositories\ProjectMemberRepositoryInterface;
 use App\Repositories\ProjectRepositoryInterface;
 use App\Services\Exceptions\ProjectException;
 
@@ -26,21 +24,22 @@ final class ProjectService implements ProjectServiceInterface
         $owned = [];
         $member = [];
         foreach ($projects as $project) {
-            if ($project->role === 'Owner')
+            if ($project->userRole === 'Owner')
                 $owned[] = $project;
             else
                 $member[] = $project;
         }
 
         return [
-            'owned' => $owned,
+            'owned' => $owned, // Your projects
             'member' => $member,
         ];
     }
 
     /** Creates a new project for the currently logged-in user.
      * Returns the new project's ID for the controller to redirect to the new project page. */
-    public function createProject(string $name, string $description): ?int {
+    public function createProject(string $name, string $description): ?int
+    {
         $name = trim($name);
         $description = trim($description);
 

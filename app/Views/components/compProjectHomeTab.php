@@ -2,16 +2,16 @@
 
 namespace App\Views\components;
 
-use App\Models\Project;
+use App\Dto\ProjectListItemDto;
 
 class compProjectHomeTab
 {
-    public function printProjectsTabs(Project $project): string
+    public function printProjectsTabs(ProjectListItemDto $project): string
     {
         $id = htmlspecialchars($project->id) ?? "";
         $name = htmlspecialchars($project->name) ?? "";
         $description = htmlspecialchars($project->description) ?? "";
-        $owner = htmlspecialchars($project->owner) ?? "";
+        $ownerName = htmlspecialchars($project->ownerName) ?? "";
 
         return "       
         <a class='tess-project-card cursor-pointer hover:brightness-50 flex flex-col justify-between min-h-32' href='" . $_ENV['SITE_URL'] . "/project/view/{$id}'>
@@ -19,7 +19,7 @@ class compProjectHomeTab
             <span class='text-amber-400 block truncate'>$name</span>
             <span class='text-xs font-medium line-clamp-3'>$description</span>
         </div>
-        <span class='text-xs font-medium'>Created by: $owner</span>
+        <span class='text-xs font-medium'>Created by: $ownerName</span>
         </a>
     ";
     }

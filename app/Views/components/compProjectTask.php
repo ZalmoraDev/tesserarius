@@ -4,6 +4,7 @@ namespace App\Views\components;
 
 use App\Models\Task;
 
+// TODO: Distgusting code, needs to be redone
 class compProjectTask
 {
     public function printProjectTask(Task $task): string
