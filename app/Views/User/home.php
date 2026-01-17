@@ -8,9 +8,6 @@ $projectTab = new compProjectHomeTab();
 $projectsOwned = $projects['owned'];
 $projectsMember = $projects['member'];
 
-$yourProjectsAmount = count($projectsOwned);
-$memberProjectsAmount = count($projectsMember);
-
 // TODO: Rework to new flash message system, maybe a toast notification?
 // Get error message from URL (if present)
 $error = $_GET['error'] ?? null;
@@ -21,14 +18,9 @@ $error = $_GET['error'] ?? null;
 <?php include_once __DIR__ . "/../skeleton/navbar.php"; ?>
 
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto">
-    <!-- Error Message -->
-    <?php if ($error === "access_denied"): ?>
-        <span class="text-red-600 text-center">You don't have access to this project.<br></span>
-    <?php endif; ?>
-
     <div class=" gap-4 flex flex-col">
         <div class="tess-base-container-sm w-full">
-            <h1>// Your projects [ <?= $yourProjectsAmount ?> ]</h1>
+            <h1>// Your projects [ <?= count($projectsOwned) ?> ]</h1>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
@@ -44,7 +36,7 @@ $error = $_GET['error'] ?? null;
     <hr>
     <div class=" gap-4 flex flex-col">
         <div class="tess-base-container-sm w-full">
-            <h1>// Member Projects [ <?= $memberProjectsAmount ?> ]</h1>
+            <h1>// Member Projects [ <?= count($projectsMember) ?> ]</h1>
         </div>
         <div id="projectGridContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 

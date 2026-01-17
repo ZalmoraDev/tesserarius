@@ -21,23 +21,27 @@ final class ProjectController
     /** GET /projects/create, serves project creation page */
     public function showCreate()
     {
-        View::render('/Project/projectsCreate.php', "Create Project" . View::addSiteName());
+        View::render('/Project/projectCreate.php', "Create Project" . View::addSiteName());
     }
 
     /** GET /projects/{projectId}, View a specified project by its ID */
-    public function showPage($projectId): void
+    public function showView($projectId): void
     {
+        // TODO: Unnecessary double project retrieval in controller and view
+
         // REFACTOR: Move global variable usage out of controller
         global $allColumnTasksArray; // 2D array of tasks, holding columns and their tasks, gets split in view/Project.php
+//
+//        // Get project name to set the title
+//
+//        $project = $this->projectService->getProjectByProjectId($projectId);
+//
+//        // Get all tasks for the project (2D array of tasks, holding columns and their tasks)
+//        $allColumnTasksArray = $this->taskService->getAllColumnTasks($projectId);
 
-        // Get project name to set the title
-        // TODO: Unnecessary double project retrieval in controller and view
-        $project = $this->projectService->getProjectByProjectId($projectId);
+        //View::render('project.php', $project->name . View::addSiteName());
 
-        // Get all tasks for the project (2D array of tasks, holding columns and their tasks)
-        $allColumnTasksArray = $this->taskService->getAllColumnTasks($projectId);
-
-        View::render('project.php', $project->name . View::addSiteName());
+        View::render('/Project/projectView.php', 'TEMP' . View::addSiteName());
     }
 
     // -------------------- POST Requests --------------------

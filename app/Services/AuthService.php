@@ -101,12 +101,11 @@ final class AuthService implements AuthServiceInterface
      */
     public function requireProjectAccess(int $projectId, AccessRole $routeReqRole): void
     {
-        // User is not part of this project
-        $accessRole = $this->authRepo->findUserAccessRole($_SESSION['auth']['userId'], $projectId);
-        if ($accessRole === null)
+        $userRole = $this->authRepo->findUserProjectRole($projectId, (int)$_SESSION['auth']['userId']);
+        if ($userRole === null)
             throw new AuthException(AuthException::PROJECT_ACCESS_DENIED);
 
-        if ($routeReqRole->value > $accessRole->value)
+        if ($routeReqRole->value > $userRole->value)
             throw new AuthException(AuthException::PROJECT_INSUFFICIENT_PERMISSIONS);
     }
     // -------------------- Public Methods END --------------------

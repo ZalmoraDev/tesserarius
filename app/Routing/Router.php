@@ -58,10 +58,8 @@ final class Router
                     $this->authService->requireAuthentication($routeReqAccess);
 
                     // Checks when accessing a project-related route, if user has access to it with required role or higher
-                    if ($pathParams['projectId'] ?? false) {
-                        $pathParams['projectId'] = (int)$pathParams['projectId'];
-                        $this->authService->requireProjectAccess($pathParams['projectId'], $routeReqAccess);
-                    }
+                    if ($pathParams['projectId'] ?? false)
+                        $this->authService->requireProjectAccess((int)$pathParams['projectId'], $routeReqAccess);
 
                     // Upon POST -> verify CSRF token. If not valid, exit with 403 (handled in Csrf::Verify)
                     if ($_SERVER['REQUEST_METHOD'] === 'POST')

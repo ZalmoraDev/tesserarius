@@ -63,10 +63,9 @@ final class ProjectService implements ProjectServiceInterface
         if ($newProjectId === null)
             throw new ProjectException(ProjectException::REGISTRATION_FAILED);
 
-        // If no exceptions were thrown, then the project was created successfully
-        // adding the owner as a member
-        $this->projectRepo->addProjectMember((int)$newProjectId, (int)$_SESSION['auth']['userId'], UserRole::Owner);
-
+        // If no exceptions were thrown, meaning the project was created successfully
+        // -> add this user as 'Owner' to project_members DB table
+        $this->projectRepo->addProjectMember($newProjectId, (int)$_SESSION['auth']['userId'], UserRole::Owner);
         return $newProjectId;
     }
 
@@ -74,6 +73,4 @@ final class ProjectService implements ProjectServiceInterface
     {
         return $this->projectRepo->findProjectByProjectId($projectId);
     }
-
-
 }

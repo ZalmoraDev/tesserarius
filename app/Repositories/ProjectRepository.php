@@ -99,7 +99,7 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
     public function createProject(string $name, string $description): ?int
     {
         // A user must be logged in at this point, retrieve their user ID to set the owner_id
-        $ownerId = $_SESSION['auth']['userId'];
+        $ownerId = (int)$_SESSION['auth']['userId'];
         $stmt = $this->connection->prepare('
                 INSERT INTO projects (owner_id, name, description) 
                 VALUES (:owner_id, :name, :description)'

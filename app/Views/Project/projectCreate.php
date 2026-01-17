@@ -10,6 +10,8 @@ $errorMessages = [
 ];
 ?>
 
+<!-- TODO: Add error messages for project creation validation -->
+
 <body class="tess-base-body flex flex-col">
 
 <?php include_once __DIR__ . "/../skeleton/navbar.php"; ?>

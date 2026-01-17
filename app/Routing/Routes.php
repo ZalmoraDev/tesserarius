@@ -41,7 +41,7 @@ final class Routes
             // ProjectController routes
             $r->get('/project/create', $this->route([$project, 'showCreate'], AccessRole::Authenticated));
             $r->post('/project/create', $this->route([$project, 'handleCreate'], AccessRole::Authenticated));
-            $r->get('/project/{projectId:\d+}', $this->route([$project, 'showPage'], AccessRole::Member));
+            $r->get('/project/view/{projectId:\d+}', $this->route([$project, 'showView'], AccessRole::Member));
         });
     }
 

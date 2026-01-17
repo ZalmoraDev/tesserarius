@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Dto\UserAuthDto;
 use App\Dto\UserIdentityDto;
-use App\Models\Enums\AccessRole;
+use App\Models\Enums\UserRole;
 use PDO;
 
 final class AuthRepository extends BaseRepository implements AuthRepositoryInterface
@@ -56,20 +56,22 @@ final class AuthRepository extends BaseRepository implements AuthRepositoryInter
 // TODO: Validate this method, also no idea where this is used
 
     /** Retrieve the role of a user in a specific project, for router access control */
-    public function findUserAccessRole(int $projectId, int $userId): ?AccessRole
+    public function findUserProjectRole(int $projectId, int $userId): ?UserRole
     {
         $stmt = $this->connection->prepare('
-                SELECT pm.role
-                FROM project_members pm
-                WHERE pm.user_id = :userId
-                  AND pm.project_id = :projectId'
-        );
+        SELECT pm.role
+        FROM project_members pm
+        WHERE pm.user_id = :userId
+          AND pm.project_id = :projectId
+    ');
+
+        $stmt->execute([
+            'userId' => $userId,
+            'projectId' => $projectId,
+        ]);
 
         $role = $stmt->fetchColumn();
 
-        if ($role === false)
-            return null;
-
-        return AccessRole::from($role);
+        return $role === false ? null : UserRole::from($role);
     }
 }
