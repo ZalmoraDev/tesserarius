@@ -4,7 +4,7 @@ namespace App\Views\components;
 
 use App\Dto\ProjectListItemDto;
 
-class compProjectHomeTab
+class projectHomeTabComp
 {
     public function printProjectsTabs(ProjectListItemDto $project): string
     {

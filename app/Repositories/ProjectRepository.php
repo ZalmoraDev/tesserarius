@@ -9,12 +9,8 @@ use PDO;
 
 final class ProjectRepository extends BaseRepository implements ProjectRepositoryInterface
 {
-
-    // TODO: Return DTOs instead of Model
     /** Used when accessing a project by its ID.
-     *
-     * Such as accessing it's URL /project/{projectId}
-     */
+     * Loads the full Project model to pass to the view, no DTO used as all data is needed */
     public function findProjectByProjectId(int $projectId): ?Project
     {
         $stmt = $this->connection->prepare('

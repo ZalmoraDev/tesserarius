@@ -1,22 +1,39 @@
 <?php
+
+use App\Views\components\projectTaskComp;
+
+// TODO: REMOVE THIS GLOBAL
 global $allColumnTasksArray;
 
+// REFACTOR: Move logic to controller params?
 $tasks1Backlog = $allColumnTasksArray[0] ?? [];
 $tasks2ToDo = $allColumnTasksArray[1] ?? [];
 $tasks3Doing = $allColumnTasksArray[2] ?? [];
 $tasks4Review = $allColumnTasksArray[3] ?? [];
 $tasks5Done = $allColumnTasksArray[4] ?? [];
 
-// Components
-use App\Views\components\compProjectTask;
+$projectTask = new projectTaskComp();
 
-$projectTask = new compProjectTask();
+$flash_errors = $_SESSION['flash_errors'] ?? [];
+unset($_SESSION['flash_errors']);
 
+$errorMessages = [
+        'already_logged_in' => 'You are already logged in,<br>
+                                redirecting to home page.',
+        'project_access_denied' => 'Access denied,<br>
+                                    you are not a member of this project.',
+        'project_insufficient_permissions' => 'Insufficient permissions,<br>
+                                               please try again.',
+];
 ?>
 
 <body class="tess-base-body flex flex-col">
 
-<?php include_once __DIR__ . "/../skeleton/navbar.php"; ?>
+<?php
+include_once __DIR__ . "/../skeleton/navbar.php";
+if ($flash_errors)
+    include __DIR__ . '/../components/toastComp.php';
+?>
 
 <main class="flex-1 flex justify-center items-start px-4 py-6">
     <div class="flex gap-4 items-start">

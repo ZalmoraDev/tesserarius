@@ -9,6 +9,6 @@ interface ProjectServiceInterface
     public function getHomeProjects(int $userId): array;
     public function createProject(string $name, string $description): ?int;
 
-    public function getProjectByProjectId(int $projectId): ?Project; // TODO: Change to DTO
+    public function getProjectByProjectId(int $projectId): ?Project; // Needs all data, so use model and not DTO
 
 }
