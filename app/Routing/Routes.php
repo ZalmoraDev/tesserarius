@@ -46,10 +46,10 @@ final class Routes
     }
 
     /** Helper-object to create conciser route auth guard objects. */
-    private function route(array $handler, AccessRole $accessRole): array
+    private function route(array $action, AccessRole $accessRole): array
     {
         return [
-            'handler' => $handler,
+            'action' => $action,
             'accessRole' => $accessRole,
         ];
     }

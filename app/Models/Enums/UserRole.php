@@ -7,8 +7,13 @@ enum UserRole: string {
     case Admin = 'Admin';
     case Owner = 'Owner';
 
-
-    // TODO: Validate if correlation to accessRole ints are correct
+    /** Converts UserRole (retrieved from DB) to AccessRole (Used in router access authorization)
+     *
+     * For example:
+     *
+     * Blocks non-members from accessing project routes.
+     * Blocks members from accessing admin or owner routes, etc.
+     */
     public function toAccessRole(): AccessRole
     {
         return match ($this) {

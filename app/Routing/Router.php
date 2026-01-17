@@ -54,8 +54,11 @@ final class Router
                     $pathParams = $routeInfo[2];
                     $routeReqAccess = $handler['accessRole'];
 
-                    // Checks if logged in
+                    // Checks if user is logged in for pages that require authentication
                     $this->authService->requireAuthentication($routeReqAccess);
+
+                    // Checks if the already logged-in user is visiting the loginPage OR signupPage, redirect to / (home)
+                    $this->authService->denyAuthenticatedOnAuthRoutes($handler['action'][1]);
 
                     // Checks when accessing a project-related route, if user has access to it with required role or higher
                     if ($pathParams['projectId'] ?? false)
@@ -67,7 +70,7 @@ final class Router
 
                     // If no auth was required OR user passed project auth guards
                     // AND CSRF token on POST is validated -> call handler
-                    call_user_func_array($handler['handler'], $pathParams);
+                    call_user_func_array($handler['action'], $pathParams);
                     break;
                 } catch (AuthException $e) {
                     $_SESSION['flash_errors'][] = $e->getMessage();
@@ -76,15 +79,16 @@ final class Router
                         case AuthException::REQUIRES_LOGIN:
                         case AuthException::CSRF_TOKEN_MISMATCH:
                             header('Location: /login', true, 302);
-                            break;
+                            exit;
                         case AuthException::PROJECT_ACCESS_DENIED:
                         case AuthException::PROJECT_INSUFFICIENT_PERMISSIONS:
+                        case AuthException::ALREADY_LOGGED_IN:
                             header('Location: /', true, 302);
-                            break;
+                            exit;
                         default:
                             header('Location: /login', true, 302);
+                            exit;
                     }
-                    exit;
                 }
         }
     }

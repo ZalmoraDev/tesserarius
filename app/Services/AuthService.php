@@ -108,6 +108,18 @@ final class AuthService implements AuthServiceInterface
         if ($routeReqRole->value > $userRole->value)
             throw new AuthException(AuthException::PROJECT_INSUFFICIENT_PERMISSIONS);
     }
+
+    /** Checks if user is already logged in when accessing login/signup pages
+     *
+     * Used by Router.php
+     * @throws AuthException if user is already logged in and tries to access login/signup pages
+     */
+    public function denyAuthenticatedOnAuthRoutes(String $routeName): void
+    {
+        if (($routeName === 'loginPage' || $routeName === 'signupPage') && isset($_SESSION['auth']['userId']))
+            throw new AuthException(AuthException::ALREADY_LOGGED_IN);
+    }
+
     // -------------------- Public Methods END --------------------
 
 
