@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
     <!-- Tailwind CSS -->
-    <script src="<?= $_ENV['SITE_URL'] ?>/assets/js/app.js"></script>
-    <link rel="stylesheet" href="<?= $_ENV['SITE_URL'] ?>/assets/styles/output.css">
+    <link rel="stylesheet" href="/assets/styles/output.css">
     <title><?= htmlspecialchars($titleRender ?? '') ?></title>
 </head>
 

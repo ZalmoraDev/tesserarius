@@ -53,11 +53,11 @@ final class ProjectController
                 $_POST['name'] ?? '',
                 $_POST['description'] ?? ''
             );
-            header("Location: /project/" . $id, true, 302);
+            header("Location: /project/view/" . $id, true, 302);
             exit;
         } catch (ProjectException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
-            header("Location: /", true, 302);
+            header("Location: /project/create", true, 302);
             exit;
         }
     }

@@ -44,10 +44,6 @@ final class ProjectService implements ProjectServiceInterface
         $name = trim($name);
         $description = trim($description);
 
-        // required fields are empty
-        if (empty($name) || empty($description))
-            throw new ProjectException(ProjectException::FIELDS_REQUIRED);
-
         // name/description do not meet format requirements
         if (!preg_match('/^.{3,32}$/', $name))
             throw new ProjectException(ProjectException::NAME_INVALID);
