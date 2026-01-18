@@ -72,10 +72,13 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
         return $invites;
     }
 
-    public function generateProjectInviteCode(int $projectId, ProjectInvite $invite): ?string
+    /** Uses Service made invitecode, contains projectId etc.
+     * Used by repository to create entry/entries in DB
+     */
+    public function createProjectInviteCodes(ProjectInvite $invite): bool
     {
         // TODO: Implement generateProjectInviteCode() method.
-        return '';
+        return false;
     }
 
     public function joinProjectByInviteCode(int $userId, string $inviteCode): bool
@@ -88,5 +91,19 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
     {
         // TODO: Implement removeProjectMember() method.
         return false;
+    }
+
+    public function addProjectMember(int $projectId, int $userId, UserRole $role): void
+    {
+        $stmt = $this->connection->prepare('
+        INSERT INTO project_members (project_id, user_id, role, joined_at)
+        VALUES (:projectId, :userId, :role, NOW())'
+        );
+
+        $stmt->execute([
+            'projectId' => $projectId,
+            'userId' => $userId,
+            'role' => $role->value
+        ]);
     }
 }

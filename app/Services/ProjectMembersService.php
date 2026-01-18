@@ -2,12 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Enums\UserRole;
-use App\Models\Project;
-use App\Repositories\ProjectMembersRepository;
 use App\Repositories\ProjectMembersRepositoryInterface;
-use App\Repositories\ProjectRepositoryInterface;
-use App\Services\Exceptions\ProjectException;
+use DateTimeImmutable;
 
 final class ProjectMembersService implements ProjectMembersServiceInterface
 {
@@ -28,11 +24,11 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
         return $this->projectMembersRepo->findProjectInviteCodes($projectId);
     }
 
-    public function generateProjectInviteCode(int $projectId, DateTimeImmutable $expiresAt, int $count): ?string
+    public function generateProjectInviteCode(int $projectId, DateTimeImmutable $expiresAt, int $count): bool
     {
-        $this->projectMembersRepo->generateProjectInviteCode($projectId, $expiresAt, $count);
+        //$this->projectMembersRepo->createProjectInviteCodes($projectId, $expiresAt, $count);
         // TODO: Implement generateProjectInviteCode() method.
-        return null;
+        return false;
     }
 
     public function joinProjectByInviteCode(int $userId, string $inviteCode): bool
