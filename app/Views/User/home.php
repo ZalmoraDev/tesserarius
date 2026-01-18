@@ -4,15 +4,20 @@ use App\Views\components\projectHomeTabComp;
 
 $projectTab = new projectHomeTabComp();
 
-// Ignore error $projects (injected by View::render)
-$projectsOwned = $projects['owned'];
-$projectsMember = $projects['member'];
+// injected by View::render
+$projectsOwned = $params['projects']['owned'] ?? null;
+$projectsMember = $params['projects']['member'] ?? null;
 
 $flash_errors = $_SESSION['flash_errors'] ?? [];
 unset($_SESSION['flash_errors']);
 
 $errorMessages = [
-// TODO: Add error messages
+        'already_logged_in' => 'You are already logged in,<br>
+                                redirecting to home page.',
+        'project_access_denied' => 'Access denied,<br>
+                                    you are not a member of this project.',
+        'project_insufficient_permissions' => 'Insufficient permissions,<br>
+                                               please try again.',
 ];
 ?>
 
@@ -30,7 +35,7 @@ if ($flash_errors)
             <h1>// Your projects [ <?= count($projectsOwned) ?> ]</h1>
         </div>
         <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
-            <?php // Generate 'Your Projects' tabs (User = UserRole::Owner)
+        <?php // Generate 'Your Projects' tabs (User = UserRole::Owner)
             foreach ($projectsOwned as $projectAdmin) {
                 echo $projectTab->printProjectsTabs($projectAdmin);
             }
@@ -46,7 +51,8 @@ if ($flash_errors)
         <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 
 
-            <?php // Generate 'Member Projects' tabs (User = UserRole::Admin | UserRole::Member)
+
+        <?php // Generate 'Member Projects' tabs (User = UserRole::Admin | UserRole::Member)
             foreach ($projectsMember as $projectMember) {
                 echo $projectTab->printProjectsTabs($projectMember);
             }

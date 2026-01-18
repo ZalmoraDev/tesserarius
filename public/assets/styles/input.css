@@ -29,16 +29,20 @@
     }
 
     .tess-btn-pri {
-        @apply w-full px-4 py-2 rounded-xl text-sm text-neutral-900  bg-amber-400  hover:bg-amber-500;
+        @apply cursor-pointer w-full px-4 py-2 rounded-xl text-sm text-neutral-900  bg-amber-400  hover:bg-amber-500;
     }
 
     .tess-btn-sec {
-        @apply w-full px-4 py-2 rounded-xl text-sm text-neutral-900  bg-neutral-400  hover:bg-neutral-500;
+        @apply cursor-pointer w-full px-4 py-2 rounded-xl text-sm text-neutral-900  bg-neutral-400  hover:bg-neutral-500;
     }
 
     .tess-project-card {
         @apply bg-neutral-800 text-neutral-400 border-neutral-700 border-2 rounded-xl p-2 w-48 h-32 overflow-hidden;
     }
+}
+
+input[type="datetime-local"] {
+    color-scheme: dark;
 }
 
 #toast {

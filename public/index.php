@@ -2,9 +2,9 @@
 
 use App\Routing\{Routes, Router};
 
-use App\Controllers\ {AuthController, UserController, ProjectController};
-use App\Services\{AuthService, ProjectService, TaskService};
-use App\Repositories\{AuthRepository, ProjectRepository, TaskRepository, UserRepository};
+use App\Controllers\{AuthController, ProjectMembersController, UserController, ProjectController};
+use App\Services\{AuthService, ProjectMembersService, ProjectService, TaskService};
+use App\Repositories\{AuthRepository, ProjectMembersRepository, ProjectRepository, TaskRepository, UserRepository};
 
 // -------------------- Headers, Session & .env config --------------------
 header("Access-Control-Allow-Methods: GET, POST"); // Only allow GET and POST requests.
@@ -36,25 +36,29 @@ $dotenv->required([
 // Repositories
 $authRepo = new AuthRepository();
 $projectRepo = new ProjectRepository();
+$projectMembersRepo = new ProjectMembersRepository();
 $taskRepo = new TaskRepository();
 $userRepo = new UserRepository();
 
 // Services
 $authService = new AuthService($authRepo, $userRepo);
-$projectService = new ProjectService($projectRepo);
+$projectService = new ProjectService($projectRepo, $projectMembersRepo);
+$projectMembersService = new ProjectMembersService($projectMembersRepo);
 $taskService = new TaskService($taskRepo);
 
 // Controllers
 $authController = new AuthController($authService);
-$projectController = new ProjectController($projectService, $taskService);
+$projectController = new ProjectController($projectService, $projectMembersService, $taskService);
+$projectMembersController = new ProjectMembersController($projectMembersService);
 $userController = new UserController($projectService);
 
 // -------------------- Routing setup & Router dispatch --------------------
 // Controller map for router
 $controllers = [
     'auth' => $authController,
+    'project' => $projectController,
+    'projectMembers' => $projectMembersController,
     'user' => $userController,
-    'project' => $projectController
 ];
 
 $routes = new Routes($controllers);

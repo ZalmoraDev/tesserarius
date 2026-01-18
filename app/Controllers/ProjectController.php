@@ -3,16 +3,18 @@
 namespace App\Controllers;
 
 use App\Core\View;
-use App\Services\{Exceptions\ProjectException, ProjectServiceInterface, TaskServiceInterface};
+use App\Services\{Exceptions\ProjectException, ProjectMembersService, ProjectServiceInterface, TaskServiceInterface};
 
 final class ProjectController
 {
     private ProjectServiceInterface $projectService;
+    private ProjectMembersService $projectMemberService;
     private TaskServiceInterface $taskService;
 
-    public function __construct(ProjectServiceInterface $projectService, TaskServiceInterface $taskService)
+    public function __construct(ProjectServiceInterface $projectService, ProjectMembersService $projectMembersService, TaskServiceInterface $taskService)
     {
         $this->projectService = $projectService;
+        $this->projectMemberService = $projectMembersService;
         $this->taskService = $taskService;
     }
 
@@ -24,7 +26,7 @@ final class ProjectController
         View::render('/Project/projectCreate.php', "Create Project" . View::addSiteName());
     }
 
-    /** GET /projects/{projectId}, View a specified project by its ID */
+    /** GET /project/view/{$projectId}, View a specified project by its ID */
     public function showView($projectId): void
     {
         $project = $this->projectService->getProjectByProjectId($projectId);
@@ -35,10 +37,21 @@ final class ProjectController
         View::render('/Project/projectView.php', $project->name . View::addSiteName(), ['project' => $project, 'allColumnTasksArray' => $allColumnTasksArray]);
     }
 
+    /** GET /project/edit/{$projectId}, View a specified project by its ID */
+    public function showEdit($projectId): void
+    {
+        $project = $this->projectService->getProjectByProjectId($projectId);
+        $members = $this->projectMemberService->getProjectMembersByProjectId($projectId);
+        $invites = $this->projectMemberService->getProjectInviteCodes($projectId);
+
+        View::render('/Project/projectEdit.php', $project->name . View::addSiteName(), ['project' => $project, 'members' => $members, 'invites' => $invites]);
+    }
+
     // -------------------- POST Requests --------------------
 
-    /** POST /projects, handles project creation form submission */
-    public function handleCreate() {
+    /** POST /project/create, handles project creation form submission */
+    public function handleCreate()
+    {
         try {
             $id = $this->projectService->createProject(
                 $_POST['name'] ?? '',
@@ -49,6 +62,38 @@ final class ProjectController
         } catch (ProjectException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
             header("Location: /project/create", true, 302);
+            exit;
+        }
+    }
+
+    /** POST /project/edit/{$projectId}, handles the creation of a project invite */
+    public function handleEdit(int $projectId)
+    {
+        try {
+            $this->projectService->editProject(
+                $projectId,
+                $_POST['name'] ?? '',
+                $_POST['description'] ?? '');
+        } catch (ProjectException $e) {
+            $_SESSION['flash_errors'][] = $e->getMessage();
+        }
+        header("Location: /project/edit/" . $projectId, true, 302);
+        exit;
+    }
+
+    /** POST /project/delete/{$projectId}, handles the creation of a project invite */
+    public function handleDeletion(int $projectId)
+    {
+        try {
+            $this->projectService->deleteProject(
+                $projectId,
+                $_POST['confirm_name'] ?? ''
+            );
+            header("Location: /", true, 302);
+            exit;
+        } catch (ProjectException $e) {
+            $_SESSION['flash_errors'][] = $e->getMessage();
+            header("Location: /project/edit/" . $projectId, true, 302);
             exit;
         }
     }

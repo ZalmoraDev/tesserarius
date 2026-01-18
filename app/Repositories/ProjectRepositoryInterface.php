@@ -6,10 +6,15 @@ use App\Models\Project;
 
 interface ProjectRepositoryInterface
 {
-    public function findProjectByProjectId(int $projectId): ?Project; // TODO: Replace with DTO
-    public function findProjectByName(string $name): ?Project; // TODO: Replace with DTO
+    public function findProjectByProjectId(int $projectId): ?Project;
+    public function findProjectNameByProjectId(int $projectId): ?string;
+
+    public function projectExistsByName(string $name): bool;
 
     public function findProjectListItemsByUserId(int $userId): array;
 
-    public function createProject(string $name, string $description): ?int;
+    public function createProject(int $ownerId, string $name, string $description): ?int;
+
+    public function editProject(int $projectId, string $name, string $description): bool;
+    public function deleteProject(int $projectId): bool;
 }

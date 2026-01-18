@@ -65,15 +65,15 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_one_owner_per_project
 -- START: Project Invites
 CREATE TABLE IF NOT EXISTS project_invites
 (
-    id         SERIAL PRIMARY KEY,
-    project_id INT         NOT NULL,
+    id          SERIAL PRIMARY KEY,
+    project_id  INT         NOT NULL,
 
-    token_hash CHAR(64)    NOT NULL,
-    expires_at TIMESTAMPTZ NOT NULL,
-    used_at    TIMESTAMPTZ NULL,
+    invite_code CHAR(16)    NOT NULL,
+    expires_at  TIMESTAMPTZ NOT NULL,
+    used_at     TIMESTAMPTZ NULL,
 
-    created_by INT         NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_by  INT         NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     CONSTRAINT fk_project FOREIGN KEY (project_id)
         REFERENCES projects (id)
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS project_invites
         ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_project_invites_token
-    ON project_invites (token_hash);
+    ON project_invites (invite_code);
 
 CREATE INDEX IF NOT EXISTS idx_project_invites_expires
     ON project_invites (expires_at)

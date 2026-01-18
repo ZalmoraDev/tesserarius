@@ -23,13 +23,15 @@ final class Routes
         return FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
             // Retrieve controllers and use them as conciser abbreviations in route handler definitions
             $auth = $this->controllers['auth'];
-            $user = $this->controllers['user'];
             $project = $this->controllers['project'];
+            $projectMembers = $this->controllers['projectMembers'];
+            $user = $this->controllers['user'];
 
             // Uses route aliases instead of full $r->addRoute(METHOD, ...)
             // AuthController routes
             $r->get('/login', $this->route([$auth, 'loginPage'], AccessRole::Anyone));
             $r->get('/signup', $this->route([$auth, 'signupPage'], AccessRole::Anyone));
+
             $r->post('/auth/login', $this->route([$auth, 'login'], AccessRole::Anyone));
             $r->post('/auth/signup', $this->route([$auth, 'signup'], AccessRole::Anyone));
             $r->post('/auth/logout', $this->route([$auth, 'logout'], AccessRole::Anyone));
@@ -43,6 +45,15 @@ final class Routes
             $r->post('/project/create', $this->route([$project, 'handleCreate'], AccessRole::Authenticated));
             $r->get('/project/view/{projectId:\d+}', $this->route([$project, 'showView'], AccessRole::Member));
             $r->get('/project/edit/{projectId:\d+}', $this->route([$project, 'showEdit'], AccessRole::Admin));
+            $r->post('/project/edit/{projectId:\d+}', $this->route([$project, 'handleEdit'], AccessRole::Admin));
+            $r->post('/project/delete/{projectId:\d+}', $this->route([$project, 'handleDeletion'], AccessRole::Owner));
+
+            // ProjectMembersController routes, all accessed on GET /project/edit/{projectId} page (showEdit)
+            $r->post('/project-members/create-invite/{projectId:\d+}', $this->route([$project, 'handleInviteCreation'], AccessRole::Admin));
+
+            $r->post('/project-members/promote/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberPromote'], AccessRole::Owner));
+            $r->post('/project-members/demote/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberDemote'], AccessRole::Owner));
+            $r->post('/project-members/remove/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberRemoval'], AccessRole::Admin));
         });
     }
 
