@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Enums\UserRole;
+use App\Models\ProjectInvite;
 use App\Repositories\ProjectMembersRepositoryInterface;
+use App\Services\Exceptions\ProjectMembersException;
 use DateTimeImmutable;
 
 final class ProjectMembersService implements ProjectMembersServiceInterface
@@ -24,16 +27,32 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
         return $this->projectMembersRepo->findProjectInviteCodes($projectId);
     }
 
-    public function generateProjectInviteCode(int $projectId, DateTimeImmutable $expiresAt, int $count): bool
+    public function generateProjectInviteCodes(int $projectId, DateTimeImmutable $expiresAt, int $count): void
     {
-        //$this->projectMembersRepo->createProjectInviteCodes($projectId, $expiresAt, $count);
-        // TODO: Implement generateProjectInviteCode() method.
-        return false;
+        $now = new DateTimeImmutable(); // Gets set in database to current time
+        $createdBy = $_SESSION['auth']['username'];
+        $invites = [];
+
+        // id is temporarily 0, since it will be auto-generated and replaced by the database
+        // Generates $count amount of invite codes to be created in the database
+        for ($i = 0; $i < $count; $i++)
+            $invites[] = new ProjectInvite(0, $projectId, $this->generateInviteCode(
+                16), $expiresAt, null, $createdBy, $now);
+
+        $this->projectMembersRepo->createProjectInviteCodes($invites);
+        // TODO: Error handling
+    }
+
+    public function removeProjectInviteCode(int $inviteId): void
+    {
+        $success = $this->projectMembersRepo->removeProjectInviteCode($inviteId);
+        if (!$success)
+            throw new ProjectMembersException(ProjectMembersException::INVITE_REMOVAL_FAILED);
     }
 
     public function joinProjectByInviteCode(int $userId, string $inviteCode): bool
     {
-        // TODO: Implement joinProjectByInviteCode() method.
+        //$this->projectMembersRepo->addProjectMember($projectId, (int)$_SESSION['auth']['userId'], UserRole::Member);
         return false;
     }
 
@@ -43,5 +62,15 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
         return false;
     }
 
+    /** Generates a random invite code of specified length. (16 characters) */
+    private function generateInviteCode(int $length): string
+    {
+        $symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        $max = strlen($symbols) - 1;
 
+        $code = '';
+        for ($i = 0; $i < $length; $i++)
+            $code .= $symbols[random_int(0, $max)];
+        return $code;
+    }
 }

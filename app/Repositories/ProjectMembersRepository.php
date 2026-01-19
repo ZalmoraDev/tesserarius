@@ -11,6 +11,7 @@ use PDO;
 
 final class ProjectMembersRepository extends BaseRepository implements ProjectMembersRepositoryInterface
 {
+    /** Fetches all members of a project by project ID. */
     public function findProjectMembersByProjectId(int $projectId): array
     {
         $stmt = $this->connection->prepare('
@@ -40,6 +41,7 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
         return $members;
     }
 
+    /** Fetches all invite codes for a project by project ID. */
     public function findProjectInviteCodes(int $projectId): array
     {
         $stmt = $this->connection->prepare('
@@ -72,25 +74,27 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
         return $invites;
     }
 
-    /** Uses Service made invitecode, contains projectId etc.
-     * Used by repository to create entry/entries in DB
-     */
-    public function createProjectInviteCodes(ProjectInvite $invite): bool
+    /** Uses Service made invite-code(s), which contains projectId, creator etc.
+     * Used by repository to create entry/entries in DB */
+    public function createProjectInviteCodes(array $invites): bool
     {
-        // TODO: Implement generateProjectInviteCode() method.
-        return false;
-    }
+        $stmt = $this->connection->prepare('
+        INSERT INTO project_invites (project_id, invite_code, expires_at, created_by, created_at)
+        VALUES (:projectId, :inviteCode, :expiresAt, 
+            (SELECT id FROM users WHERE username = :createdBy), :createdAt)'
+        );
 
-    public function joinProjectByInviteCode(int $userId, string $inviteCode): bool
-    {
-        // TODO: Implement joinProjectByInviteCode() method.
-        return false;
-    }
+        foreach ($invites as $invite) {
+            $stmt->execute([
+                'projectId' => $invite->projectId,
+                'inviteCode' => $invite->inviteCode,
+                'expiresAt' => $invite->expiresAt->format('Y-m-d H:i:s'),
+                'createdBy' => $invite->createdBy,
+                'createdAt' => $invite->createdAt->format('Y-m-d H:i:s')
+            ]);
+        }
 
-    public function removeProjectMember(int $projectId, int $userId): bool
-    {
-        // TODO: Implement removeProjectMember() method.
-        return false;
+        return true;
     }
 
     public function addProjectMember(int $projectId, int $userId, UserRole $role): void
@@ -105,5 +109,25 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
             'userId' => $userId,
             'role' => $role->value
         ]);
+    }
+
+    public function removeProjectMember(int $projectId, int $userId): bool
+    {
+        // TODO: Implement removeProjectMember() method.
+        return false;
+    }
+
+    public function removeProjectInviteCode(int $inviteId): bool
+    {
+        $stmt = $this->connection->prepare('
+        DELETE FROM project_invites
+        WHERE id = :inviteId'
+        );
+
+        $stmt->execute([
+            'inviteId' => $inviteId
+        ]);
+
+        return $stmt->rowCount() > 0;
     }
 }

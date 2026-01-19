@@ -28,7 +28,7 @@ final readonly class ProjectInvite implements JsonSerializable
             'projectId' => $this->projectId,
             'inviteCode' => $this->inviteCode,
             'expiresAt' => $this->expiresAt->format(DATE_ATOM),
-            'usedAt' => $this->activatedAt?->format(DATE_ATOM),
+            'activatedAt' => $this->activatedAt?->format(DATE_ATOM),
             'createdBy' => $this->createdBy,
             'createdAt' => $this->createdAt->format(DATE_ATOM),
         ];

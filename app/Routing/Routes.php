@@ -49,11 +49,13 @@ final class Routes
             $r->post('/project/delete/{projectId:\d+}', $this->route([$project, 'handleDeletion'], AccessRole::Owner));
 
             // ProjectMembersController routes, all accessed on GET /project/edit/{projectId} page (showEdit)
-            $r->post('/project-members/create-invite/{projectId:\d+}', $this->route([$project, 'handleInviteCreation'], AccessRole::Admin));
+            $r->post('/project-members/join-project', $this->route([$projectMembers, 'handleJoinByInviteCode'], AccessRole::Authenticated));
+            $r->post('/project-members/create-invites/{projectId:\d+}', $this->route([$projectMembers, 'handleInviteCreation'], AccessRole::Admin));
+            $r->post('/project-members/remove-invite/{inviteId:\d+}', $this->route([$projectMembers, 'handleInviteDeletion'], AccessRole::Admin));
 
+            $r->post('/project-members/remove/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberRemoval'], AccessRole::Admin));
             $r->post('/project-members/promote/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberPromote'], AccessRole::Owner));
             $r->post('/project-members/demote/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberDemote'], AccessRole::Owner));
-            $r->post('/project-members/remove/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberRemoval'], AccessRole::Admin));
         });
     }
 

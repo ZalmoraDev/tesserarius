@@ -77,9 +77,9 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
         $stmt = $this->connection->prepare('
         SELECT p.id, p.name, p.description, u.username AS owner_name, pm.role
         FROM projects p
-            INNER JOIN project_members pm
+            JOIN project_members pm
                 ON p.id = pm.project_id
-            INNER JOIN users u
+            JOIN users u
                 ON p.owner_id = u.id
         WHERE pm.user_id = :userId'
         );

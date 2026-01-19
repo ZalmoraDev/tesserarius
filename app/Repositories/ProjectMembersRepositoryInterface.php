@@ -11,10 +11,11 @@ use DateTimeImmutable;
 interface ProjectMembersRepositoryInterface
 {
     public function findProjectMembersByProjectId(int $projectId): ?array; // array of ProjectMemberDto
+
     public function findProjectInviteCodes(int $projectId): ?array;
+    public function createProjectInviteCodes(array $invites): bool;
+    public function removeProjectInviteCode(int $inviteId): bool;
 
     public function addProjectMember(int $projectId, int $userId, UserRole $role): void;
-    public function createProjectInviteCodes(ProjectInvite $invite): bool;
-    public function joinProjectByInviteCode(int $userId, string $inviteCode): bool;
     public function removeProjectMember(int $projectId, int $userId): bool;
 }

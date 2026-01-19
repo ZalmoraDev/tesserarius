@@ -36,7 +36,7 @@ if ($flash_errors)
             <!-- TOP LEFT | Project Invites -->
             <div class="tess-base-container-md gap-4 flex flex-col w-full items-center">
                 <h2 class="text-2xl">Project Invites</h2>
-                <form action="/project/create-invite/<?= $project->id ?>" method="POST" class="w-full">
+                <form action="/project-members/create-invites/<?= $project->id ?>" method="POST" class="w-full">
                     <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
 
                     <table class="w-full border-collapse">
@@ -53,11 +53,11 @@ if ($flash_errors)
                         <tbody>
                         <?php foreach ($invites as $invite): ?>
                             <tr class="border-b">
-                                <td class="p-2"><?= htmlspecialchars($invite->token_hash) ?></td>
-                                <td class="p-2"><?= htmlspecialchars($invite->creator_name) ?></td>
-                                <td class="p-2"><?= htmlspecialchars($invite->created_at) ?></td>
-                                <td class="p-2"><?= htmlspecialchars($invite->expires_at) ?></td>
-                                <td class="p-2"><?= $invite->used_at ? htmlspecialchars($invite->used_at) : '-' ?></td>
+                                <td class="p-2"><?= htmlspecialchars($invite->inviteCode) ?></td>
+                                <td class="p-2"><?= htmlspecialchars($invite->createdBy) ?></td>
+                                <td class="p-2"><?= htmlspecialchars($invite->createdAt->format('Y-m-d H:i')) ?></td>
+                                <td class="p-2"><?= htmlspecialchars($invite->expiresAt->format('Y-m-d H:i')) ?></td>
+                                <td class="p-2"><?= $invite->activatedAt ? htmlspecialchars($invite->activatedAt->format('Y-m-d H:i')) : '-' ?></td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
