@@ -16,11 +16,4 @@ final class AuthException extends \RuntimeException
     public const string ALREADY_LOGGED_IN = 'You are already logged in.';
     public const string PROJECT_ACCESS_DENIED = 'You do not have access to this project.';
     public const string PROJECT_INSUFFICIENT_PERMISSIONS = 'You do not have sufficient permissions for this action.';
-
-    /** Get reason in router to split redirect logic
-     * into / (home) or /login */
-    public function reason(): string
-    {
-        return $this->getMessage();
-    }
 }

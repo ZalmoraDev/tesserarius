@@ -74,8 +74,7 @@ final class Router
                     break;
                 } catch (AuthException $e) {
                     $_SESSION['flash_errors'][] = $e->getMessage();
-                    // Retrieve reason for exception and redirect between /login or / (home) depending on case
-                    switch ($e->reason()) {
+                    switch ($e->getMessage()) {
                         case AuthException::REQUIRES_LOGIN:
                         case AuthException::CSRF_TOKEN_MISMATCH:
                             header('Location: /login', true, 302);
