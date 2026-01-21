@@ -16,15 +16,6 @@ $projectTask = new projectTaskComp();
 
 $flash_errors = $_SESSION['flash_errors'] ?? [];
 unset($_SESSION['flash_errors']);
-
-$errorMessages = [
-        'already_logged_in' => 'You are already logged in,<br>
-                                redirecting to home page.',
-        'project_access_denied' => 'Access denied,<br>
-                                    you are not a member of this project.',
-        'project_insufficient_permissions' => 'Insufficient permissions,<br>
-                                               please try again.',
-];
 ?>
 
 <body class="tess-base-body flex flex-col">

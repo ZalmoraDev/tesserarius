@@ -4,13 +4,6 @@ use App\Core\Csrf;
 
 $flash_errors = $_SESSION['flash_errors'] ?? [];
 unset($_SESSION['flash_errors']);
-
-$errorMessages = [
-        'name_invalid' => 'Project name must be between 3 and 32 characters.',
-        'description_invalid' => 'Description must be between 0 and 128 characters.',
-        'name_duplicate' => 'You already have a project with this name.',
-        'creation_failed' => 'Project creation failed. Please try again later.',
-];
 ?>
 
 <body class="tess-base-body flex flex-col">

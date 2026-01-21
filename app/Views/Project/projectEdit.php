@@ -9,13 +9,6 @@ $invites = $params['invites'] ?? [];
 
 $flash_errors = $_SESSION['flash_errors'] ?? [];
 unset($_SESSION['flash_errors']);
-
-$errorMessages = [
-        'name_invalid' => 'Project name must be between 3 and 32 characters.',
-        'description_invalid' => 'Description must be between 0 and 128 characters.',
-        'name_duplicate' => 'You already have a project with this name.',
-        'creation_failed' => 'Project creation failed. Please try again later.',
-];
 ?>
 
 <body class="tess-base-body flex flex-col">
@@ -70,7 +63,7 @@ if ($flash_errors)
                         </div>
                         <div class="flex flex-col w-32">
                             <label for="count" class="text-sm mb-1">Count</label>
-                            <input type="number" id="count" name="count" min="1" max="25" value="1" required
+                            <input type="number" id="count" name="count" min="1" max="10" value="1" required
                                    class="tess-input-md w-full">
                         </div>
                     </div>
@@ -166,7 +159,8 @@ if ($flash_errors)
                 <form action="/project/delete/<?= $project->id ?>" method="POST" class="w-full">
                     <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                     <p> Repeat project name to confirm deletion: </p>
-                    <input type="text" class="tess-input-md w-full" placeholder="Project Name" name="confirm_name" required>
+                    <input type="text" class="tess-input-md w-full" placeholder="Project Name" name="confirm_name"
+                           required>
                     <button type="submit"
                             class="cursor-pointer tess-btn-pri bg-red-600 hover:bg-red-700 text-white font-bold w-full mt-4">
                         CONFIRM DELETION

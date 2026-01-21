@@ -4,27 +4,6 @@ use App\Core\Csrf;
 
 $flash_errors = $_SESSION['flash_errors'] ?? [];
 unset($_SESSION['flash_errors']);
-
-$errorMessages = [
-        'fields_required' => 'All fields are required,<br>
-                              please try again.',
-        'username_invalid' => 'Your provided username is not valid,<br>
-                               please try again.',
-        'username_taken' => 'Your provided username is already taken,<br>
-                             please try again.',
-        'email_invalid' => 'Your provided email is not valid,<br>
-                            please try again.',
-        'email_taken' => 'Your provided email is already taken,<br>
-                          please try again.',
-        'password_invalid' => 'Your password must be in the following format:<br>
-                               at least one lowercase, one uppercase, one digit, no spaces<br>
-                               length of 12-64,<br>
-                               please try again.',
-        'password_mismatch' => 'Your passwords did not match,<br>
-                                please try again.',
-        'registration_failed' => 'Registration failed due to a server error,<br>
-                                  please try again later.',
-];
 ?>
 
 <body class="tess-base-body">
@@ -40,10 +19,8 @@ $errorMessages = [
         <!-- START Error Messages, $flash_errors set in calling controller -->
         <?php if ($flash_errors): ?>
             <div class="text-red-600 text-center space-y-2">
-                <?php foreach ($flash_errors as $e): ?>
-                    <?php if (isset($errorMessages[$e])): ?>
-                        <span><?= $errorMessages[$e] ?></span>
-                    <?php endif; ?>
+                <?php foreach ($flash_errors as $message): ?>
+                    <span><?= $message ?></span>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>

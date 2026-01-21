@@ -2,17 +2,16 @@
 
 namespace App\Services\Exceptions;
 
-/** Exceptions for authentication or authorization errors. */
+/** Exceptions for project-related errors. */
 final class ProjectException extends \RuntimeException
 {
-    // NAME_INVALID is based on duplicate projectname of a user's projects
-    public const string NAME_INVALID = 'name_invalid';
-    public const string NAME_TAKEN = 'name_duplicate';
+    public const string NAME_INVALID = 'The project name is invalid,<br>please try again.';
+    public const string NAME_TAKEN = 'A project with this name already exists,<br>please choose a different name.';
 
-    public const string DESCRIPTION_INVALID = 'description_invalid';
-    public const string REGISTRATION_FAILED = 'creation_failed';
-    public const string EDIT_FAILED = 'edit_failed';
-    public const string DELETION_FAILED = 'deletion_failed';
-    public const string PROJECT_NOT_FOUND = 'project_not_found';
-    public const string DELETION_NAME_MISMATCH = 'deletion_name_mismatch';
+    public const string DESCRIPTION_INVALID = 'The project description is invalid,<br>please try again.';
+    public const string REGISTRATION_FAILED = 'Failed to create the project,<br>please try again later.';
+    public const string EDIT_FAILED = 'Failed to update the project,<br>please try again later.';
+    public const string DELETION_FAILED = 'Failed to delete the project,<br>please try again later.';
+    public const string PROJECT_NOT_FOUND = 'The requested project was not found.';
+    public const string DELETION_NAME_MISMATCH = 'The project name does not match,<br>please try again.';
 }

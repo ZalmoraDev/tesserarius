@@ -6,25 +6,19 @@ namespace App\Services\Exceptions;
 final class AuthException extends \RuntimeException
 {
     // Not logged in
-    public const string INVALID_CREDENTIALS = 'invalid_credentials';
-    public const string REQUIRES_LOGIN = 'requires_login';
+    public const string INVALID_CREDENTIALS = 'Invalid username or password,<br>please try again.';
+    public const string REQUIRES_LOGIN = 'You must log in using an account,<br>please try again.';
 
     // Login not known
-    public const string CSRF_TOKEN_MISMATCH = 'csrf_token_mismatch';
+    public const string CSRF_TOKEN_MISMATCH = 'Session expired,<br>please try again.';
 
     // logged in
-    public const string ALREADY_LOGGED_IN = 'already_logged_in';
-    public const string PROJECT_ACCESS_DENIED = 'project_access_denied';
-    public const string PROJECT_INSUFFICIENT_PERMISSIONS = 'project_insufficient_permissions';
+    public const string ALREADY_LOGGED_IN = 'You are already logged in.';
+    public const string PROJECT_ACCESS_DENIED = 'You do not have access to this project.';
+    public const string PROJECT_INSUFFICIENT_PERMISSIONS = 'You do not have sufficient permissions for this action.';
 
-    public function __construct(string $reason)
-    {
-        parent::__construct($reason);
-    }
-
-    /** Get the reason for the exception,
-     * used for redirection to /login or / (home) depending on if the user was authenticated, used in the router.
-     */
+    /** Get reason in router to split redirect logic
+     * into / (home) or /login */
     public function reason(): string
     {
         return $this->getMessage();

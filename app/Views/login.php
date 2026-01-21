@@ -4,15 +4,6 @@ use App\Core\Csrf;
 
 $flash_errors = $_SESSION['flash_errors'] ?? [];
 unset($_SESSION['flash_errors']);
-
-$errorMessages = [
-        'invalid_credentials' => 'Invalid username or password,<br>
-                                  please try again.',
-        'requires_login' => 'You must log in using an account,<br>
-                             please try again.',
-        'csrf_token_mismatch' => 'Session expired,<br>
-                                  please try again.'
-];
 ?>
 
 <body class="tess-base-body">
@@ -28,10 +19,8 @@ $errorMessages = [
         <!-- START Error Messages, $flash_errors set in calling controller -->
         <?php if ($flash_errors): ?>
             <div class="text-red-600 text-center space-y-2">
-                <?php foreach ($flash_errors as $e): ?>
-                    <?php if (isset($errorMessages[$e])): ?>
-                        <span><?= $errorMessages[$e] ?></span>
-                    <?php endif; ?>
+                <?php foreach ($flash_errors as $message): ?>
+                    <span><?= $message ?></span>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
