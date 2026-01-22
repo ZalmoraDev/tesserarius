@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Controllers\ProjectController;
 use App\Models\Enums\UserRole;
 use App\Models\Project;
 use App\Repositories\ProjectMembersRepositoryInterface;
@@ -27,12 +28,11 @@ final class ProjectService implements ProjectServiceInterface
 
         $owned = [];  // Owner
         $member = []; // Admin + Member
-        foreach ($projects as $project) {
+        foreach ($projects as $project)
             if ($project->userRole === UserRole::Owner)
                 $owned[] = $project;
             else
                 $member[] = $project;
-        }
 
         return [
             'owned' => $owned, // Your projects
@@ -40,14 +40,20 @@ final class ProjectService implements ProjectServiceInterface
         ];
     }
 
-    public function getProjectByProjectId(int $projectId): ?Project
+    /** Returns a project by its ID.
+     * @throws ProjectException if the project is not found. */
+    public function getProjectByProjectId(int $projectId): Project
     {
-        return $this->projectRepo->findProjectByProjectId($projectId);
+        $project = $this->projectRepo->findProjectByProjectId($projectId);
+        if ($project === null)
+            throw new ProjectException(ProjectException::PROJECT_NOT_FOUND);
+
+        return $project;
     }
 
     /** Creates a new project for the currently logged-in user.
-     * Returns the new project's ID for the controller to redirect to the new project page. */
-    public function createProject(string $name, string $description): ?int
+     * And returns its ID to the ProjectController for redirecting to the new project's page. */
+    public function createProject(string $name, string $description): int
     {
         $name = trim($name);
         $description = trim($description);
@@ -69,13 +75,13 @@ final class ProjectService implements ProjectServiceInterface
             throw new ProjectException(ProjectException::REGISTRATION_FAILED);
 
         // If no exceptions were thrown, meaning the project was created successfully
-        // -> add this user as 'Owner' to project_members DB table
+        // -> add this user as 'Owner' to 'project_members' DB table
         $this->projectMembersRepo->addProjectMember($newProjectId, (int)$_SESSION['auth']['userId'], UserRole::Owner);
         return $newProjectId;
     }
 
     /** Edits an existing project's name and description.
-     * Throws exceptions if validation fails or the edit operation fails. */
+     * @throws ProjectException if validation fails or the edit operation fails. */
     public function editProject(int $projectId, string $name, string $description): void
     {
         $name = trim($name);
@@ -97,6 +103,8 @@ final class ProjectService implements ProjectServiceInterface
             throw new ProjectException(ProjectException::EDIT_FAILED);
     }
 
+    /** Deletes a project after confirming the project name.
+     * @Throws ProjectException if validation fails or the deletion operation fails. */
     public function deleteProject(int $projectId, string $confirmName): void
     {
         // We could fetch the project, and it's name through the view,
@@ -105,16 +113,13 @@ final class ProjectService implements ProjectServiceInterface
 
         if ($projectName === null)
             throw new ProjectException(ProjectException::PROJECT_NOT_FOUND);
-
         if ($confirmName !== $projectName)
             throw new ProjectException(ProjectException::DELETION_NAME_MISMATCH);
 
         // failed attempt deleting the project
-        // NOTE: No authorization check for project owner,
-        // since this is taken care of in the routes AccessRole::Owner routes.php
-        // Which is evaluated before reaching the calling controller and service in router.php
         $success = $this->projectRepo->deleteProject($projectId);
         if (!$success)
             throw new ProjectException(ProjectException::DELETION_FAILED);
+        // Note: Route to POST this request is for 'Owner' only, but repository also checks for this to be sure
     }
 }

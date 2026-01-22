@@ -21,7 +21,7 @@ if ($flash_errors)
 ?>
 
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto">
-    <div class=" gap-4 flex flex-col mt-4 ">
+    <div class=" gap-4 flex flex-col mt-4">
         <div class="tess-base-container-sm w-full">
             <h1>// Your projects [ <?= count($projectsOwned) ?> ]</h1>
         </div>

@@ -17,23 +17,30 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
         $this->projectMembersRepo = $projectMembersRepo;
     }
 
-    public function getProjectMembersByProjectId(int $projectId): ?array
+    /** Returns array of 'ProjectMemberDto's by $projectId */
+    public function getProjectMembersByProjectId(int $projectId): array
     {
         return $this->projectMembersRepo->findProjectMembersByProjectId($projectId);
     }
 
-    public function getProjectInviteCodes(int $projectId): ?array
+    /** Returns array of 'ProjectInvite's by $projectId */
+    public function getProjectInviteCodes(int $projectId): array
     {
         return $this->projectMembersRepo->findProjectInviteCodes($projectId);
     }
 
+
+    // TODO: Add exceptions
+
+    /** Generates one-or-more $projectInviteCode's for given $projectId,
+     * with expiration date and total amount to generate. */
     public function generateProjectInviteCodes(int $projectId, DateTimeImmutable $expiresAt, int $count): void
     {
         $now = new DateTimeImmutable(); // Gets set in database to current time
         $createdBy = $_SESSION['auth']['username'];
         $invites = [];
 
-        // id is temporarily 0, since it will be auto-generated and replaced by the database
+        // id is temporarily 0, automatically set by the database.
         // Generates $count amount of invite codes to be created in the database
         for ($i = 0; $i < $count; $i++)
             $invites[] = new ProjectInvite(0, $projectId, $this->generateInviteCode(
@@ -43,6 +50,8 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
         // TODO: Error handling
     }
 
+    /** Removes a project invite code by its ID.
+     * @throws ProjectMembersException if removal fails. */
     public function removeProjectInviteCode(int $inviteId): void
     {
         $success = $this->projectMembersRepo->removeProjectInviteCode($inviteId);
@@ -52,6 +61,8 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
 
     public function joinProjectByInviteCode(int $userId, string $inviteCode): bool
     {
+        // TODO: Implement joinProjectByInviteCode() method.
+
         //$this->projectMembersRepo->addProjectMember($projectId, (int)$_SESSION['auth']['userId'], UserRole::Member);
         return false;
     }
@@ -62,7 +73,7 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
         return false;
     }
 
-    /** Generates a random invite code of specified length. (16 characters) */
+    /** Generates a random invite code of specified length. (always 16 characters) */
     private function generateInviteCode(int $length): string
     {
         $symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

@@ -16,9 +16,4 @@ final class ValidationException extends \RuntimeException
     public const string PASSWORD_MISMATCH = 'Your passwords did not match,<br>please try again.';
 
     public const string REGISTRATION_FAILED = 'Registration failed due to a server error,<br>please try again later.';
-
-    public function __construct(string $message)
-    {
-        parent::__construct($message);
-    }
 }

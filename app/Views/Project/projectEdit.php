@@ -21,7 +21,7 @@ if ($flash_errors)
 
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto relative">
     <div class="flex flex-col gap-6">
-        <h1 class="tess-base-container-sm text-2xl w-full max-w-full">Edit project: <?= $project->name ?></h1>
+        <h1 class="tess-base-container-sm text-2xl w-full max-w-full mt-4">Edit project: <?= $project->name ?></h1>
 
         <!-- 2x2 / 1x4 GRID -->
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
