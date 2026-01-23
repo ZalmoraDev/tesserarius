@@ -27,6 +27,10 @@ final class AuthService implements AuthServiceInterface
     public function login(string $email, string $password): void
     {
         $auth = $this->authRepo->findAuthByEmail($email);
+
+        if ($auth === null)
+            throw new AuthException(AuthException::INVALID_CREDENTIALS);
+
         if (!password_verify($password, $auth->passwordHash))
             throw new AuthException(AuthException::INVALID_CREDENTIALS);
 
