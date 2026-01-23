@@ -35,7 +35,7 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
                 $row['username'],
                 $row['email'],
                 UserRole::from($row['role']),
-                $row['joined_at']
+                new DateTimeImmutable($row['joined_at'])
             );
         }
         return $members;

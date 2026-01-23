@@ -6,6 +6,7 @@ use App\Dto\ProjectListItemDto;
 use App\Models\Enums\UserRole;
 use App\Models\Project;
 use PDO;
+use DateTimeImmutable;
 
 final class ProjectRepository extends BaseRepository implements ProjectRepositoryInterface
 {
@@ -25,11 +26,11 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ? new Project(
-            $row["id"],
-            $row["owner_id"],
+            (int)$row["id"],
+            (int)$row["owner_id"],
             $row["name"],
             $row["description"],
-            $row["created_at"]
+            new DateTimeImmutable($row["created_at"])
         ) : null;
     }
 

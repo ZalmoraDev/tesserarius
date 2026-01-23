@@ -3,6 +3,7 @@
 namespace App\Dto;
 
 use App\Models\Enums\UserRole;
+use DateTimeImmutable;
 
 /**
  * BASE: Project model
@@ -22,7 +23,7 @@ final readonly class ProjectMemberDto
         public string   $username, // JOINed from users table
         public string   $userEmail, // JOINed from users table
         public UserRole $userRole,
-        public string   $joinedAt, // TODO: Change to DateTime
+        public DateTimeImmutable $joinedAt
     )
     {
     }

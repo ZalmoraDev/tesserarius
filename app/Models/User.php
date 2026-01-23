@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use DateTimeImmutable;
+
 /** 1:1 correlation to 'users' table in the database, */
 final readonly class User
 {
@@ -10,7 +12,7 @@ final readonly class User
         public string $username,
         public string $passwordHash,
         public string $email,
-        public string $createdAt //TODO: Change to DateTime
+        public DateTimeImmutable $createdAt
     )
     {
     }

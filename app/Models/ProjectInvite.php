@@ -14,7 +14,7 @@ final readonly class ProjectInvite implements JsonSerializable
         public string             $inviteCode,
         public DateTimeImmutable  $expiresAt,
         public ?DateTimeImmutable $activatedAt,
-        public string             $createdBy,
+        public string                $createdBy,
         public DateTimeImmutable  $createdAt,
     )
     {
