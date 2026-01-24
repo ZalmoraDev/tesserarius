@@ -5,6 +5,7 @@ namespace App\Models;
 use DateTimeImmutable;
 use JsonSerializable;
 
+/** 1:1 mapping to 'projects' DB table */
 final readonly class Project implements JsonSerializable
 {
     public function __construct(

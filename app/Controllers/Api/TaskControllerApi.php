@@ -6,6 +6,10 @@ use App\Services\TaskService;
 
 class TaskControllerApi
 {
+
+    // TODO: Completely rework
+    // add dependency injection
+
     private TaskService $taskService;
 
     public function __construct()

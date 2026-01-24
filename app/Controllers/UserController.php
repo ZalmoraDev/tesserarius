@@ -18,12 +18,12 @@ final class UserController
     /** GET /, Home page for logged-in users */
     public function homePage()
     {
-        // TODO: REWORK
-
         // Owner        = owned  = "Your Projects"
         // Member/Admin = member = "Member Projects"
         $projects = $this->projectService->getHomeProjects((int)$_SESSION['auth']['userId']);
-        View::render('/User/home.php', "Home" . View::addSiteName(), ['projects' => $projects]);
+        View::render('/User/home.php', "Home" . View::addSiteName(), [
+            'projects' => $projects
+        ]);
     }
 
     public function settingsPage()

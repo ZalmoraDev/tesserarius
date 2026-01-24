@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Task;
+use App\Models\ProjectTask;
 use PDO;
 
 final class TaskRepository extends BaseRepository implements TaskRepositoryInterface
@@ -29,7 +29,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
 
                 while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     // Create a task object for each task in current column
-                    $task = new Task(
+                    $task = new ProjectTask(
                         $data["id"],
                         $data["project_id"],
                         $data["title"],

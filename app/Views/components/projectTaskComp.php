@@ -2,12 +2,12 @@
 
 namespace App\Views\components;
 
-use App\Models\Task;
+use App\Models\ProjectTask;
 
 // TODO: Distgusting code, needs to be redone
 class projectTaskComp
 {
-    public function printProjectTask(Task $task): string
+    public function printProjectTask(ProjectTask $task): string
     {
         $title = htmlspecialchars($task->title ?? "");
         $description = htmlspecialchars($task->description ?? "");

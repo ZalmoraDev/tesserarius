@@ -6,7 +6,7 @@ use DateTime;
 use DateTimeImmutable;
 use JsonSerializable;
 
-final readonly class Task implements JsonSerializable
+final readonly class ProjectTask implements JsonSerializable
 {
     public function __construct(
         public int    $id,

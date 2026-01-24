@@ -4,7 +4,7 @@ namespace App\Models;
 
 use DateTimeImmutable;
 
-/** 1:1 correlation to 'users' table in the database, */
+/** 1:1 mapping to 'users' DB table */
 final readonly class User
 {
     public function __construct(

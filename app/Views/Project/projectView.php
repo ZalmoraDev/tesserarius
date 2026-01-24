@@ -5,6 +5,8 @@ use App\Views\components\projectTaskComp;
 // TODO: REMOVE THIS GLOBAL
 global $allColumnTasksArray;
 
+// TODO: Use ViewModel
+
 // REFACTOR: Move logic to controller params?
 $tasks1Backlog = $allColumnTasksArray[0] ?? [];
 $tasks2ToDo = $allColumnTasksArray[1] ?? [];

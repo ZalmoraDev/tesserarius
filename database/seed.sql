@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users
 (
     id            SERIAL PRIMARY KEY,
     username      VARCHAR(32)  NOT NULL UNIQUE,
-    password_hash TEXT         NOT NULL, -- Ensures no padding
+    password_hash TEXT         NOT NULL, -- Ensures no padding compared to VARCHAR
     email         VARCHAR(256) NOT NULL UNIQUE,
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
@@ -22,10 +22,10 @@ CREATE TABLE IF NOT EXISTS users
 CREATE TABLE IF NOT EXISTS projects
 (
     id          SERIAL PRIMARY KEY,
-    owner_id    INT          NOT NULL REFERENCES users (id), -- Set since only one owner per project, easier access
-    name        VARCHAR(32)  NOT NULL UNIQUE,
-    description VARCHAR(256) NOT NULL,
-    created_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+    owner_id    INT         NOT NULL REFERENCES users (id), -- Set since only one owner per project, easier access
+    name        VARCHAR(32) NOT NULL UNIQUE,
+    description VARCHAR(256),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_projects_owner_id
     ON projects (owner_id);

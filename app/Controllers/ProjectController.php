@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\View;
+use App\ViewModels\ProjectEditViewModel;
 use App\Services\{Exceptions\ProjectException, ProjectMembersService, ProjectServiceInterface, TaskServiceInterface};
 
 final class ProjectController
@@ -31,21 +32,26 @@ final class ProjectController
     {
         $project = $this->projectService->getProjectByProjectId($projectId);
 
-        // Get all tasks for the project (2D array of tasks, holding columns and their tasks)
+        // TODO: Rework this completely
         $allColumnTasksArray = $this->taskService->getAllColumnTasks($projectId);
 
-        View::render('/Project/projectView.php', $project->name . View::addSiteName(), ['project' => $project, 'allColumnTasksArray' => $allColumnTasksArray]);
+        View::render('/Project/projectView.php', $project->name . View::addSiteName(), [
+            'project' => $project,
+            'allColumnTasksArray' => $allColumnTasksArray
+        ]);
     }
 
     /** GET /project/edit/{$projectId}, View a specified project by its ID */
     public function showEdit($projectId): void
     {
-        $project = $this->projectService->getProjectByProjectId($projectId);
-        $members = $this->projectMemberService->getProjectMembersByProjectId($projectId);
-        $invites = $this->projectMemberService->getProjectInviteCodes($projectId);
-
-        View::render('/Project/projectEdit.php', $project->name . View::addSiteName(), ['project' => $project, 'members' => $members, 'invites' => $invites]);
+        $vm = new ProjectEditViewModel(
+            project: $this->projectService->getProjectByProjectId($projectId),
+            members: $this->projectMemberService->getProjectMembersByProjectId($projectId),
+            invites: $this->projectMemberService->getProjectInviteCodes($projectId)
+        );
+        View::render('/Project/projectEdit.php', $vm->project->name . View::addSiteName(), ['vm' => $vm]);
     }
+
 
     // -------------------- POST Requests --------------------
 

@@ -4,7 +4,8 @@ use App\Views\components\projectHomeTabComp;
 
 $projectTab = new projectHomeTabComp();
 
-// injected by View::render
+// variables injected and path redirected by
+// UserController::homeView
 $projectsOwned = $params['projects']['owned'] ?? null;
 $projectsMember = $params['projects']['member'] ?? null;
 
