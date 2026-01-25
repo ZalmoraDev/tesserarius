@@ -4,7 +4,10 @@ use App\Core\Csrf;
 
 // variables injected and path redirected by
 // ProjectController::editProjectView
-$vm = $params['vm'] ?? null;
+$project = $params['project'] ?? null;
+$members = $params['members'] ?? [];
+$invites = $params['invites'] ?? [];
+
 $flash_errors = $_SESSION['flash_errors'] ?? [];
 unset($_SESSION['flash_errors']);
 ?>
@@ -21,7 +24,7 @@ if ($flash_errors)
 
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto relative">
     <div class="flex flex-col gap-6">
-        <h1 class="tess-base-container-sm text-2xl w-full max-w-full mt-4">Edit project: <?= $vm->project->name ?></h1>
+        <h1 class="tess-base-container-sm text-2xl w-full max-w-full mt-4">Edit project: <?= $project->name ?></h1>
 
         <!-- 2x2 / 1x4 GRID -->
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
@@ -29,7 +32,7 @@ if ($flash_errors)
             <!-- TOP LEFT | Project Invites -->
             <div class="tess-base-container-md gap-4 flex flex-col w-full items-center">
                 <h2 class="text-2xl">Project Invites</h2>
-                <form action="/project-members/create-invites/<?= $vm->project->id ?>" method="POST" class="w-full">
+                <form action="/project-members/create-invites/<?= $project->id ?>" method="POST" class="w-full">
                     <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
 
                     <table class="w-full border-collapse">
@@ -44,7 +47,7 @@ if ($flash_errors)
                         </thead>
 
                         <tbody>
-                        <?php foreach ($vm->invites as $invite): ?>
+                        <?php foreach ($invites as $invite): ?>
                             <tr class="border-b">
                                 <td class="p-2"><?= htmlspecialchars($invite->inviteCode) ?></td>
                                 <td class="p-2"><?= htmlspecialchars($invite->createdBy) ?></td>
@@ -88,7 +91,7 @@ if ($flash_errors)
 
                     <tbody>
                     <!-- LIST MEMBERS -->
-                    <?php foreach ($vm->members as $member): ?>
+                    <?php foreach ($members as $member): ?>
                         <tr class="border-b">
                             <td class="p-2"><?= htmlspecialchars($member->username) ?></td>
                             <td class="p-2"><?= htmlspecialchars($member->userRole->value) ?></td>
@@ -99,7 +102,7 @@ if ($flash_errors)
                                     <!-- PROMOTE, Owner Only -->
                                     <?php if ($member->userRole->value === 'member'): ?>
                                         <form method="POST"
-                                              action="/project/<?= $vm->project->id ?>/members/<?= $member->id ?>/promote">
+                                              action="/project/<?= $project->id ?>/members/<?= $member->id ?>/promote">
                                             <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                                             <button
                                                     class="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded">
@@ -111,7 +114,7 @@ if ($flash_errors)
                                     <!-- DEMOTE, Owner only -->
                                     <?php if ($member->userRole->value === 'admin'): ?>
                                         <form method="POST"
-                                              action="/project/<?= $vm->project->id ?>/members/<?= $member->id ?>/demote">
+                                              action="/project/<?= $project->id ?>/members/<?= $member->id ?>/demote">
                                             <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                                             <button
                                                     class="w-9 h-9 flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded">
@@ -122,7 +125,7 @@ if ($flash_errors)
 
                                     <!-- REMOVE, Owner CANNOT be removed. Admins CANNOT remove other admins. Admins CAN remove members -->
                                     <form method="POST"
-                                          action="/project/<?= $vm->project->id ?>/members/<?= $member->id ?>/remove">
+                                          action="/project/<?= $project->id ?>/members/<?= $member->id ?>/remove">
                                         <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                                         <button
                                                 class="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded">
@@ -142,13 +145,13 @@ if ($flash_errors)
             <!-- BOTTOM LEFT | Edit Project -->
             <div class="tess-base-container-md gap-4 flex flex-col w-full items-center">
                 <h2 class="text-2xl">Edit project</h2>
-                <form action="/project/edit/<?= $vm->project->id ?>" method="POST"
+                <form action="/project/edit/<?= $project->id ?>" method="POST"
                       class="flex flex-col justify-center items-center gap-2 w-full">
                     <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                     <input type="text" class="tess-input-md w-full" placeholder="Project Name [3-32]" name="name"
-                           value="<?= $vm->project->name ?>" required>
+                           value="<?= $project->name ?>" required>
                     <textarea class="tess-input-md min-h-32 w-full" placeholder="Description [0-128]"
-                              name="description"><?= $vm->project->description ?></textarea>
+                              name="description"><?= $project->description ?></textarea>
                     <button type="submit" class="tess-btn-sec w-full mt-4 cursor-pointer">Confirm edit</button>
                 </form>
             </div>
@@ -156,7 +159,7 @@ if ($flash_errors)
             <!-- BOTTOM RIGHT | Delete Project-->
             <div class="tess-base-container-md gap-4 flex flex-col w-full items-center mb-4">
                 <h2 class="text-2xl">Delete project</h2>
-                <form action="/project/delete/<?= $vm->project->id ?>" method="POST" class="w-full">
+                <form action="/project/delete/<?= $project->id ?>" method="POST" class="w-full">
                     <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                     <p> Repeat project name to confirm deletion: </p>
                     <input type="text" class="tess-input-md w-full" placeholder="Project Name" name="confirm_name"

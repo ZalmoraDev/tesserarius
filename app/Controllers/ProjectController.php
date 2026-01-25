@@ -44,12 +44,15 @@ final class ProjectController
     /** GET /project/edit/{$projectId}, View a specified project by its ID */
     public function showEdit($projectId): void
     {
-        $vm = new ProjectEditViewModel(
-            project: $this->projectService->getProjectByProjectId($projectId),
-            members: $this->projectMemberService->getProjectMembersByProjectId($projectId),
-            invites: $this->projectMemberService->getProjectInviteCodes($projectId)
-        );
-        View::render('/Project/projectEdit.php', $vm->project->name . View::addSiteName(), ['vm' => $vm]);
+        $project = $this->projectService->getProjectByProjectId($projectId);
+        $members = $this->projectMemberService->getProjectMembersByProjectId($projectId);
+        $invites = $this->projectMemberService->getProjectInviteCodes($projectId);
+
+        View::render('/Project/projectEdit.php', $project->name . View::addSiteName(), [
+            'project' => $project,
+            'members' => $members,
+            'invites' => $invites,
+        ]);
     }
 
 
