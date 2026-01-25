@@ -61,6 +61,8 @@ final class Router
                     $this->authService->denyAuthenticatedOnAuthRoutes($handler['action'][1]);
 
                     // Checks when accessing a project-related route, if user has access to it with required role or higher
+
+                    // TODO: NOT WORKING, 'member' role can access 'admin' / 'owner' routes
                     if ($pathParams['projectId'] ?? false)
                         $this->authService->requireProjectAccess((int)$pathParams['projectId'], $routeReqAccess);
 

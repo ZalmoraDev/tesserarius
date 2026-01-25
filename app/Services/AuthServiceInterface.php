@@ -17,7 +17,7 @@ interface AuthServiceInterface
     // Router methods
     public function requireAuthentication(AccessRole $routeReqRole): void;
 
-    public function requireProjectAccess(int $projectId, AccessRole $routeReqRole): void;
+    public function requireProjectAccess(int $projectId, AccessRole $routeReqAccess): void;
 
     public function denyAuthenticatedOnAuthRoutes(string $routeName): void;
 }
