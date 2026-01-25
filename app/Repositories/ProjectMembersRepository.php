@@ -6,6 +6,10 @@ use App\Dto\ProjectListItemDto;
 use App\Dto\ProjectMemberDto;
 use App\Models\Enums\UserRole;
 use App\Models\ProjectInvite;
+use App\Repositories\Exceptions\ProjectMembers\InviteCodeExpiredOrUsedException;
+use App\Repositories\Exceptions\ProjectMembers\InviteNotFoundException;
+use App\Repositories\Exceptions\RepositoryException;
+use App\Services\Exceptions\ProjectMembersException;
 use DateTimeImmutable;
 use PDO;
 
@@ -72,6 +76,68 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
         }
 
         return $invites;
+    }
+
+
+    /** Join a user to a project by invite code.
+     * Returns the joined project ID on success.
+     * @throws RepositoryException if invite code is invalid or used/expired.
+     */
+    public function joinProjectByInviteCode(string $inviteCode, int $userId): int
+    {
+        // Start transaction, which on rollback undoes all the following query operations
+        $this->connection->beginTransaction();
+
+        // 1.1) Fetch invite details (FOR UPDATE locks the row for this transaction, making its access atomic)
+        $stmt = $this->connection->prepare('
+        SELECT project_id, expires_at, used_at
+        FROM project_invites
+        WHERE invite_code = :inviteCode
+        FOR UPDATE'
+        );
+        $stmt->execute([
+            'inviteCode' => $inviteCode
+        ]);
+        $invite = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // 1.2) Check if invite exists
+        if (!$invite) {
+            $this->connection->rollBack();
+            throw new InviteNotFoundException();
+        }
+
+        // 1.3) Check if invite is used or expired, uses DateTimeImmutable for comparison within PHP objects instead of SQL
+        if ($invite['used_at'] !== null || new DateTimeImmutable($invite['expires_at']) < new DateTimeImmutable()) {
+            $this->connection->rollBack();
+            throw new InviteCodeExpiredOrUsedException;
+        }
+
+        // 2.1) Add user to project members
+        $projectId = (int)$invite['project_id'];
+        $stmt = $this->connection->prepare('
+        INSERT INTO project_members (project_id, user_id, role, joined_at)
+        VALUES (:projectId, :userId, :role, NOW())'
+        );
+        $stmt->execute([
+            'projectId' => $projectId,
+            'userId' => $userId,
+            'role' => UserRole::Member->value
+        ]);
+
+        // 3) Mark invite as used
+        $stmt = $this->connection->prepare('
+        UPDATE project_invites
+        SET used_at = NOW()
+        WHERE invite_code = :inviteCode'
+        );
+
+        $stmt->execute([
+            'inviteCode' => $inviteCode
+        ]);
+
+        // Unlocks the row and finalizes the transaction, returns id to redirect user to joined project's view
+        $this->connection->commit();
+        return $projectId;
     }
 
     /** Uses Service made invite-code(s), which contains projectId, creator etc.

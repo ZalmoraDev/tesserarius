@@ -33,17 +33,4 @@ class projectHomeTabComp
     </a>
     ";
     }
-
-    public function printJoinProjectTab(): string
-    {
-        //TODO: Redo design and implement functionality
-        return "       
-    <div class='tess-project-card flex flex-col items-center justify-center space-y-2'>
-        <input type='text' placeholder='Enter Project Code' class='tess-input-sm'>
-        <button class='tess-btn-pri cursor-pointer'>
-            Join
-        </button>
-    </div>
-    ";
-    }
 }

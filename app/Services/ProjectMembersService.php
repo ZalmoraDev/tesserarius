@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Enums\UserRole;
 use App\Models\ProjectInvite;
+use App\Repositories\Exceptions\ProjectMembers\InviteCodeExpiredOrUsedException;
+use App\Repositories\Exceptions\ProjectMembers\InviteNotFoundException;
 use App\Repositories\ProjectMembersRepositoryInterface;
 use App\Services\Exceptions\ProjectMembersException;
 use DateTimeImmutable;
@@ -51,7 +53,8 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
     }
 
     /** Removes a project invite code by its ID.
-     * @throws ProjectMembersException if removal fails. */
+     * @throws ProjectMembersException if removal fails.
+     */
     public function removeProjectInviteCode(int $inviteId): void
     {
         $success = $this->projectMembersRepo->removeProjectInviteCode($inviteId);
@@ -59,12 +62,20 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
             throw new ProjectMembersException(ProjectMembersException::INVITE_REMOVAL_FAILED);
     }
 
-    public function joinProjectByInviteCode(int $userId, string $inviteCode): bool
+    public function joinProjectByInviteCode(string $inviteCode): int
     {
-        // TODO: Implement joinProjectByInviteCode() method.
+        if (!isset($inviteCode))
+            throw new ProjectMembersException(ProjectMembersException::INVITE_CODE_INVALID);
 
-        //$this->projectMembersRepo->addProjectMember($projectId, (int)$_SESSION['auth']['userId'], UserRole::Member);
-        return false;
+        // Try repository operations, catch their 'technical' exceptions
+        // and re-throw them to user with additional context as 'business' exceptions
+        try {
+            return $this->projectMembersRepo->joinProjectByInviteCode($inviteCode, (int)$_SESSION['auth']['userId']);
+        } catch (InviteNotFoundException $e) {
+            throw new ProjectMembersException(ProjectMembersException::INVITE_CODE_INVALID);
+        } catch (InviteCodeExpiredOrUsedException $e) {
+            throw new ProjectMembersException(ProjectMembersException::INVITE_CODE_EXPIRED_OR_USED);
+        }
     }
 
     public function removeProjectMember(int $projectId, int $userId): bool

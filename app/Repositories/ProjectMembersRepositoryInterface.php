@@ -13,6 +13,7 @@ interface ProjectMembersRepositoryInterface
     public function findProjectMembersByProjectId(int $projectId): ?array; // array of ProjectMemberDto
 
     public function findProjectInviteCodes(int $projectId): ?array;
+    public function joinProjectByInviteCode(string $inviteCode, int $userId): int;
     public function createProjectInviteCodes(array $invites): bool;
     public function removeProjectInviteCode(int $inviteId): bool;
 

@@ -7,7 +7,8 @@ use App\Services\{Exceptions\ProjectException,
     Exceptions\ProjectMembersException,
     ProjectMembersService,
     ProjectServiceInterface,
-    TaskServiceInterface};
+    TaskServiceInterface
+};
 
 final class ProjectMembersController
 {
@@ -38,6 +39,7 @@ final class ProjectMembersController
         exit;
     }
 
+
     /** POST /project-members/remove-invite/{$inviteId}, handles the creation of a project invite */
     public function handleInviteDeletion(int $inviteId)
     {
@@ -49,6 +51,21 @@ final class ProjectMembersController
         // Redirect by hidden input field project_id, will be replaced by JS Ajax later
         header("Location: /project/edit/" . $_POST['project_id'], true, 302);
         exit;
+    }
+
+
+    /** POST /project-members/join-project, handles joining a project by invite code */
+    public function handleJoinByInviteCode()
+    {
+        try {
+            $joinedProjectId = $this->projectMemberService->joinProjectByInviteCode($_POST['invite_code']);
+            header("Location: /project/view/" . $joinedProjectId, true, 302);
+            exit;
+        } catch (ProjectMembersException $e) {
+            $_SESSION['flash_errors'][] = $e->getMessage();
+            header("Location: /", true, 302);
+            exit;
+        }
     }
 
     /** POST /project-members/promote/{$projectId}/{$memberId}, handles the creation of a project invite */
@@ -69,6 +86,7 @@ final class ProjectMembersController
         }
     }
 
+
     /** POST /project-members/demote/{$projectId}/{$memberId}, handles the creation of a project invite */
     public function handleMemberDemote(int $id)
     {
@@ -86,6 +104,7 @@ final class ProjectMembersController
             exit;
         }
     }
+
 
     /** POST /project/create-invite, handles the creation of a project invite */
     public function handleUserRemoval(int $id)
