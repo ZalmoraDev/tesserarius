@@ -52,9 +52,6 @@ final class AuthRepository extends BaseRepository implements AuthRepositoryInter
         ) : null;
     }
 
-
-// TODO: Validate this method, also no idea where this is used
-
     /** Retrieve the role of a user in a specific project, for router access control */
     public function findUserProjectRole(int $projectId, int $userId): ?UserRole
     {

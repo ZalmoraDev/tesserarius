@@ -6,8 +6,6 @@ use App\Services\Exceptions\AuthException;
 
 final class Csrf
 {
-    // TODO: Use : ?string, and redirect upon NULL or invalid token
-
     /** Generate or retrieve existing CSRF token. */
     public static function getToken(): string
     {

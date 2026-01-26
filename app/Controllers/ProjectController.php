@@ -46,7 +46,7 @@ final class ProjectController
     {
         $project = $this->projectService->getProjectByProjectId($projectId);
         $members = $this->projectMemberService->getProjectMembersByProjectId($projectId);
-        $invites = $this->projectMemberService->getProjectInviteCodes($projectId);
+        $invites = $this->projectMemberService->getProjectInvitesByProjectId($projectId);
 
         View::render('/Project/projectEdit.php', $project->name . View::addSiteName(), [
             'project' => $project,

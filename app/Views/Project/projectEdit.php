@@ -4,9 +4,9 @@ use App\Core\Csrf;
 
 // variables injected and path redirected by
 // ProjectController::editProjectView
-$project = $params['project'] ?? null;
-$members = $params['members'] ?? [];
-$invites = $params['invites'] ?? [];
+$project = $params['project'] ?? null; // Project
+$members = $params['members'] ?? []; // Project
+$invites = $params['invites'] ?? []; // ProjectInvite[]
 
 $flash_errors = $_SESSION['flash_errors'] ?? [];
 unset($_SESSION['flash_errors']);
@@ -100,39 +100,40 @@ if ($flash_errors)
                                 <div class="flex gap-2">
 
                                     <!-- PROMOTE, Owner Only -->
-                                    <?php if ($member->userRole->value === 'member'): ?>
+                                    <?php if ($member->userRole->value === 'Member'): ?>
                                         <form method="POST"
-                                              action="/project/<?= $project->id ?>/members/<?= $member->id ?>/promote">
+                                              action="/project-members/promote/<?= $project->id ?>/<?= $member->userId ?>">
                                             <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                                            <button
-                                                    class="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded">
+                                            <button type="submit"
+                                                    class="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded cursor-pointer">
                                                 ↑
                                             </button>
                                         </form>
                                     <?php endif; ?>
 
                                     <!-- DEMOTE, Owner only -->
-                                    <?php if ($member->userRole->value === 'admin'): ?>
+                                    <?php if ($member->userRole->value === 'Admin'): ?>
                                         <form method="POST"
-                                              action="/project/<?= $project->id ?>/members/<?= $member->id ?>/demote">
+                                              action="/project-members/demote/<?= $project->id ?>/<?= $member->userId ?>">
                                             <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                                            <button
-                                                    class="w-9 h-9 flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded">
+                                            <button type="submit"
+                                                    class="w-9 h-9 flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded cursor-pointer">
                                                 ↓
                                             </button>
                                         </form>
                                     <?php endif; ?>
 
                                     <!-- REMOVE, Owner CANNOT be removed. Admins CANNOT remove other admins. Admins CAN remove members -->
-                                    <form method="POST"
-                                          action="/project/<?= $project->id ?>/members/<?= $member->id ?>/remove">
-                                        <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                                        <button
-                                                class="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded">
-                                            ✕
-                                        </button>
-                                    </form>
-
+                                    <?php if ($member->userRole->value !== 'Owner'): ?>
+                                        <form method="POST"
+                                              action="/project-members/remove/<?= $project->id ?>/<?= $member->userId ?>">
+                                            <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
+                                            <button type="submit"
+                                                    class="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded cursor-pointer">
+                                                ✕
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
@@ -156,20 +157,25 @@ if ($flash_errors)
                 </form>
             </div>
 
-            <!-- BOTTOM RIGHT | Delete Project-->
-            <div class="tess-base-container-md gap-4 flex flex-col w-full items-center mb-4">
-                <h2 class="text-2xl">Delete project</h2>
-                <form action="/project/delete/<?= $project->id ?>" method="POST" class="w-full">
-                    <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                    <p> Repeat project name to confirm deletion: </p>
-                    <input type="text" class="tess-input-md w-full" placeholder="Project Name" name="confirm_name"
-                           required>
-                    <button type="submit"
-                            class="cursor-pointer tess-btn-pri bg-red-600 hover:bg-red-700 text-white font-bold w-full mt-4">
-                        CONFIRM DELETION
-                    </button>
-                </form>
-            </div>
+            <!-- BOTTOM RIGHT | Delete Project (Owner-only) -->
+            <?php if ($project->ownerId === (int)$_SESSION['auth']['userId']): ?>
+                <div class="tess-base-container-md gap-4 flex flex-col w-full items-center">
+                    <h2 class="text-2xl">Delete project</h2>
+                    <div class="gap-4 flex flex-col w-full items-center">
+                        <form action="/project/delete/<?= $project->id ?>" method="POST" class="w-full">
+                            <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
+                            <p> Repeat project name to confirm deletion: </p>
+                            <input type="text" class="tess-input-md w-full" placeholder="Project Name"
+                                   name="confirm_name"
+                                   required>
+                            <button type="submit"
+                                    class="cursor-pointer tess-btn-pri bg-red-600 hover:bg-red-700 text-white font-bold w-full mt-4">
+                                CONFIRM DELETION
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            <?php endif; ?>
 
         </div>
     </div>

@@ -6,7 +6,7 @@ use FastRoute;
 use App\Models\Enums\AccessRole;
 
 /** Separation of routes from router dispatching logic.
- * Defines all routes with their handlers and required access roles to be evalualted in router. */
+ * Defines all routes with their handlers and required access roles to be evaluated in router. */
 final class Routes
 {
     private array $controllers;
@@ -36,8 +36,7 @@ final class Routes
             $r->post('/auth/signup', $this->route([$auth, 'signup'], AccessRole::Anyone));
             $r->post('/auth/logout', $this->route([$auth, 'logout'], AccessRole::Anyone));
 
-            // default page for logged-in users, default to URL '/'
-            // UserController routes
+            // UserController routes (default for logged-in users '/')
             $r->get('/', $this->route([$user, 'homePage'], AccessRole::Authenticated));
 
             // ProjectController routes
@@ -48,14 +47,14 @@ final class Routes
             $r->post('/project/edit/{projectId:\d+}', $this->route([$project, 'handleEdit'], AccessRole::Admin));
             $r->post('/project/delete/{projectId:\d+}', $this->route([$project, 'handleDeletion'], AccessRole::Owner));
 
-            // ProjectMembersController routes, all accessed on GET /project/edit/{projectId} page (showEdit)
+            // ProjectMembersController routes
             $r->post('/project-members/join-project', $this->route([$projectMembers, 'handleJoinByInviteCode'], AccessRole::Authenticated));
             $r->post('/project-members/create-invites/{projectId:\d+}', $this->route([$projectMembers, 'handleInviteCreation'], AccessRole::Admin));
             $r->post('/project-members/remove-invite/{inviteId:\d+}', $this->route([$projectMembers, 'handleInviteDeletion'], AccessRole::Admin));
 
-            $r->post('/project-members/remove/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberRemoval'], AccessRole::Admin));
             $r->post('/project-members/promote/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberPromote'], AccessRole::Owner));
             $r->post('/project-members/demote/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberDemote'], AccessRole::Owner));
+            $r->post('/project-members/remove/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberRemoval'], AccessRole::Admin));
         });
     }
 

@@ -24,7 +24,7 @@ final class ProjectMembersController
     // -------------------- POST Requests --------------------
 
     /** POST /project-members/create-invite/{$projectId}, handles the creation of a project invite */
-    public function handleInviteCreation(int $projectId)
+    public function handleInviteCreation(int $projectId): void
     {
         try {
             $this->projectMemberService->generateProjectInviteCodes(
@@ -39,9 +39,8 @@ final class ProjectMembersController
         exit;
     }
 
-
     /** POST /project-members/remove-invite/{$inviteId}, handles the creation of a project invite */
-    public function handleInviteDeletion(int $inviteId)
+    public function handleInviteDeletion(int $inviteId): void
     {
         try {
             $this->projectMemberService->removeProjectInviteCode($inviteId);
@@ -53,9 +52,8 @@ final class ProjectMembersController
         exit;
     }
 
-
     /** POST /project-members/join-project, handles joining a project by invite code */
-    public function handleJoinByInviteCode()
+    public function handleJoinByInviteCode(): void
     {
         try {
             $joinedProjectId = $this->projectMemberService->joinProjectByInviteCode($_POST['invite_code']);
@@ -68,59 +66,30 @@ final class ProjectMembersController
         }
     }
 
-    /** POST /project-members/promote/{$projectId}/{$memberId}, handles the creation of a project invite */
-    public function handleMemberPromote(int $projectId)
+    /** POST /project-members/promote/{$projectId}/{$memberId}, handles promoting a project member.
+     * Doesn't throw exceptions, as authorization for Owner is done by router.php. */
+    public function handleMemberPromote(int $projectId, int $memberId): void
     {
-        try {
-            $this->projectMemberService->addProjectMember(
-                (int)$_POST['project_id'],
-                (int)$_POST['user_id'],
-                $_POST['role']
-            );
-            header("Location: /project/view/" . $projectId, true, 302);
-            exit;
-        } catch (ProjectException $e) {
-            $_SESSION['flash_errors'][] = $e->getMessage();
-            header("Location: /project/create", true, 302);
-            exit;
-        }
+        $this->projectMemberService->promoteProjectMember($projectId, $memberId);
+        header("Location: /project/edit/" . $projectId, true, 302);
+        exit;
     }
 
-
-    /** POST /project-members/demote/{$projectId}/{$memberId}, handles the creation of a project invite */
-    public function handleMemberDemote(int $id)
+    /** POST /project-members/demote/{$projectId}/{$memberId}, handles demoting a project member.
+     * Doesn't throw exceptions, as authorization for Owner is done by router.php. */
+    public function handleMemberDemote(int $projectId, int $memberId): void
     {
-        try {
-            $this->projectMemberService->addProjectMember(
-                (int)$_POST['project_id'],
-                (int)$_POST['user_id'],
-                $_POST['role']
-            );
-            header("Location: /project/view/" . $id, true, 302);
-            exit;
-        } catch (ProjectException $e) {
-            $_SESSION['flash_errors'][] = $e->getMessage();
-            header("Location: /project/create", true, 302);
-            exit;
-        }
+        $this->projectMemberService->demoteProjectMember($projectId, $memberId);
+        header("Location: /project/edit/" . $projectId, true, 302);
+        exit;
     }
 
-
-    /** POST /project/create-invite, handles the creation of a project invite */
-    public function handleUserRemoval(int $id)
+    /** POST /project-members/remove/{$projectId}/{$memberId}, handles removing a project member.
+     * Doesn't throw exceptions, as authorization for Admin/Owner is done by router.php. */
+    public function handleMemberRemoval(int $projectId, int $memberId): void
     {
-        try {
-            $this->projectMemberService->addProjectMember(
-                (int)$_POST['project_id'],
-                (int)$_POST['user_id'],
-                $_POST['role']
-            );
-            header("Location: /project/view/" . $id, true, 302);
-            exit;
-        } catch (ProjectException $e) {
-            $_SESSION['flash_errors'][] = $e->getMessage();
-            header("Location: /project/create", true, 302);
-            exit;
-        }
+        $this->projectMemberService->removeProjectMember($projectId, $memberId);
+        header("Location: /project/edit/" . $projectId, true, 302);
+        exit;
     }
 }

@@ -14,7 +14,7 @@ final readonly class ProjectTask implements JsonSerializable
         public string $title,
         public string $description,
         public string $columnName, // TODO: Change to Enum
-        public DateTimeImmutable $createdAt // TODO: Change to DateTime
+        public DateTimeImmutable $createdAt
     )
     {
     }
