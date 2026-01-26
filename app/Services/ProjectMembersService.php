@@ -60,19 +60,18 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
         $this->projectMembersRepo->createProjectInviteCodes($invites);
     }
 
-    /** Removes a project invite code by its ID.
-     * @throws ProjectMembersException if removal fails.
-     */
-    public function removeProjectInviteCode(int $inviteId): void
+    /** Delete a project invite code by its ID.
+     * @throws ProjectMembersException if removal fails. */
+    public function deleteProjectInviteCode(int $projectId, int $inviteId): void
     {
-        $success = $this->projectMembersRepo->removeProjectInviteCode($inviteId);
+        $success = $this->projectMembersRepo->deleteProjectInviteCode($projectId, $inviteId);
         if (!$success)
             throw new ProjectMembersException(ProjectMembersException::INVITE_REMOVAL_FAILED);
     }
 
     /** Joins the project associated with the given invite code for the current user.
      * @return int ID of the project the user has joined.
-     * @throws ProjectMembersException if the invite code is invalid, expired, or already used.
+     * @throws ProjectMembersException if invite code is invalid, expired, or already used.
      */
     public function joinProjectByInviteCode(string $inviteCode): int
     {

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Dto\UserIdentityDto;
 use App\Models\Enums\AccessRole;
+use App\Models\Enums\UserRole;
 use App\Repositories\UserRepositoryInterface;
 use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
@@ -99,9 +100,10 @@ final class AuthService implements AuthServiceInterface
 
 
     /** Checks if the currently authenticated user has access to the specified project with required role or higher
+     * @return UserRole The user's role in the project
      * @throws AuthException if user is not part of project or has insufficient permissions
      */
-    public function requireProjectAccess(int $projectId, AccessRole $routeReqAccess): void
+    public function requireProjectAccess(int $projectId, AccessRole $routeReqAccess): UserRole
     {
         if (!isset($_SESSION['auth']))
             throw new AuthException(AuthException::PROJECT_ACCESS_DENIED);
@@ -114,6 +116,8 @@ final class AuthService implements AuthServiceInterface
         // Convert UserRole to AccessRole logic for comparison
         if ($routeReqAccess->value > $userRole->toAccessRole()->value)
             throw new AuthException(AuthException::PROJECT_INSUFFICIENT_PERMISSIONS);
+
+        return $userRole;
     }
 
 

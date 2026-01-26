@@ -12,7 +12,7 @@ interface ProjectMembersServiceInterface
 
     public function generateProjectInviteCodes(int $projectId, DateTimeImmutable $expiresAt, int $count): void;
     public function joinProjectByInviteCode(string $inviteCode): int;
-    public function removeProjectInviteCode(int $inviteId): void;
+    public function deleteProjectInviteCode(int $projectId, int $inviteId): void;
 
     public function promoteProjectMember(int $projectId, int $userId): void;
     public function demoteProjectMember(int $projectId, int $userId): void;

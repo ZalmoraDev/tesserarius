@@ -27,6 +27,8 @@ final class Routes
             $projectMembers = $this->controllers['projectMembers'];
             $user = $this->controllers['user'];
 
+            // TODO: Remove POST requests from usign URLs directly
+
             // Uses route aliases instead of full $r->addRoute(METHOD, ...)
             // AuthController routes
             $r->get('/login', $this->route([$auth, 'loginPage'], AccessRole::Anyone));
@@ -50,7 +52,7 @@ final class Routes
             // ProjectMembersController routes
             $r->post('/project-members/join-project', $this->route([$projectMembers, 'handleJoinByInviteCode'], AccessRole::Authenticated));
             $r->post('/project-members/create-invites/{projectId:\d+}', $this->route([$projectMembers, 'handleInviteCreation'], AccessRole::Admin));
-            $r->post('/project-members/remove-invite/{inviteId:\d+}', $this->route([$projectMembers, 'handleInviteDeletion'], AccessRole::Admin));
+            $r->post('/project-members/delete-invite/{projectId:\d+}/{inviteId:\d+}', $this->route([$projectMembers, 'handleInviteDeletion'], AccessRole::Admin));
 
             $r->post('/project-members/promote/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberPromote'], AccessRole::Owner));
             $r->post('/project-members/demote/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberDemote'], AccessRole::Owner));
@@ -58,7 +60,7 @@ final class Routes
         });
     }
 
-    /** Helper-object to create conciser route auth guard objects. */
+    /** Helper-object to create conciser route auth guard objects */
     private function route(array $action, AccessRole $accessRole): array
     {
         return [

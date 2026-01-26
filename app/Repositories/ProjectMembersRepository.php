@@ -2,14 +2,12 @@
 
 namespace App\Repositories;
 
-use App\Dto\ProjectListItemDto;
 use App\Dto\ProjectMemberDto;
 use App\Models\Enums\UserRole;
 use App\Models\ProjectInvite;
 use App\Repositories\Exceptions\ProjectMembers\InviteCodeExpiredOrUsedException;
 use App\Repositories\Exceptions\ProjectMembers\InviteNotFoundException;
 use App\Repositories\Exceptions\RepositoryException;
-use App\Services\Exceptions\ProjectMembersException;
 use DateTimeImmutable;
 use PDO;
 
@@ -76,7 +74,6 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
                 new DateTimeImmutable($row['created_at'])
             );
         }
-
         return $invites;
     }
 
@@ -224,5 +221,22 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
             'projectId' => $projectId,
             'userId' => $userId
         ]);
+    }
+
+    /** Deletes a project invite code by its ID.
+     * @return bool True if the invite was deleted, false otherwise. */
+    public function deleteProjectInviteCode(int $projectId, int $inviteId): bool
+    {
+        $stmt = $this->connection->prepare('
+        DELETE FROM project_invites
+        WHERE id = :inviteId AND project_id = :projectId'
+        );
+
+        $stmt->execute([
+            'inviteId' => $inviteId,
+            'projectId' => $projectId
+        ]);
+
+        return $stmt->rowCount() > 0;
     }
 }

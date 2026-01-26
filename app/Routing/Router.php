@@ -30,7 +30,6 @@ final class Router
         $httpMethod = $_SERVER['REQUEST_METHOD'];
         $uri = $_SERVER['REQUEST_URI'];
 
-
         // Strip query string (?foo=bar) and decode URI
         if (false !== $pos = strpos($uri, '?')) {
             $uri = substr($uri, 0, $pos);
@@ -60,10 +59,15 @@ final class Router
                     // Checks if the already logged-in user is visiting the loginPage OR signupPage, redirect to / (home)
                     $this->authService->denyAuthenticatedOnAuthRoutes($handler['action'][1]);
 
-                    // Checks when accessing a project-related route, if user has access to it with required role or higher
-
-                    if ($pathParams['projectId'] ?? false)
-                        $this->authService->requireProjectAccess((int)$pathParams['projectId'], $routeReqAccess);
+                    // Checks when accessing a project route, if user has access with required role or higher
+                    // Store the user's project role in session for use in project views AS A STRING, else clear it
+                    // Uses string instead of UserRole since every single route would otherwise need to import UserRole enum
+                    if ($pathParams['projectId'] ?? false) {
+                        $userProjectRole = $this->authService->requireProjectAccess((int)$pathParams['projectId'], $routeReqAccess);
+                        $_SESSION['auth']['projectRole'] = $userProjectRole->value;
+                    } else {
+                        unset($_SESSION['auth']['projectRole']);
+                    }
 
                     // Upon POST -> verify CSRF token. If not valid, exit with 403 (handled in Csrf::Verify)
                     if ($_SERVER['REQUEST_METHOD'] === 'POST')

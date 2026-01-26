@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Enums\AccessRole;
+use App\Models\Enums\UserRole;
 
 
 interface AuthServiceInterface
@@ -17,7 +18,7 @@ interface AuthServiceInterface
     // Router methods
     public function requireAuthentication(AccessRole $routeReqRole): void;
 
-    public function requireProjectAccess(int $projectId, AccessRole $routeReqAccess): void;
+    public function requireProjectAccess(int $projectId, AccessRole $routeReqAccess): UserRole;
 
     public function denyAuthenticatedOnAuthRoutes(string $routeName): void;
 }

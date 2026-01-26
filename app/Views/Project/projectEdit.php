@@ -1,12 +1,16 @@
 <?php
 
 use App\Core\Csrf;
+use App\Models\Enums\UserRole;
 
 // variables injected and path redirected by
 // ProjectController::editProjectView
 $project = $params['project'] ?? null; // Project
 $members = $params['members'] ?? []; // Project
 $invites = $params['invites'] ?? []; // ProjectInvite[]
+
+// injected by Router::dispatch() via AuthServiceInterface::requireProjectAccess
+$userRole = UserRole::tryFrom($_SESSION['auth']['projectRole']) ?? null;
 
 $flash_errors = $_SESSION['flash_errors'] ?? [];
 unset($_SESSION['flash_errors']);
@@ -20,8 +24,6 @@ if ($flash_errors)
     include __DIR__ . '/../components/toastComp.php';
 ?>
 
-<!-- TODO: Compare logged-in user with $vm->project->ownerId to conditionally show/hide promote/demote/remove buttons -->
-
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto relative">
     <div class="flex flex-col gap-6">
         <h1 class="tess-base-container-sm text-2xl w-full max-w-full mt-4">Edit project: <?= $project->name ?></h1>
@@ -32,9 +34,6 @@ if ($flash_errors)
             <!-- TOP LEFT | Project Invites -->
             <div class="tess-base-container-md gap-4 flex flex-col w-full items-center">
                 <h2 class="text-2xl">Project Invites</h2>
-                <form action="/project-members/create-invites/<?= $project->id ?>" method="POST" class="w-full">
-                    <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-
                     <table class="w-full border-collapse">
                         <thead>
                         <tr class="border-b">
@@ -43,21 +42,36 @@ if ($flash_errors)
                             <th class="text-left p-2">Created At</th>
                             <th class="text-left p-2">Expires At</th>
                             <th class="text-left p-2">Activated At</th>
+                            <th class="text-left p-2">Actions</th>
                         </tr>
                         </thead>
 
                         <tbody>
                         <?php foreach ($invites as $invite): ?>
+                            <!-- activatedAt uses 2 ternary checks: if activatedAt, show date, else if expired show EXPIRED, else show '-' -->
                             <tr class="border-b">
                                 <td class="p-2"><?= htmlspecialchars($invite->inviteCode) ?></td>
                                 <td class="p-2"><?= htmlspecialchars($invite->createdBy) ?></td>
                                 <td class="p-2"><?= htmlspecialchars($invite->createdAt->format('Y-m-d H:i')) ?></td>
                                 <td class="p-2"><?= htmlspecialchars($invite->expiresAt->format('Y-m-d H:i')) ?></td>
-                                <td class="p-2"><?= $invite->activatedAt ? htmlspecialchars($invite->activatedAt->format('Y-m-d H:i')) : '-' ?></td>
+                                <td class="p-2"><?= $invite->activatedAt ? htmlspecialchars($invite->activatedAt->format('Y-m-d H:i')) :
+                                            (new DateTimeImmutable() > $invite->expiresAt ? '<span class="text-red-600 font-semibold">EXPIRED</span>' : '-') ?></td>
+                                <td class="p-2">
+                                    <form method="POST"
+                                          action="/project-members/delete-invite/<?= $project->id ?>/<?= $invite->id ?>">
+                                        <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
+                                        <button type="submit"
+                                                class="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded cursor-pointer">
+                                            ✕
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
                     </table>
+                <form action="/project-members/create-invites/<?= $project->id ?>" method="POST" class="w-full">
+                    <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                     <div class="flex gap-4 w-full mt-4">
                         <div class="flex flex-col w-full">
                             <label for="expires_at" class="text-sm mb-1">Expires at</label>
@@ -100,7 +114,7 @@ if ($flash_errors)
                                 <div class="flex gap-2">
 
                                     <!-- PROMOTE, Owner Only -->
-                                    <?php if ($member->userRole->value === 'Member'): ?>
+                                    <?php if ($member->userRole === UserRole::Member): ?>
                                         <form method="POST"
                                               action="/project-members/promote/<?= $project->id ?>/<?= $member->userId ?>">
                                             <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
@@ -112,7 +126,7 @@ if ($flash_errors)
                                     <?php endif; ?>
 
                                     <!-- DEMOTE, Owner only -->
-                                    <?php if ($member->userRole->value === 'Admin'): ?>
+                                    <?php if ($member->userRole === UserRole::Admin): ?>
                                         <form method="POST"
                                               action="/project-members/demote/<?= $project->id ?>/<?= $member->userId ?>">
                                             <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
@@ -124,7 +138,8 @@ if ($flash_errors)
                                     <?php endif; ?>
 
                                     <!-- REMOVE, Owner CANNOT be removed. Admins CANNOT remove other admins. Admins CAN remove members -->
-                                    <?php if ($member->userRole->value !== 'Owner'): ?>
+                                    <?php if ($member->userRole !== UserRole::Owner && ($userRole === UserRole::Owner ||
+                                                    ($userRole === UserRole::Admin && $member->userRole === UserRole::Member))): ?>
                                         <form method="POST"
                                               action="/project-members/remove/<?= $project->id ?>/<?= $member->userId ?>">
                                             <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
@@ -142,7 +157,6 @@ if ($flash_errors)
                 </table>
             </div>
 
-
             <!-- BOTTOM LEFT | Edit Project -->
             <div class="tess-base-container-md gap-4 flex flex-col w-full items-center">
                 <h2 class="text-2xl">Edit project</h2>
@@ -158,22 +172,20 @@ if ($flash_errors)
             </div>
 
             <!-- BOTTOM RIGHT | Delete Project (Owner-only) -->
-            <?php if ($project->ownerId === (int)$_SESSION['auth']['userId']): ?>
-                <div class="tess-base-container-md gap-4 flex flex-col w-full items-center">
+            <?php if ($userRole === UserRole::Owner): ?>
+                <div class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
                     <h2 class="text-2xl">Delete project</h2>
-                    <div class="gap-4 flex flex-col w-full items-center">
-                        <form action="/project/delete/<?= $project->id ?>" method="POST" class="w-full">
-                            <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                            <p> Repeat project name to confirm deletion: </p>
-                            <input type="text" class="tess-input-md w-full" placeholder="Project Name"
-                                   name="confirm_name"
-                                   required>
-                            <button type="submit"
-                                    class="cursor-pointer tess-btn-pri bg-red-600 hover:bg-red-700 text-white font-bold w-full mt-4">
-                                CONFIRM DELETION
-                            </button>
-                        </form>
-                    </div>
+                    <form action="/project/delete/<?= $project->id ?>" method="POST" class="w-full flex flex-col">
+                        <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
+                        <p class="mb-2"> Repeat project name to confirm deletion: </p>
+                        <input type="text" class="tess-input-md w-full" placeholder="Project Name"
+                               name="confirm_name"
+                               required>
+                        <button type="submit"
+                                class="cursor-pointer tess-btn-pri bg-red-600 hover:bg-red-700 text-white font-bold w-full mt-4">
+                            CONFIRM DELETION
+                        </button>
+                    </form>
                 </div>
             <?php endif; ?>
 

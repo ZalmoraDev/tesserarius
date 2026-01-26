@@ -39,16 +39,15 @@ final class ProjectMembersController
         exit;
     }
 
-    /** POST /project-members/remove-invite/{$inviteId}, handles the creation of a project invite */
-    public function handleInviteDeletion(int $inviteId): void
+    /** POST /project-members/delete-invite/{$projectId}/{$inviteId}, handles the deletion of a project invite */
+    public function handleInviteDeletion(int $projectId, int $inviteId): void
     {
         try {
-            $this->projectMemberService->removeProjectInviteCode($inviteId);
+            $this->projectMemberService->deleteProjectInviteCode($projectId, $inviteId);
         } catch (ProjectMembersException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
         }
-        // Redirect by hidden input field project_id, will be replaced by JS Ajax later
-        header("Location: /project/edit/" . $_POST['project_id'], true, 302);
+        header("Location: /project/edit/" . $projectId, true, 302);
         exit;
     }
 
