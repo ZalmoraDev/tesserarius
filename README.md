@@ -41,14 +41,16 @@
 
 - Website: http://localhost/, first signup a user.
 - pgAdmin: http://localhost:8080, use credentials found in `compose.yml -> pgadmin`:
-    - **Email Address:** admin@local.dev
-    - **Password:** admin123
+    - Site login:
+      - **Email Address:** admin@local.dev
+      - **Password:** admin123
+    - Server connection:
+      -  **Password:** database123
 
 ## Stop / Cleanup
-
-1. Stop containers:
+* Stop containers:
    ```bash
    docker-compose stop
-2. Remove containers and named volume _(tesserarius_postgres_data)_:
+* Remove containers and named volume _(tesserarius_postgres_data)_:
     ```bash
    docker-compose down -v
