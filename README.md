@@ -10,10 +10,6 @@
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-38B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)<br>
 🛡 Collaborative & Customizable Task Manager 🐘 Built with PHP, JavaScript & PostgreSQL ✨ Inspired by Trello & Notion, allowing users to create private or public projects with tickets custom metadata tags
 
-# PROJECT IS WORK IN PROGRESS
-
----
-
 ## Prerequisites & Running
 
 ### Running
