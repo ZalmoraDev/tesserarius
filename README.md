@@ -8,7 +8,7 @@
 ![PostgreSQL](https://img.shields.io/badge/postgresql-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-0db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-38B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)<br>
-🛡 Collaborative & Customizable Task Manager 🐘 Built with PHP, JavaScript & PostgreSQL ✨ Inspired by Trello & Notion, allowing users to create private or public projects with tickets custom metadata tags
+🛡 Collaborative & Customizable Task Manager 🐘 Built with PHP, JavaScript & PostgreSQL ✨ Inspired by Trello & Notion, allowing users to create and join projects with custom task metadata tags.
 
 ## Prerequisites & Running
 
