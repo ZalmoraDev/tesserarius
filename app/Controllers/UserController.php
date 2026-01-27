@@ -5,7 +5,9 @@ namespace App\Controllers;
 use App\Core\View;
 use App\Services\ProjectServiceInterface;
 
-final class UserController
+/** Controller for user-related actions
+ * - GET: Display user homepage and settings */
+final readonly class UserController
 {
     private ProjectServiceInterface $projectService;
     public function __construct(ProjectServiceInterface $projectService)

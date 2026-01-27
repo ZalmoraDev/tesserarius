@@ -4,7 +4,8 @@ namespace App\Core;
 
 use App\Services\Exceptions\AuthException;
 
-final class Csrf
+/** CSRF protection utility class. */
+final readonly class Csrf
 {
     /** Generate or retrieve existing CSRF token. */
     public static function getToken(): string

@@ -3,7 +3,9 @@ namespace App\Controllers;
 
 use App\Core\View;
 
-final class ErrorController
+/** Controller to handle GET error pages
+ * - GET: display 404/405 pages */
+final readonly class ErrorController
 {
     /** 404 Not Found */
     public function notFound(): void

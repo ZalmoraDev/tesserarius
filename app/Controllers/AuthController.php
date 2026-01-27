@@ -8,6 +8,11 @@ use App\Services\AuthServiceInterface;
 use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
 
+/** Controller handling user authentication actions:
+   - GET: Displaying login and signup pages
+   - POST: Processing login and signup form submissions
+   - POST: Handling user logout
+*/
 final readonly class AuthController
 {
     private AuthServiceInterface $authService;

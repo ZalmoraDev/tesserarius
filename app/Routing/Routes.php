@@ -27,7 +27,7 @@ final class Routes
             $projectMembers = $this->controllers['projectMembers'];
             $user = $this->controllers['user'];
 
-            // TODO: Remove POST requests from usign URLs directly
+            // TODO: Remove POST requests from using URLs
 
             // Uses route aliases instead of full $r->addRoute(METHOD, ...)
             // AuthController routes
@@ -40,12 +40,14 @@ final class Routes
 
             // UserController routes (default for logged-in users '/')
             $r->get('/', $this->route([$user, 'homePage'], AccessRole::Authenticated));
+            // TODO: Add user edit page(s)
 
             // ProjectController routes
             $r->get('/project/create', $this->route([$project, 'showCreate'], AccessRole::Authenticated));
-            $r->post('/project/create', $this->route([$project, 'handleCreate'], AccessRole::Authenticated));
             $r->get('/project/view/{projectId:\d+}', $this->route([$project, 'showView'], AccessRole::Member));
             $r->get('/project/edit/{projectId:\d+}', $this->route([$project, 'showEdit'], AccessRole::Admin));
+
+            $r->post('/project/create', $this->route([$project, 'handleCreate'], AccessRole::Authenticated));
             $r->post('/project/edit/{projectId:\d+}', $this->route([$project, 'handleEdit'], AccessRole::Admin));
             $r->post('/project/delete/{projectId:\d+}', $this->route([$project, 'handleDeletion'], AccessRole::Owner));
 

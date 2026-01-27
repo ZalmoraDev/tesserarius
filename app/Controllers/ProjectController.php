@@ -3,10 +3,12 @@
 namespace App\Controllers;
 
 use App\Core\View;
-use App\ViewModels\ProjectEditViewModel;
 use App\Services\{Exceptions\ProjectException, ProjectMembersService, ProjectServiceInterface, TaskServiceInterface};
 
-final class ProjectController
+/** Controller handling project requests
+ * - GET: Displaying project creation, viewing, and editing pages
+ * - POST: Processing project creation, editing, and deletion form submissions */
+final readonly class ProjectController
 {
     private ProjectServiceInterface $projectService;
     private ProjectMembersService $projectMemberService;

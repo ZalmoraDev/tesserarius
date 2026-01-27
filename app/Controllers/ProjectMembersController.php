@@ -3,14 +3,14 @@
 namespace App\Controllers;
 
 use DateTimeImmutable;
-use App\Services\{Exceptions\ProjectException,
-    Exceptions\ProjectMembersException,
-    ProjectMembersService,
-    ProjectServiceInterface,
-    TaskServiceInterface
-};
+use App\Services\Exceptions\ProjectMembersException;
+use App\Services\ProjectMembersService;
 
-final class ProjectMembersController
+/** Controller handling project member related actions
+ * - POST: create & delete project
+ * - POST: join-project
+ * - POST: promote, demote & remove members */
+final readonly class ProjectMembersController
 {
     private ProjectMembersService $projectMemberService;
 

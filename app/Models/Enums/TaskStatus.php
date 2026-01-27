@@ -7,3 +7,5 @@ enum TaskStatus: int {
     case Review = 3;
     case Done = 4;
 }
+
+// TODO: REDO COMPLETELY

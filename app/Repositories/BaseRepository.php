@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use PDO;
 
-/** Establishes database connection using PDO */
+/** Base repository providing a PDO connection to be used by child repositories */
 abstract class BaseRepository
 {
     protected PDO $connection;
