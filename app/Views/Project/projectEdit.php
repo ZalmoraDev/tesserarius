@@ -3,26 +3,21 @@
 use App\Core\Csrf;
 use App\Models\Enums\UserRole;
 
+/** @var array $data /app/Core/View.php View::render*/
+
 // variables injected and path redirected by
 // ProjectController::editProjectView
-$project = $params['project'] ?? null; // Project
-$members = $params['members'] ?? []; // Project
-$invites = $params['invites'] ?? []; // ProjectInvite[]
+$project = $data['project'] ?? null; // Project
+$members = $data['members'] ?? []; // Project
+$invites = $data['invites'] ?? []; // ProjectInvite[]
 
 // injected by Router::dispatch() via AuthServiceInterface::requireProjectAccess
 $userRole = UserRole::tryFrom($_SESSION['auth']['projectRole']) ?? null;
-
-$flash_errors = $_SESSION['flash_errors'] ?? [];
-unset($_SESSION['flash_errors']);
 ?>
 
 <body class="tess-base-body flex flex-col">
 
-<?php
-include_once __DIR__ . "/../skeleton/navbar.php";
-if ($flash_errors)
-    include __DIR__ . '/../components/toastComp.php';
-?>
+<?= include_once __DIR__ . "/../skeleton/navbar.php"; ?>
 
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto relative">
     <div class="flex flex-col gap-6">

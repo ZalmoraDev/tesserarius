@@ -3,7 +3,7 @@
 use App\Core\Csrf;
 use App\Views\components\projectHomeTabComp;
 
-/** @var array $data View */
+/** @var array $data /app/Core/View.php View::render*/
 
 $projectTab = new projectHomeTabComp();
 
@@ -14,13 +14,7 @@ $projectsMember = $data['projects']['member'] ?? null;
 ?>
 
 <body class="tess-base-body flex flex-col">
-
-<?php
-include_once __DIR__ . "/../skeleton/navbar.php";
-if ($data['flash_errors'])
-    include __DIR__ . '/../components/toastComp.php';
-?>
-
+<?= include_once __DIR__ . "/../skeleton/navbar.php"; ?>
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto">
     <div class=" gap-4 flex flex-col mt-4">
         <div class="tess-base-container-sm w-full">
@@ -47,7 +41,8 @@ if ($data['flash_errors'])
             <div class='tess-project-card flex flex-col items-center justify-center space-y-2'>
                 <form action="/project-members/join-project" method="POST" class="flex flex-col gap-2">
                     <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                    <input type='text' name="invite_code" placeholder='Enter Project Code' required minlength="16"  maxlength="16" class='tess-input-sm'>
+                    <input type='text' name="invite_code" placeholder='Enter Project Code' required minlength="16"
+                           maxlength="16" class='tess-input-sm'>
                     <button class='tess-btn-pri cursor-pointer'>
                         Join
                     </button>

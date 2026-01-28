@@ -6,7 +6,7 @@ namespace App\Core;
 final readonly class View
 {
     /** Handle rendering of views with provided title and parameters. */
-    public static function render(string $view, string $title, array $extraData = []): void
+    public static function render(string $view, string $title, array $controllerData = []): void
     {
         // Set globally used data for views
         $data = [
@@ -16,7 +16,7 @@ final readonly class View
         ];
 
         // Merge controller data, and extract to variables for use in views
-        $data = array_merge($data, $extraData);
+        $data = array_merge($data, $controllerData);
         extract($data, EXTR_SKIP);
 
         // Unset all flash data, preventing showing in unrelated views
