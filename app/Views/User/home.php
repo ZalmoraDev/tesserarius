@@ -3,22 +3,21 @@
 use App\Core\Csrf;
 use App\Views\components\projectHomeTabComp;
 
+/** @var array $data View */
+
 $projectTab = new projectHomeTabComp();
 
 // variables injected and path redirected by
 // UserController::homeView
-$projectsOwned = $params['projects']['owned'] ?? null;
-$projectsMember = $params['projects']['member'] ?? null;
-
-$flash_errors = $_SESSION['flash_errors'] ?? [];
-unset($_SESSION['flash_errors']);
+$projectsOwned = $data['projects']['owned'] ?? null;
+$projectsMember = $data['projects']['member'] ?? null;
 ?>
 
 <body class="tess-base-body flex flex-col">
 
 <?php
 include_once __DIR__ . "/../skeleton/navbar.php";
-if ($flash_errors)
+if ($data['flash_errors'])
     include __DIR__ . '/../components/toastComp.php';
 ?>
 

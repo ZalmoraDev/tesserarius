@@ -17,8 +17,8 @@ use App\Core\Csrf;
     </div>
 
     <!-- Center -->
-<!--    <div class="flex flex-1 gap-4 justify-center items-center">-->
-<!--    </div>-->
+    <!--    <div class="flex flex-1 gap-4 justify-center items-center">-->
+    <!--    </div>-->
 
     <!-- Right -->
     <div class="flex flex-1 gap-4 justify-end items-center">

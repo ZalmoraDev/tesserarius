@@ -94,7 +94,7 @@ final class AuthService implements AuthServiceInterface
     public function requireAuthentication($routeReqRole): void
     {
         // AUTHENTICATION: If route requires authenticated user, but user is not authenticated, redirect to /login
-        if ($routeReqRole >= AccessRole::Authenticated && !isset($_SESSION['auth']['userId']) )
+        if ($routeReqRole >= AccessRole::Authenticated && !isset($_SESSION['auth']['userId']))
             throw new AuthException(AuthException::REQUIRES_LOGIN);
     }
 

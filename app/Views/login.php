@@ -2,8 +2,6 @@
 
 use App\Core\Csrf;
 
-$flash_errors = $_SESSION['flash_errors'] ?? [];
-unset($_SESSION['flash_errors']);
 ?>
 
 <body class="tess-base-body">
@@ -15,17 +13,6 @@ unset($_SESSION['flash_errors']);
             <h1 class="text-4xl"><?= $_ENV['SITE_NAME'] ?></h1>
             <p class="text-neutral-400">Your tasks safeguarded</p>
         </div>
-
-        <!-- START Error Messages, $flash_errors set in calling controller -->
-        <?php if ($flash_errors): ?>
-            <div class="text-red-600 text-center space-y-2">
-                <?php foreach ($flash_errors as $message): ?>
-                    <span><?= $message ?></span>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-        <!-- END Error Messages -->
-
         <div class="gap-4 flex flex-col w-full items-center">
             <form action="/auth/login" method="POST" class="flex flex-col justify-center items-center gap-2">
                 <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">

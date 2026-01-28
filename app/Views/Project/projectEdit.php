@@ -35,60 +35,60 @@ if ($flash_errors)
             <div class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
                 <h2 class="text-2xl justify-center">Project Invites</h2>
                 <div class="flex-1 flex flex-col justify-center w-full gap-4">
-                <table class="w-full border-collapse">
-                    <thead>
-                    <tr class="border-b">
-                        <th class="text-left p-2">Code</th>
-                        <th class="text-left p-2">Creator</th>
-                        <th class="text-left p-2">Created At</th>
-                        <th class="text-left p-2">Expires At</th>
-                        <th class="text-left p-2">Activated At</th>
-                        <th class="text-left p-2">Actions</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    <?php foreach ($invites as $invite): ?>
-                        <!-- activatedAt uses 2 ternary checks: if activatedAt, show date, else if expired show EXPIRED, else show '-' -->
+                    <table class="w-full border-collapse">
+                        <thead>
                         <tr class="border-b">
-                            <td class="p-2"><?= htmlspecialchars($invite->inviteCode) ?></td>
-                            <td class="p-2"><?= htmlspecialchars($invite->createdBy) ?></td>
-                            <td class="p-2"><?= htmlspecialchars($invite->createdAt->format('Y-m-d H:i')) ?></td>
-                            <td class="p-2"><?= htmlspecialchars($invite->expiresAt->format('Y-m-d H:i')) ?></td>
-                            <td class="p-2"><?= $invite->activatedAt ? htmlspecialchars($invite->activatedAt->format('Y-m-d H:i')) :
-                                        (new DateTimeImmutable() > $invite->expiresAt ? '<span class="text-red-600 font-semibold">EXPIRED</span>' : '-') ?></td>
-                            <td class="p-2">
-                                <form method="POST"
-                                      action="/project-members/delete-invite/<?= $project->id ?>/<?= $invite->id ?>">
-                                    <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                                    <button type="submit"
-                                            class="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded cursor-pointer">
-                                        ✕
-                                    </button>
-                                </form>
-                            </td>
+                            <th class="text-left p-2">Code</th>
+                            <th class="text-left p-2">Creator</th>
+                            <th class="text-left p-2">Created At</th>
+                            <th class="text-left p-2">Expires At</th>
+                            <th class="text-left p-2">Activated At</th>
+                            <th class="text-left p-2">Actions</th>
                         </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
-                <form action="/project-members/create-invites/<?= $project->id ?>" method="POST" class="w-full">
-                    <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                    <div class="flex gap-4 w-full mt-4">
-                        <div class="flex flex-col w-full">
-                            <label for="expires_at" class="text-sm mb-1">Expires at</label>
-                            <input type="datetime-local" id="expires_at" name="expires_at" required
-                                   class="tess-input-md w-full">
+                        </thead>
+
+                        <tbody>
+                        <?php foreach ($invites as $invite): ?>
+                            <!-- activatedAt uses 2 ternary checks: if activatedAt, show date, else if expired show EXPIRED, else show '-' -->
+                            <tr class="border-b">
+                                <td class="p-2"><?= htmlspecialchars($invite->inviteCode) ?></td>
+                                <td class="p-2"><?= htmlspecialchars($invite->createdBy) ?></td>
+                                <td class="p-2"><?= htmlspecialchars($invite->createdAt->format('Y-m-d H:i')) ?></td>
+                                <td class="p-2"><?= htmlspecialchars($invite->expiresAt->format('Y-m-d H:i')) ?></td>
+                                <td class="p-2"><?= $invite->activatedAt ? htmlspecialchars($invite->activatedAt->format('Y-m-d H:i')) :
+                                            (new DateTimeImmutable() > $invite->expiresAt ? '<span class="text-red-600 font-semibold">EXPIRED</span>' : '-') ?></td>
+                                <td class="p-2">
+                                    <form method="POST"
+                                          action="/project-members/delete-invite/<?= $project->id ?>/<?= $invite->id ?>">
+                                        <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
+                                        <button type="submit"
+                                                class="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded cursor-pointer">
+                                            ✕
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <form action="/project-members/create-invites/<?= $project->id ?>" method="POST" class="w-full">
+                        <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
+                        <div class="flex gap-4 w-full mt-4">
+                            <div class="flex flex-col w-full">
+                                <label for="expires_at" class="text-sm mb-1">Expires at</label>
+                                <input type="datetime-local" id="expires_at" name="expires_at" required
+                                       class="tess-input-md w-full">
+                            </div>
+                            <div class="flex flex-col w-32">
+                                <label for="count" class="text-sm mb-1">Count</label>
+                                <input type="number" id="count" name="count" min="1" max="10" value="1" required
+                                       class="tess-input-md w-full">
+                            </div>
                         </div>
-                        <div class="flex flex-col w-32">
-                            <label for="count" class="text-sm mb-1">Count</label>
-                            <input type="number" id="count" name="count" min="1" max="10" value="1" required
-                                   class="tess-input-md w-full">
-                        </div>
-                    </div>
-                    <button type="submit" class="tess-btn-pri w-full bg-green-500 hover:bg-green-600 mt-4">
-                        Create invite token(s)
-                    </button>
-                </form>
+                        <button type="submit" class="tess-btn-pri w-full bg-green-500 hover:bg-green-600 mt-4">
+                            Create invite token(s)
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -97,67 +97,67 @@ if ($flash_errors)
                 <h2 class="text-2xl justify-center">Edit members</h2>
 
                 <div class="flex-1 flex flex-col justify-center w-full">
-                <table class="w-full border-collapse">
-                    <thead>
-                    <tr class="border-b">
-                        <th class="text-left p-2">Username</th>
-                        <th class="text-left p-2">Role</th>
-                        <th class="text-left p-2">Actions</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    <!-- LIST MEMBERS -->
-                    <?php foreach ($members as $member): ?>
+                    <table class="w-full border-collapse">
+                        <thead>
                         <tr class="border-b">
-                            <td class="p-2"><?= htmlspecialchars($member->username) ?></td>
-                            <td class="p-2"><?= htmlspecialchars($member->userRole->value) ?></td>
-
-                            <td class="p-2">
-                                <div class="flex gap-2">
-
-                                    <!-- PROMOTE, Owner Only -->
-                                    <?php if ($userRole === UserRole::Owner && $member->userRole === UserRole::Member): ?>
-                                        <form method="POST"
-                                              action="/project-members/promote/<?= $project->id ?>/<?= $member->userId ?>">
-                                            <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                                            <button type="submit"
-                                                    class="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded cursor-pointer">
-                                                ↑
-                                            </button>
-                                        </form>
-                                    <?php endif; ?>
-
-                                    <!-- DEMOTE, Owner only -->
-                                    <?php if ($userRole === UserRole::Owner && $member->userRole === UserRole::Admin): ?>
-                                        <form method="POST"
-                                              action="/project-members/demote/<?= $project->id ?>/<?= $member->userId ?>">
-                                            <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                                            <button type="submit"
-                                                    class="w-9 h-9 flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded cursor-pointer">
-                                                ↓
-                                            </button>
-                                        </form>
-                                    <?php endif; ?>
-
-                                    <!-- REMOVE, Owner CANNOT be removed. Admins CANNOT remove other admins. Admins CAN remove members -->
-                                    <?php if ($member->userRole !== UserRole::Owner && ($userRole === UserRole::Owner ||
-                                                    ($userRole === UserRole::Admin && $member->userRole === UserRole::Member))): ?>
-                                        <form method="POST"
-                                              action="/project-members/remove/<?= $project->id ?>/<?= $member->userId ?>">
-                                            <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                                            <button type="submit"
-                                                    class="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded cursor-pointer">
-                                                ✕
-                                            </button>
-                                        </form>
-                                    <?php endif; ?>
-                                </div>
-                            </td>
+                            <th class="text-left p-2">Username</th>
+                            <th class="text-left p-2">Role</th>
+                            <th class="text-left p-2">Actions</th>
                         </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        </thead>
+
+                        <tbody>
+                        <!-- LIST MEMBERS -->
+                        <?php foreach ($members as $member): ?>
+                            <tr class="border-b">
+                                <td class="p-2"><?= htmlspecialchars($member->username) ?></td>
+                                <td class="p-2"><?= htmlspecialchars($member->userRole->value) ?></td>
+
+                                <td class="p-2">
+                                    <div class="flex gap-2">
+
+                                        <!-- PROMOTE, Owner Only -->
+                                        <?php if ($userRole === UserRole::Owner && $member->userRole === UserRole::Member): ?>
+                                            <form method="POST"
+                                                  action="/project-members/promote/<?= $project->id ?>/<?= $member->userId ?>">
+                                                <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
+                                                <button type="submit"
+                                                        class="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded cursor-pointer">
+                                                    ↑
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+
+                                        <!-- DEMOTE, Owner only -->
+                                        <?php if ($userRole === UserRole::Owner && $member->userRole === UserRole::Admin): ?>
+                                            <form method="POST"
+                                                  action="/project-members/demote/<?= $project->id ?>/<?= $member->userId ?>">
+                                                <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
+                                                <button type="submit"
+                                                        class="w-9 h-9 flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded cursor-pointer">
+                                                    ↓
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+
+                                        <!-- REMOVE, Owner CANNOT be removed. Admins CANNOT remove other admins. Admins CAN remove members -->
+                                        <?php if ($member->userRole !== UserRole::Owner && ($userRole === UserRole::Owner ||
+                                                        ($userRole === UserRole::Admin && $member->userRole === UserRole::Member))): ?>
+                                            <form method="POST"
+                                                  action="/project-members/remove/<?= $project->id ?>/<?= $member->userId ?>">
+                                                <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
+                                                <button type="submit"
+                                                        class="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded cursor-pointer">
+                                                    ✕
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -165,15 +165,15 @@ if ($flash_errors)
             <div class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
                 <h2 class="text-2xl justify-center">Edit project</h2>
                 <div class="flex-1 flex flex-col justify-center w-full">
-                <form action="/project/edit/<?= $project->id ?>" method="POST"
-                      class="flex flex-col justify-center items-center gap-2 w-full">
-                    <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                    <input type="text" class="tess-input-md w-full" placeholder="Project Name [3-32]" name="name"
-                           value="<?= $project->name ?>" required>
-                    <textarea class="tess-input-md min-h-32 w-full" placeholder="Description [0-128]"
-                              name="description"><?= $project->description ?></textarea>
-                    <button type="submit" class="tess-btn-sec w-full mt-4 cursor-pointer">Confirm edit</button>
-                </form>
+                    <form action="/project/edit/<?= $project->id ?>" method="POST"
+                          class="flex flex-col justify-center items-center gap-2 w-full">
+                        <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
+                        <input type="text" class="tess-input-md w-full" placeholder="Project Name [3-32]" name="name"
+                               value="<?= $project->name ?>" required>
+                        <textarea class="tess-input-md min-h-32 w-full" placeholder="Description [0-128]"
+                                  name="description"><?= $project->description ?></textarea>
+                        <button type="submit" class="tess-btn-sec w-full mt-4 cursor-pointer">Confirm edit</button>
+                    </form>
                 </div>
             </div>
 
@@ -182,17 +182,17 @@ if ($flash_errors)
                 <div class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
                     <h2 class="text-2xl justify-center">Delete project</h2>
                     <div class="flex-1 flex flex-col justify-center w-full">
-                    <form action="/project/delete/<?= $project->id ?>" method="POST" class="w-full flex flex-col">
-                        <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                        <p class="mb-2"> Repeat project name to confirm deletion: </p>
-                        <input type="text" class="tess-input-md w-full" placeholder="Project Name"
-                               name="confirm_name"
-                               required>
-                        <button type="submit"
-                                class="cursor-pointer tess-btn-pri bg-red-600 hover:bg-red-700 text-white font-bold w-full mt-4">
-                            CONFIRM DELETION
-                        </button>
-                    </form>
+                        <form action="/project/delete/<?= $project->id ?>" method="POST" class="w-full flex flex-col">
+                            <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
+                            <p class="mb-2"> Repeat project name to confirm deletion: </p>
+                            <input type="text" class="tess-input-md w-full" placeholder="Project Name"
+                                   name="confirm_name"
+                                   required>
+                            <button type="submit"
+                                    class="cursor-pointer tess-btn-pri bg-red-600 hover:bg-red-700 text-white font-bold w-full mt-4">
+                                CONFIRM DELETION
+                            </button>
+                        </form>
                     </div>
                 </div>
             <?php endif; ?>

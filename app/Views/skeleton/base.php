@@ -6,7 +6,7 @@
 
     <!-- Tailwind CSS -->
     <link rel="stylesheet" href="/assets/styles/output.css">
-    <title><?= htmlspecialchars($titleRender ?? '') ?></title>
+    <title><?= htmlspecialchars($data['viewTitle'] ?? '') ?></title>
 </head>
 
 <?php
@@ -15,6 +15,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require $viewRender; // Ignore error, $viewRender is always set in controllers View::render() calls
+require $data['viewFile']; // Ignore error, $viewRender is always set in controllers View::render() calls
 ?>
 </html>
