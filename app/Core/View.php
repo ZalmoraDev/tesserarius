@@ -12,17 +12,31 @@ final readonly class View
         $data = [
             'viewFile' => __DIR__ . '/../Views/' . $view,
             'viewTitle' => $title,
-            'flash_errors' => $_SESSION['flash_errors'] ?? [],
+
+            'user' => [
+                'id' => $_SESSION['auth']['userId'] ?? null,
+                'username' => $_SESSION['auth']['username'] ?? null,
+                'email' => $_SESSION['auth']['email'] ?? null,
+                'role' => $_SESSION['auth']['projectRole'] ?? null,
+            ],
+
+            'flash' => [
+                'success' => $_SESSION['flash_success'] ?? [],
+                'info' => $_SESSION['flash_info'] ?? [],
+                'errors' => $_SESSION['flash_errors'] ?? [],
+            ],
         ];
+
+        // Include auth data, so views don't need to access $_SESSION directly
+        $data['auth'] = $_SESSION['auth'] ?? null;
 
         // Merge controller data, and extract to variables for use in views
         $data = array_merge($data, $controllerData);
+        self::addConditionalData($data);
         extract($data, EXTR_SKIP);
 
         // Unset all flash data, preventing showing in unrelated views
         unset($_SESSION['flash_errors']);
-
-        self::addConditionalData($data);
         require __DIR__ . '/../Views/skeleton/base.php';
     }
 
@@ -37,7 +51,7 @@ final readonly class View
     private static function addConditionalData($data): void
     {
         // Include toast component if there are flash errors to show
-        if ($data['flash_errors'])
+        if ($data['flash']['success'] || $data['flash']['info'] || !empty($data['flash']['errors']))
             include __DIR__ . '/../Views/components/toastComp.php';
     }
 }

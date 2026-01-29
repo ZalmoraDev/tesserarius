@@ -2,6 +2,7 @@
 
 use App\Core\Csrf;
 
+/** @var array $data /app/Core/View.php View::render*/
 ?>
 
 <nav class="w-full bg-neutral-900 gap-2 p-2
@@ -22,7 +23,7 @@ use App\Core\Csrf;
 
     <!-- Right -->
     <div class="flex flex-1 gap-4 justify-end items-center">
-        <p><?= $_SESSION['auth']['username'] ?? "NO_USER"; ?></p>
+        <p><?= (!empty($data['user']['role']) ? $data['user']['role'] . ': ' : '') . $data['user']['username'] ?? "NO_USER"; ?></p>
         <form action="/auth/logout" method="POST">
             <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
             <button type="submit" class="transition-colors cursor-pointer">

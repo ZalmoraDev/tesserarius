@@ -59,9 +59,9 @@ final class Router
                     // Checks if the already logged-in user is visiting the loginPage OR signupPage, redirect to / (home)
                     $this->authService->denyAuthenticatedOnAuthRoutes($handler['action'][1]);
 
-                    // Checks when accessing a project route, if user has access with required role or higher
+                    // Checks if accessing a project route, validate if user has access with required role or higher
                     // Store the user's project role in session for use in project views AS A STRING, else clear it
-                    // Uses string instead of UserRole since every single route would otherwise need to import UserRole enum
+                    // Uses string instead of UserRole, otherwise every single route including POST would need to import UserRole enum
                     if ($pathParams['projectId'] ?? false) {
                         $userProjectRole = $this->authService->requireProjectAccess((int)$pathParams['projectId'], $routeReqAccess);
                         $_SESSION['auth']['projectRole'] = $userProjectRole->value;

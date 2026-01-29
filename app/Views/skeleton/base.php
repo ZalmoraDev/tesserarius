@@ -15,6 +15,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require $data['viewFile']; // Ignore error, $viewRender is always set in controllers View::render() calls
+/** @var array $data /app/Core/View.php View::render */
+require $data['viewFile'];
 ?>
+
 </html>
