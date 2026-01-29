@@ -12,14 +12,14 @@ $members = $data['members'] ?? []; // Project
 $invites = $data['invites'] ?? []; // ProjectInvite[]
 
 // injected by Router::dispatch() via AuthServiceInterface::requireProjectAccess
-$userRole = UserRole::tryFrom($data['auth']['projectRole']) ?? null;
+$userRole = $data['user']['role'] ?? null;
 ?>
 
 <body class="tess-base-body flex flex-col">
 
 <?php include_once __DIR__ . "/../skeleton/navbar.php"; ?>
 
-<main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto relative">
+<main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto relative mb-4">
     <div class="flex flex-col gap-6">
         <h1 class="tess-base-container-sm text-2xl w-full max-w-full mt-4">Edit project: <?= $project->name ?></h1>
 

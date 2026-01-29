@@ -40,7 +40,7 @@ final class Routes
 
             // UserController routes (default for logged-in users '/')
             $r->get('/', $this->route([$user, 'homePage'], AccessRole::Authenticated));
-            // TODO: Add user edit page(s)
+            $r->get('/settings', $this->route([$user, 'settingsPage'], AccessRole::Authenticated));
 
             // ProjectController routes
             $r->get('/project/create', $this->route([$project, 'showCreate'], AccessRole::Authenticated));

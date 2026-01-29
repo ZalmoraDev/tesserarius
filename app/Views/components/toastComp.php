@@ -77,6 +77,7 @@ foreach ($toastTypes as $type => $config) {
                 toast.addEventListener('click', function () {
                     this.classList.remove('opacity-100', 'translate-y-0');
                     this.classList.add('opacity-0', '-translate-y-8');
+
                     setTimeout(() => {
                         this.remove();
                         // Remove container if no toasts left

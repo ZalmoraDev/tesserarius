@@ -83,7 +83,7 @@ final class Router
                         header('Location: /', true, 302);
                         exit;
                     }
-                    
+
                     $_SESSION['flash_errors'][] = $e->getMessage();
                     switch ($e->getMessage()) {
                         case AuthException::REQUIRES_LOGIN:

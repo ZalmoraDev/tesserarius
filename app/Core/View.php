@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use App\Models\Enums\UserRole;
+
 /** View renderer for passing view, title & parameters */
 final readonly class View
 {
@@ -13,11 +15,12 @@ final readonly class View
             'viewFile' => __DIR__ . '/../Views/' . $view,
             'viewTitle' => $title,
 
+            // projectRole imported as string, since otherwise each route would need to import UserRole enum
             'user' => [
                 'id' => $_SESSION['auth']['userId'] ?? null,
                 'username' => $_SESSION['auth']['username'] ?? null,
                 'email' => $_SESSION['auth']['email'] ?? null,
-                'role' => $_SESSION['auth']['projectRole'] ?? null,
+                'role' => UserRole::tryFrom($_SESSION['auth']['projectRole'] ?? '') ?? null,
             ],
 
             'flash' => [
@@ -26,9 +29,6 @@ final readonly class View
                 'errors' => $_SESSION['flash_errors'] ?? [],
             ],
         ];
-
-        // Include auth data, so views don't need to access $_SESSION directly
-        $data['auth'] = $_SESSION['auth'] ?? null;
 
         // Merge controller data, and extract to variables for use in views
         $data = array_merge($data, $controllerData);
