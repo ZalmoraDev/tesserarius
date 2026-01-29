@@ -68,6 +68,7 @@ final readonly class ProjectController
                 $_POST['name'] ?? '',
                 $_POST['description'] ?? ''
             );
+            $_SESSION['flash_success'][] = "Project created successfully.";
             header("Location: /project/view/" . $id, true, 302);
             exit;
         } catch (ProjectException $e) {
@@ -85,6 +86,7 @@ final readonly class ProjectController
                 $projectId,
                 $_POST['name'] ?? '',
                 $_POST['description'] ?? '');
+            $_SESSION['flash_success'][] = "Project updated successfully.";
         } catch (ProjectException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
         }
@@ -100,6 +102,7 @@ final readonly class ProjectController
                 $projectId,
                 $_POST['confirm_name'] ?? ''
             );
+            $_SESSION['flash_success'][] = "Project deleted successfully.";
             header("Location: /", true, 302);
             exit;
         } catch (ProjectException $e) {

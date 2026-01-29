@@ -2,9 +2,9 @@
 
 namespace App\Routing;
 
+use App\Controllers\ErrorController;
 use App\Core\Csrf;
 
-use App\Controllers;
 use App\Services\AuthServiceInterface;
 
 use App\Services\Exceptions\AuthException;
@@ -39,7 +39,7 @@ final class Router
         // Use dispatcher retrieved from Routes.php
         $routeInfo = $this->dispatcher->dispatch($httpMethod, $uri);
 
-        $errorController = new Controllers\ErrorController();
+        $errorController = new ErrorController();
         switch ($routeInfo[0]) {
             case FastRoute\Dispatcher::NOT_FOUND:
                 $errorController->notFound();
@@ -78,6 +78,12 @@ final class Router
                     call_user_func_array($handler['action'], $pathParams);
                     break;
                 } catch (AuthException $e) {
+                    if ($e->getMessage() === AuthException::ALREADY_LOGGED_IN) {
+                        $_SESSION['flash_info'][] = $e->getMessage();
+                        header('Location: /', true, 302);
+                        exit;
+                    }
+                    
                     $_SESSION['flash_errors'][] = $e->getMessage();
                     switch ($e->getMessage()) {
                         case AuthException::REQUIRES_LOGIN:
@@ -86,7 +92,6 @@ final class Router
                             exit;
                         case AuthException::PROJECT_ACCESS_DENIED:
                         case AuthException::PROJECT_INSUFFICIENT_PERMISSIONS:
-                        case AuthException::ALREADY_LOGGED_IN:
                             header('Location: /', true, 302);
                             exit;
                         default:

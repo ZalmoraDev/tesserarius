@@ -9,10 +9,10 @@ use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
 
 /** Controller handling user authentication actions:
-   - GET: Displaying login and signup pages
-   - POST: Processing login and signup form submissions
-   - POST: Handling user logout
-*/
+ * - GET: Displaying login and signup pages
+ * - POST: Processing login and signup form submissions
+ * - POST: Handling user logout
+ */
 final readonly class AuthController
 {
     private AuthServiceInterface $authService;
@@ -46,6 +46,7 @@ final readonly class AuthController
                 $_POST['email'] ?? '',
                 $_POST['password'] ?? ''
             );
+            $_SESSION['flash_success'][] = "You are now logged in.";
             header("Location: /", true, 302);
             exit;
         } catch (AuthException $e) {
@@ -59,12 +60,15 @@ final readonly class AuthController
     public function signup(): void
     {
         try {
+            $username = $_POST['username'] ?? '';
+
             $this->authService->signup(
-                $_POST['username'] ?? '',
+                $username,
                 $_POST['email'] ?? '',
                 $_POST['password'] ?? '',
                 $_POST['password_confirm'] ?? ''
             );
+            $_SESSION['flash_success'][] = "Welcome " . $username . "! Your account has been created.";
             header("Location: /", true, 302);
             exit;
         } catch (ValidationException $e) {
@@ -78,6 +82,7 @@ final readonly class AuthController
     public function logout(): void
     {
         $this->authService->logout();
+        $_SESSION['flash_info'][] = "You have been logged out.";
         header("Location: /login", true, 302);
     }
 }

@@ -14,7 +14,7 @@ class projectHomeTabComp
         $ownerName = htmlspecialchars($project->ownerName) ?? "";
 
         return "       
-        <a class='tess-project-card cursor-pointer hover:brightness-50 flex flex-col justify-between min-h-32' href='" . $_ENV['SITE_URL'] . "/project/view/{$id}'>
+        <a class='tess-project-card cursor-pointer hover:brightness-50 flex flex-col justify-between min-h-32' href='" . "/project/view/{$id}'>
         <div>
             <span class='text-amber-400 block truncate'>$name</span>
             <span class='text-xs font-medium line-clamp-3'>$description</span>

@@ -44,6 +44,7 @@ final readonly class ProjectMembersController
     {
         try {
             $this->projectMemberService->deleteProjectInviteCode($projectId, $inviteId);
+            $_SESSION['flash_success'][] = 'Invite deleted successfully.';
         } catch (ProjectMembersException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
         }
@@ -56,6 +57,7 @@ final readonly class ProjectMembersController
     {
         try {
             $joinedProjectId = $this->projectMemberService->joinProjectByInviteCode($_POST['invite_code']);
+            $_SESSION['flash_success'][] = 'Successfully joined project.';
             header("Location: /project/view/" . $joinedProjectId, true, 302);
             exit;
         } catch (ProjectMembersException $e) {
@@ -70,6 +72,7 @@ final readonly class ProjectMembersController
     public function handleMemberPromote(int $projectId, int $memberId): void
     {
         $this->projectMemberService->promoteProjectMember($projectId, $memberId);
+        $_SESSION['flash_success'][] = 'Member promoted successfully.';
         header("Location: /project/edit/" . $projectId, true, 302);
         exit;
     }
@@ -79,6 +82,7 @@ final readonly class ProjectMembersController
     public function handleMemberDemote(int $projectId, int $memberId): void
     {
         $this->projectMemberService->demoteProjectMember($projectId, $memberId);
+        $_SESSION['flash_success'][] = 'Member demoted successfully.';
         header("Location: /project/edit/" . $projectId, true, 302);
         exit;
     }
@@ -88,6 +92,7 @@ final readonly class ProjectMembersController
     public function handleMemberRemoval(int $projectId, int $memberId): void
     {
         $this->projectMemberService->removeProjectMember($projectId, $memberId);
+        $_SESSION['flash_success'][] = 'Member removed successfully.';
         header("Location: /project/edit/" . $projectId, true, 302);
         exit;
     }

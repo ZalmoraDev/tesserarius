@@ -36,7 +36,11 @@ final readonly class View
         extract($data, EXTR_SKIP);
 
         // Unset all flash data, preventing showing in unrelated views
-        unset($_SESSION['flash_errors']);
+        unset(
+            $_SESSION['flash_success'],
+            $_SESSION['flash_info'],
+            $_SESSION['flash_errors']
+        );
         require __DIR__ . '/../Views/skeleton/base.php';
     }
 
