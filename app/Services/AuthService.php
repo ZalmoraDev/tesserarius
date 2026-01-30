@@ -85,45 +85,6 @@ final class AuthService implements AuthServiceInterface
         $this->setSessionData($identity);
     }
 
-    public function editAccount(string $newUsername, string $newEmail): void
-    {
-        $identity = $this->userRepo->findUserIdentityById((int)$_SESSION['auth']['userId']);
-
-        // If user is not logged in / no fields changed
-        if ($identity === null)
-            throw new AuthException(AuthException::USER_NOT_FOUND);
-        if ($identity->username === $newUsername && $identity->email === $newEmail)
-            return;
-
-        // Username & email use same validation logic as signup(...)
-        // If a new username is provided, validate it
-        if ($newUsername !== $identity->username) {
-            if (!preg_match('/^[a-zA-Z0-9_]{3,32}$/', $newUsername))
-                throw new ValidationException(ValidationException::USERNAME_INVALID);
-            if ($this->userRepo->existsByUsername($newUsername))
-                throw new ValidationException(ValidationException::USERNAME_TAKEN);
-        } else {
-            $newUsername = $identity->username;
-        }
-
-        // If a new email is provided, validate it
-        if ($newEmail !== $identity->email) {
-            if (!filter_var($newEmail, FILTER_VALIDATE_EMAIL))
-                throw new ValidationException(ValidationException::USERNAME_INVALID);
-            if ($this->userRepo->existsByEmail($newUsername))
-                throw new ValidationException(ValidationException::USERNAME_TAKEN);
-        } else {
-            $newEmail = $identity->email;
-        }
-
-        // If one field fails, no changes are made to either field
-        $this->userRepo->updateUser($identity->id, $newUsername, $newEmail);
-    }
-
-    public function deleteAccount(string $username): void
-    {
-        // TODO: Implement deleteAccount() method.
-    }
     // -------------------- Public Auth Methods END --------------------
 
 
@@ -159,7 +120,6 @@ final class AuthService implements AuthServiceInterface
 
         return $userRole;
     }
-
 
     /** Checks if user is already logged in when accessing login/signup pages
      * @throws AuthException if user is already logged in and tries to access login/signup pages

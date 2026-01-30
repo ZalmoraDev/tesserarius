@@ -54,15 +54,14 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
 
     /** Checks if a project with the given name already exists.
      * Checked to enforce unique project names per user during creation. */
-    public function projectExistsByName(string $name): bool
+    public function existsByName(string $name): bool
     {
         $stmt = $this->connection->prepare('
         SELECT EXISTS (
             SELECT 1
             FROM projects
             WHERE name = :name
-        )'
-        );
+        )');
 
         $stmt->execute(['name' => $name]);
 

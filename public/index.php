@@ -3,7 +3,7 @@
 use App\Routing\{Routes, Router};
 
 use App\Controllers\{AuthController, ProjectMembersController, UserController, ProjectController};
-use App\Services\{AuthService, ProjectMembersService, ProjectService, TaskService};
+use App\Services\{AuthService, ProjectMembersService, ProjectService, TaskService, UserService};
 use App\Repositories\{AuthRepository, ProjectMembersRepository, ProjectRepository, TaskRepository, UserRepository};
 
 // -------------------- Headers, Session & .env config --------------------
@@ -45,12 +45,13 @@ $authService = new AuthService($authRepo, $userRepo);
 $projectService = new ProjectService($projectRepo, $projectMembersRepo);
 $projectMembersService = new ProjectMembersService($projectMembersRepo);
 $taskService = new TaskService($taskRepo);
+$userService = new UserService($userRepo);
 
 // Controllers
 $authController = new AuthController($authService);
 $projectController = new ProjectController($projectService, $projectMembersService, $taskService);
 $projectMembersController = new ProjectMembersController($projectMembersService);
-$userController = new UserController($projectService);
+$userController = new UserController($userService, $projectService);
 
 // -------------------- Routing setup & Router dispatch --------------------
 // Controller map for router

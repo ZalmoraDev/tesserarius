@@ -65,7 +65,7 @@ final class ProjectService implements ProjectServiceInterface
             throw new ProjectException(ProjectException::DESCRIPTION_INVALID);
 
         // username already has a project by this name
-        if ($this->projectRepo->projectExistsByName($name))
+        if ($this->projectRepo->existsByName($name))
             throw new ProjectException(ProjectException::NAME_TAKEN);
 
         // failed attempt creating the new project
@@ -94,7 +94,7 @@ final class ProjectService implements ProjectServiceInterface
             throw new ProjectException(ProjectException::DESCRIPTION_INVALID);
 
         // username already has a project by this name
-        if ($this->projectRepo->projectExistsByName($name))
+        if ($this->projectRepo->existsByName($name))
             throw new ProjectException(ProjectException::NAME_TAKEN);
 
         // failed attempt editing the project

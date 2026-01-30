@@ -46,7 +46,7 @@ final readonly class AuthController
                 $_POST['email'] ?? '',
                 $_POST['password'] ?? ''
             );
-            $_SESSION['flash_success'][] = "You are now logged in.";
+            $_SESSION['flash_successes'][] = "You are now logged in.";
             header("Location: /", true, 302);
             exit;
         } catch (AuthException $e) {
@@ -68,7 +68,7 @@ final readonly class AuthController
                 $_POST['password'] ?? '',
                 $_POST['password_confirm'] ?? ''
             );
-            $_SESSION['flash_success'][] = "Welcome " . $username . "! Your account has been created.";
+            $_SESSION['flash_successes'][] = "Welcome " . $username . "! Your account has been created.";
             header("Location: /", true, 302);
             exit;
         } catch (ValidationException $e) {

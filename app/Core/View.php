@@ -24,7 +24,7 @@ final readonly class View
             ],
 
             'flash' => [
-                'success' => $_SESSION['flash_success'] ?? [],
+                'successes' => $_SESSION['flash_successes'] ?? [],
                 'info' => $_SESSION['flash_info'] ?? [],
                 'errors' => $_SESSION['flash_errors'] ?? [],
             ],
@@ -37,7 +37,7 @@ final readonly class View
 
         // Unset all flash data, preventing showing in unrelated views
         unset(
-            $_SESSION['flash_success'],
+            $_SESSION['flash_successes'],
             $_SESSION['flash_info'],
             $_SESSION['flash_errors']
         );
@@ -55,7 +55,7 @@ final readonly class View
     private static function addConditionalData($data): void
     {
         // Include toast component if there are flash errors to show
-        if ($data['flash']['success'] || $data['flash']['info'] || !empty($data['flash']['errors']))
+        if ($data['flash']['successes'] || $data['flash']['info'] || !empty($data['flash']['errors']))
             include __DIR__ . '/../Views/components/toastComp.php';
     }
 }

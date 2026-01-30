@@ -17,7 +17,7 @@ final class Routes
     }
 
     /** nikic/fast-route | https://packagist.org/packages/nikic/fast-route.
-     * Route definitions with additional access rights to be evaluated by router. */
+     * Route definitions with additional access rights logic, to be evaluated by router. */
     public function dispatcher(): FastRoute\Dispatcher
     {
         return FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
@@ -28,6 +28,7 @@ final class Routes
             $user = $this->controllers['user'];
 
             // Uses route aliases instead of full $r->addRoute(METHOD, ...)
+
             // AuthController routes
             $r->get('/login', $this->route([$auth, 'loginPage'], AccessRole::Anyone));
             $r->get('/signup', $this->route([$auth, 'signupPage'], AccessRole::Anyone));
@@ -35,12 +36,6 @@ final class Routes
             $r->post('/auth/login', $this->route([$auth, 'login'], AccessRole::Anyone));
             $r->post('/auth/signup', $this->route([$auth, 'signup'], AccessRole::Anyone));
             $r->post('/auth/logout', $this->route([$auth, 'logout'], AccessRole::Anyone));
-
-            // UserController routes (default for logged-in users '/')
-            $r->get('/', $this->route([$user, 'homePage'], AccessRole::Authenticated));
-            $r->get('/settings', $this->route([$user, 'settingsPage'], AccessRole::Authenticated));
-            $r->post('/user/edit/{userId:\d+}', $this->route([$user, 'handleEdit'], AccessRole::Authenticated));
-            $r->post('/user/delete/{userId:\d+}', $this->route([$user, 'handleDeletion'], AccessRole::Authenticated));
 
             // ProjectController routes
             $r->get('/project/create', $this->route([$project, 'showCreate'], AccessRole::Authenticated));
@@ -59,10 +54,18 @@ final class Routes
             $r->post('/project-members/promote/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberPromote'], AccessRole::Owner));
             $r->post('/project-members/demote/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberDemote'], AccessRole::Owner));
             $r->post('/project-members/remove/{projectId:\d+}/{memberId:\d+}', $this->route([$projectMembers, 'handleMemberRemoval'], AccessRole::Admin));
+
+            // UserController routes (default for logged-in users '/')
+            $r->get('/', $this->route([$user, 'homePage'], AccessRole::Authenticated));
+            $r->get('/settings', $this->route([$user, 'settingsPage'], AccessRole::Authenticated));
+            $r->post('/user/edit', $this->route([$user, 'handleEdit'], AccessRole::Authenticated));
+            $r->post('/user/delete', $this->route([$user, 'handleDeletion'], AccessRole::Authenticated));
         });
     }
 
-    /** Helper-object to create conciser route auth guard objects */
+    /** Helper-object to create conciser route auth guard objects
+     * @param array $action [controllerClass OBJ, 'classMethod' STRING]
+     * @param AccessRole $accessRole Minimum access role required to access route */
     private function route(array $action, AccessRole $accessRole): array
     {
         return [

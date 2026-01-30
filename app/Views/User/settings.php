@@ -42,12 +42,12 @@ $email = $data['user']['email'] ?? null;
             <div class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
                 <h2 class="text-2xl justify-center">Edit account</h2>
                 <div class="flex-1 flex flex-col justify-center w-full">
-                    <form action="/user/edit<?= $userId ?>" method="POST"
+                    <form action="/user/edit" method="POST"
                           class="flex flex-col justify-center items-center gap-2 w-full">
                         <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
-                        <input type="text" class="tess-input-md w-full" placeholder="Username" name="name"
+                        <input type="text" class="tess-input-md w-full" placeholder="Username" name="username"
                                value="<?= $username ?>" required>
-                        <input type="text" class="tess-input-md w-full" placeholder="Email" name="name"
+                        <input type="text" class="tess-input-md w-full" placeholder="Email" name="email"
                                value="<?= $email ?>" required>
                         <button type="submit" class="tess-btn-sec w-full mt-4 cursor-pointer">Confirm edit</button>
                     </form>
@@ -58,11 +58,11 @@ $email = $data['user']['email'] ?? null;
             <div class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
                 <h2 class="text-2xl justify-center">Delete account</h2>
                 <div class="flex-1 flex flex-col justify-center w-full">
-                    <form action="/user/delete/<?= $userId ?>" method="POST" class="w-full flex flex-col">
+                    <form action="/user/delete" method="POST" class="w-full flex flex-col">
                         <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                         <p class="mb-2"> Repeat account name to confirm deletion: </p>
                         <input type="text" class="tess-input-md w-full" placeholder="Account Name"
-                               name="confirm_name"
+                               name="confirm_username"
                                required>
                         <button type="submit"
                                 class="cursor-pointer tess-btn-pri bg-red-600 hover:bg-red-700 text-white font-bold w-full mt-4">

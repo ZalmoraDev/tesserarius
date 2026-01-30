@@ -16,5 +16,10 @@ final class AuthException extends \RuntimeException
     public const string ALREADY_LOGGED_IN = 'You are already logged in.';
     public const string PROJECT_ACCESS_DENIED = 'You do not have access to this project.';
     public const string PROJECT_INSUFFICIENT_PERMISSIONS = 'You do not have sufficient permissions for this action.';
-    public const string USER_NOT_FOUND = 'User not found.';
+
+
+    // User account actions
+    public const string DELETION_REQUIRES_CONFIRMATION = 'You must confirm your username to delete your account.';
+    public const string DELETION_NAME_MISMATCH = 'The provided username does not match your username.';
+    public const string DELETION_FAILED = 'Account deletion failed due to a server error,<br>please try again later.';
 }

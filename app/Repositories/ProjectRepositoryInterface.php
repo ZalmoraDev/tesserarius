@@ -9,7 +9,7 @@ interface ProjectRepositoryInterface
     public function findProjectByProjectId(int $projectId): ?Project;
     public function findProjectNameByProjectId(int $projectId): ?string;
 
-    public function projectExistsByName(string $name): bool;
+    public function existsByName(string $name): bool;
 
     public function findProjectListItemsByUserId(int $userId): array;
 

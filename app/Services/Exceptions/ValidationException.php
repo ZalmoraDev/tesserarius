@@ -6,6 +6,7 @@ final class ValidationException extends \RuntimeException
 {
     public const string FIELDS_REQUIRED = 'All fields are required,<br>please try again.';
 
+    public const string USER_NOT_FOUND = 'User not found.';
     public const string USERNAME_INVALID = 'Your provided username is not valid,<br>please try again.';
     public const string USERNAME_TAKEN = 'Your provided username is already taken,<br>please try again.';
 

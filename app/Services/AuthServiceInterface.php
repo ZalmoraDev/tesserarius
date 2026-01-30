@@ -14,10 +14,6 @@ interface AuthServiceInterface
     public function logout(): void;
 
     public function signup(string $username, string $email, string $password, string $passwordConfirm): void;
-
-    public function editAccount(string $newUsername, string $newEmail): void;
-
-    public function deleteAccount(string $username): void;
     
 
     // Router methods
