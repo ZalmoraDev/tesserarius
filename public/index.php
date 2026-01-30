@@ -6,11 +6,7 @@ use App\Controllers\{AuthController, ProjectMembersController, UserController, P
 use App\Services\{AuthService, ProjectMembersService, ProjectService, TaskService, UserService};
 use App\Repositories\{AuthRepository, ProjectMembersRepository, ProjectRepository, TaskRepository, UserRepository};
 
-// -------------------- Headers, Session & .env config --------------------
-header("Access-Control-Allow-Methods: GET, POST"); // Only allow GET and POST requests.
-header("Access-Control-Allow-Origin: *"); // TODO: Change this to localhost
-header("Access-Control-Allow-Headers: *"); // Allows all HTTP request headers (useful for handling JSON requests, auth tokens, etc.).
-
+// -------------------- Session & .env config --------------------
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     // https://www.php.net/manual/en/session.configuration.php
@@ -31,6 +27,22 @@ $dotenv->required([
     'SITE_NAME', 'SITE_URL',
     'DB_TYPE', 'DB_HOST', 'DB_PORT', 'DB_DATABASE',
     'DB_USERNAME', 'DB_PASSWORD']);
+
+// TODO: Replace scrip-src 'unsafe-inline' with random hash nonce-based approach (source 3 below)
+
+// -------------------- Security Headers --------------------
+// See HTTP headers:
+// 1) https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference
+// 2) https://developer.mozilla.org/en-US/docs/Glossary/Fetch_directive
+// 3) https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/script-src#unsafe_inline_script
+header("Access-Control-Allow-Methods: GET, POST"); // Only allow GET and POST requests
+header("Access-Control-Allow-Origin: " . $_ENV['SITE_URL']); // Only allow requests from this host's URL
+header("Content-Security-Policy: " .
+    "default-src 'self'; " .
+    "script-src 'self' 'unsafe-inline';"); // CSP to mitigate XSS attacks
+header("X-Content-Type-Options: nosniff"); // Prevent MIME type sniffing
+header("X-Frame-Options: SAMEORIGIN"); // Prevent clickjacking
+header("Referrer-Policy: strict-origin-when-cross-origin"); // Control referrer information
 
 // -------------------- DI Container setup --------------------
 // Repositories
