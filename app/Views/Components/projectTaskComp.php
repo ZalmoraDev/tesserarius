@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Views\components;
+namespace App\Views\Components;
 
 use App\Models\ProjectTask;
 

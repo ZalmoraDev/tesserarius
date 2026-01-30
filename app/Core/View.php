@@ -12,7 +12,7 @@ final readonly class View
     {
         // Set globally used data for views
         $data = [
-            'viewFile' => __DIR__ . '/../Views/' . $view,
+            'viewFile' => __DIR__ . '/../Views/Pages/' . $view,
             'viewTitle' => $title,
 
             // projectRole imported as string, since otherwise each route would need to import UserRole enum
@@ -41,7 +41,7 @@ final readonly class View
             $_SESSION['flash_info'],
             $_SESSION['flash_errors']
         );
-        require __DIR__ . '/../Views/skeleton/base.php';
+        require __DIR__ . '/../Views/Layout/base.php';
     }
 
     /** Retrieve site name from .env, preventing repeatedly hardcoding.
@@ -56,6 +56,6 @@ final readonly class View
     {
         // Include toast component if there are flash errors to show
         if ($data['flash']['successes'] || $data['flash']['info'] || !empty($data['flash']['errors']))
-            include __DIR__ . '/../Views/components/toastComp.php';
+            include __DIR__ . '/../Views/Components/toastComp.php';
     }
 }

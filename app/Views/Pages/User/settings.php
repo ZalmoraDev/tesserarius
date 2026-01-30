@@ -19,7 +19,7 @@ $email = $data['user']['email'] ?? null;
 
 <body class="tess-base-body flex flex-col">
 
-<?php include_once __DIR__ . "/../skeleton/navbar.php"; ?>
+<?php include_once __DIR__ . "/../../Layout/navbar.php"; ?>
 
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto relative mb-4">
     <div class="flex flex-col gap-6">

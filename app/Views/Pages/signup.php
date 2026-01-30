@@ -2,7 +2,7 @@
 
 use App\Core\Csrf;
 
-include_once __DIR__ . "/../skeleton/navbar.php";
+include_once __DIR__ . "/../Layout/navbar.php";
 ?>
 
 <body class="tess-base-body">
