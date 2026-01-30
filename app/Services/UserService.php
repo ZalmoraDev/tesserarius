@@ -2,13 +2,10 @@
 
 namespace App\Services;
 
-use App\Dto\UserIdentityDto;
-use App\Models\Enums\AccessRole;
-use App\Models\Enums\UserRole;
-use App\Repositories\UserRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
-use App\Repositories\AuthRepositoryInterface;
+use App\Services\Interfaces\UserServiceInterface;
 
 final class UserService implements UserServiceInterface
 {
@@ -62,7 +59,8 @@ final class UserService implements UserServiceInterface
     }
 
     /** Delete the logged-in user's account
-     * @throws AuthException if deletion fails */
+     * @throws AuthException if deletion fails
+     */
     public function deleteAccount(string $confirmName): void
     {
         $username = $_SESSION['auth']['username'];

@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Interfaces;
 
 use App\Dto\UserAuthDto;
 use App\Dto\UserIdentityDto;
-use App\Models\Enums\AccessRole;
 use App\Models\Enums\UserRole;
 
 interface AuthRepositoryInterface

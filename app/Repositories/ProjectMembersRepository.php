@@ -8,6 +8,7 @@ use App\Models\ProjectInvite;
 use App\Repositories\Exceptions\ProjectMembers\InviteCodeExpiredOrUsedException;
 use App\Repositories\Exceptions\ProjectMembers\InviteNotFoundException;
 use App\Repositories\Exceptions\RepositoryException;
+use App\Repositories\Interfaces\ProjectMembersRepositoryInterface;
 use DateTimeImmutable;
 use PDO;
 

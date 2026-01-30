@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use App\Repositories\TaskRepositoryInterface;
+use App\Repositories\Interfaces\TaskRepositoryInterface;
+use App\Services\Interfaces\TaskServiceInterface;
 
 final class TaskService implements TaskServiceInterface
 {

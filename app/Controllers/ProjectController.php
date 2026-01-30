@@ -3,7 +3,10 @@
 namespace App\Controllers;
 
 use App\Core\View;
-use App\Services\{Exceptions\ProjectException, ProjectMembersService, ProjectServiceInterface, TaskServiceInterface};
+use App\Services\{Exceptions\ProjectException,
+    Interfaces\ProjectServiceInterface,
+    Interfaces\TaskServiceInterface,
+    ProjectMembersService};
 
 /** Controller handling project requests
  * - GET: Displaying project creation, viewing, and editing pages

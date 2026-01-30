@@ -5,8 +5,8 @@ namespace App\Controllers;
 use App\Core\View;
 use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
-use App\Services\ProjectServiceInterface;
-use App\Services\UserServiceInterface;
+use App\Services\Interfaces\ProjectServiceInterface;
+use App\Services\Interfaces\UserServiceInterface;
 
 /** Controller for user-related actions
  * - GET: Display user homepage and settings

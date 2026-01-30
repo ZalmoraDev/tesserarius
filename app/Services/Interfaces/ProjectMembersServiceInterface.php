@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Interfaces;
 
-use App\Models\Project;
 use DateTimeImmutable;
 
 interface ProjectMembersServiceInterface

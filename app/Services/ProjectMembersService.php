@@ -3,12 +3,12 @@
 namespace App\Services;
 
 use App\Dto\ProjectMemberDto;
-use App\Models\Enums\UserRole;
 use App\Models\ProjectInvite;
 use App\Repositories\Exceptions\ProjectMembers\InviteCodeExpiredOrUsedException;
 use App\Repositories\Exceptions\ProjectMembers\InviteNotFoundException;
-use App\Repositories\ProjectMembersRepositoryInterface;
+use App\Repositories\Interfaces\ProjectMembersRepositoryInterface;
 use App\Services\Exceptions\ProjectMembersException;
+use App\Services\Interfaces\ProjectMembersServiceInterface;
 use DateTimeImmutable;
 
 final class ProjectMembersService implements ProjectMembersServiceInterface

@@ -5,10 +5,11 @@ namespace App\Services;
 use App\Dto\UserIdentityDto;
 use App\Models\Enums\AccessRole;
 use App\Models\Enums\UserRole;
-use App\Repositories\UserRepositoryInterface;
+use App\Repositories\Interfaces\AuthRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
-use App\Repositories\AuthRepositoryInterface;
+use App\Services\Interfaces\AuthServiceInterface;
 
 final class AuthService implements AuthServiceInterface
 {

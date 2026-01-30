@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\ProjectTask;
+use App\Repositories\Interfaces\TaskRepositoryInterface;
 use PDO;
 
 final class TaskRepository extends BaseRepository implements TaskRepositoryInterface

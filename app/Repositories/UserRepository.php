@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Dto\UserIdentityDto;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use PDO;
 
 final class UserRepository extends BaseRepository implements UserRepositoryInterface

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Services\Interfaces;
 
-interface TaskRepositoryInterface
+interface TaskServiceInterface
 {
     public function getAllColumnTasks(int $projectId): array;
     public function moveTaskToColumn(int $taskId, string $newColumn): bool;

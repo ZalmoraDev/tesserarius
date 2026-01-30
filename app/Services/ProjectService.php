@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Controllers\ProjectController;
 use App\Models\Enums\UserRole;
 use App\Models\Project;
-use App\Repositories\ProjectMembersRepositoryInterface;
-use App\Repositories\ProjectRepositoryInterface;
+use App\Repositories\Interfaces\ProjectMembersRepositoryInterface;
+use App\Repositories\Interfaces\ProjectRepositoryInterface;
 use App\Services\Exceptions\ProjectException;
+use App\Services\Interfaces\ProjectServiceInterface;
 
 final class ProjectService implements ProjectServiceInterface
 {

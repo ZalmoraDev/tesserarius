@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Dto\UserAuthDto;
 use App\Dto\UserIdentityDto;
 use App\Models\Enums\UserRole;
+use App\Repositories\Interfaces\AuthRepositoryInterface;
 use PDO;
 
 final class AuthRepository extends BaseRepository implements AuthRepositoryInterface

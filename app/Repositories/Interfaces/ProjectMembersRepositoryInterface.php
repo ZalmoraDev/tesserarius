@@ -1,12 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Interfaces;
 
-use App\Dto\ProjectMemberDto;
 use App\Models\Enums\UserRole;
-use App\Models\Project;
-use App\Models\ProjectInvite;
-use DateTimeImmutable;
 
 interface ProjectMembersRepositoryInterface
 {

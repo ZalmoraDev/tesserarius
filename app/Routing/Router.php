@@ -4,10 +4,8 @@ namespace App\Routing;
 
 use App\Controllers\ErrorController;
 use App\Core\Csrf;
-
-use App\Services\AuthServiceInterface;
-
 use App\Services\Exceptions\AuthException;
+use App\Services\Interfaces\AuthServiceInterface;
 use FastRoute;
 
 final class Router

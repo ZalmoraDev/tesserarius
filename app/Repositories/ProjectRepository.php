@@ -5,8 +5,9 @@ namespace App\Repositories;
 use App\Dto\ProjectListItemDto;
 use App\Models\Enums\UserRole;
 use App\Models\Project;
-use PDO;
+use App\Repositories\Interfaces\ProjectRepositoryInterface;
 use DateTimeImmutable;
+use PDO;
 
 final class ProjectRepository extends BaseRepository implements ProjectRepositoryInterface
 {

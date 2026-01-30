@@ -3,10 +3,9 @@
 namespace App\Controllers;
 
 use App\Core\View;
-
-use App\Services\AuthServiceInterface;
 use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
+use App\Services\Interfaces\AuthServiceInterface;
 
 /** Controller handling user authentication actions:
  * - GET: Displaying login and signup pages
