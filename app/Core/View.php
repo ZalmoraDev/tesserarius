@@ -41,7 +41,7 @@ final readonly class View
             $_SESSION['flash_info'],
             $_SESSION['flash_errors']
         );
-        require __DIR__ . '/../Views/Layout/base.php';
+        require __DIR__ . '/../Views/Layouts/base.php';
     }
 
     /** Retrieve site name from .env, preventing repeatedly hardcoding.

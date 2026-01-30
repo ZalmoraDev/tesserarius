@@ -18,7 +18,7 @@ $projectTask = new projectTaskComp();
 ?>
 
 <body class="tess-base-body flex flex-col">
-<?php include_once __DIR__ . "/../../Layout/navbar.php"; ?>
+<?php include_once __DIR__ . "/../../Layouts/navbar.php"; ?>
 <main class="flex-1 flex justify-center items-start px-4 py-6">
     <div class="flex gap-4 items-start">
 

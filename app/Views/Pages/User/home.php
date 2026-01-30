@@ -14,7 +14,7 @@ $projectsMember = $data['projects']['member'] ?? null;
 ?>
 
 <body class="tess-base-body flex flex-col">
-<?php include_once __DIR__ . "/../../Layout/navbar.php"; ?>
+<?php include_once __DIR__ . "/../../Layouts/navbar.php"; ?>
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto">
     <div class=" gap-4 flex flex-col mt-4">
         <div class="tess-base-container-sm w-full">
