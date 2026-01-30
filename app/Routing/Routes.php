@@ -27,8 +27,6 @@ final class Routes
             $projectMembers = $this->controllers['projectMembers'];
             $user = $this->controllers['user'];
 
-            // TODO: Remove POST requests from using URLs
-
             // Uses route aliases instead of full $r->addRoute(METHOD, ...)
             // AuthController routes
             $r->get('/login', $this->route([$auth, 'loginPage'], AccessRole::Anyone));
@@ -41,6 +39,8 @@ final class Routes
             // UserController routes (default for logged-in users '/')
             $r->get('/', $this->route([$user, 'homePage'], AccessRole::Authenticated));
             $r->get('/settings', $this->route([$user, 'settingsPage'], AccessRole::Authenticated));
+            $r->post('/user/edit/{userId:\d+}', $this->route([$user, 'handleEdit'], AccessRole::Authenticated));
+            $r->post('/user/delete/{userId:\d+}', $this->route([$user, 'handleDeletion'], AccessRole::Authenticated));
 
             // ProjectController routes
             $r->get('/project/create', $this->route([$project, 'showCreate'], AccessRole::Authenticated));

@@ -29,45 +29,20 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
         ) : null;
     }
 
-    /** Retrieve a user by their email, returns UserIdentityDto or null if not found */
-    public function findUserIdentityByEmail(string $email): ?UserIdentityDto
+    public function existsByUsername(string $username): bool
     {
-        $stmt = $this->connection->prepare('
-                SELECT *
-                FROM users
-                WHERE email = :email'
-        );
-
-        $stmt->execute([
-            'email' => $email
-        ]);
-
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row ? new UserIdentityDto(
-            $row['id'],
-            $row['username'],
-            $row['email']
-        ) : null;
+        // TODO: Implement existsByUsername() method.
+        return false;
     }
 
-    /** Retrieve a user by their username, returns UserIdentityDto or null if not found */
-    public function findUserIdentityByUsername(string $username): ?UserIdentityDto
+    public function existsByEmail(string $email): bool
     {
-        $stmt = $this->connection->prepare('
-                SELECT *
-                FROM users
-                WHERE username = :username'
-        );
+        // TODO: Implement existsByEmail() method.
+        return false;
+    }
 
-        $stmt->execute([
-            'username' => $username
-        ]);
-
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row ? new UserIdentityDto(
-            $row['id'],
-            $row['username'],
-            $row['email']
-        ) : null;
+    public function updateUser(int $id, string $newUsername, string $newEmail): void
+    {
+        // TODO: Implement updateUser() method.
     }
 }

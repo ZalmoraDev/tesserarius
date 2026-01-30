@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\View;
+use App\Services\Exceptions\AuthException;
 use App\Services\ProjectServiceInterface;
 
 /** Controller for user-related actions
@@ -10,6 +11,7 @@ use App\Services\ProjectServiceInterface;
 final readonly class UserController
 {
     private ProjectServiceInterface $projectService;
+
     public function __construct(ProjectServiceInterface $projectService)
     {
         $this->projectService = $projectService;
@@ -34,4 +36,35 @@ final readonly class UserController
     }
 
     // -------------------- POST Requests --------------------
+
+    public function handleEdit(): void
+    {
+        try {
+            $this->authService->editAccount(
+                $_POST['username'] ?? '',
+                $_POST['email'] ?? ''
+            );
+            $_SESSION['flash_success'][] = "Settings updated successfully.";
+        } catch (AuthException $e) {
+            $_SESSION['flash_errors'][] = $e->getMessage();
+        }
+        header("Location: /settings", true, 302);
+        exit;
+    }
+
+    public function handleDelete(): void
+    {
+        try {
+            $this->authService->deleteAccount(
+                $_POST['username'] ?? ''
+            );
+            $_SESSION['flash_success'][] = "Account deleted successfully.";
+            header("Location: /login", true, 302);
+            exit;
+        } catch (AuthException $e) {
+            $_SESSION['flash_errors'][] = $e->getMessage();
+            header("Location: /settings", true, 302);
+            exit;
+        }
+    }
 }

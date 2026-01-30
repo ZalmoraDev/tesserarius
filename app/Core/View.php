@@ -19,7 +19,7 @@ final readonly class View
             'user' => [
                 'id' => $_SESSION['auth']['userId'] ?? null,
                 'username' => $_SESSION['auth']['username'] ?? null,
-                'email' => $_SESSION['auth']['email'] ?? null,
+                'email' => $_SESSION['auth']['userEmail'] ?? null,
                 'role' => UserRole::tryFrom($_SESSION['auth']['projectRole'] ?? '') ?? null,
             ],
 

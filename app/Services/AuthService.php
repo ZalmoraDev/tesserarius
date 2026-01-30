@@ -21,7 +21,7 @@ final class AuthService implements AuthServiceInterface
         $this->userRepo = $userRepo;
     }
 
-    // -------------------- Public Methods START --------------------
+    // -------------------- Public Auth Methods START --------------------
 
     /** Attempts to log in a user with provided credentials.
      * @throws AuthException if credentials are invalid.
@@ -38,7 +38,6 @@ final class AuthService implements AuthServiceInterface
         $this->setSessionData($identity);
     }
 
-
     /** Logs out by unsetting session auth data */
     public function logout(): void
     {
@@ -46,7 +45,6 @@ final class AuthService implements AuthServiceInterface
         unset($_SESSION['auth']);
         session_regenerate_id(true);
     }
-
 
     /** Attempts to register a new user with provided data.
      * @throws ValidationException if any validation fails.
@@ -74,9 +72,9 @@ final class AuthService implements AuthServiceInterface
             throw new ValidationException(ValidationException::PASSWORD_INVALID);
 
         // username/email are already taken
-        if ($this->userRepo->findUserIdentityByUsername($username))
+        if ($this->userRepo->existsByUsername($username))
             throw new ValidationException(ValidationException::USERNAME_TAKEN);
-        if ($this->userRepo->findUserIdentityByEmail($email))
+        if ($this->userRepo->existsByEmail($email))
             throw new ValidationException(ValidationException::EMAIL_TAKEN);
 
         // failed attempt creating the new user
@@ -87,7 +85,49 @@ final class AuthService implements AuthServiceInterface
         $this->setSessionData($identity);
     }
 
+    public function editAccount(string $newUsername, string $newEmail): void
+    {
+        $identity = $this->userRepo->findUserIdentityById((int)$_SESSION['auth']['userId']);
 
+        // If user is not logged in / no fields changed
+        if ($identity === null)
+            throw new AuthException(AuthException::USER_NOT_FOUND);
+        if ($identity->username === $newUsername && $identity->email === $newEmail)
+            return;
+
+        // Username & email use same validation logic as signup(...)
+        // If a new username is provided, validate it
+        if ($newUsername !== $identity->username) {
+            if (!preg_match('/^[a-zA-Z0-9_]{3,32}$/', $newUsername))
+                throw new ValidationException(ValidationException::USERNAME_INVALID);
+            if ($this->userRepo->existsByUsername($newUsername))
+                throw new ValidationException(ValidationException::USERNAME_TAKEN);
+        } else {
+            $newUsername = $identity->username;
+        }
+
+        // If a new email is provided, validate it
+        if ($newEmail !== $identity->email) {
+            if (!filter_var($newEmail, FILTER_VALIDATE_EMAIL))
+                throw new ValidationException(ValidationException::USERNAME_INVALID);
+            if ($this->userRepo->existsByEmail($newUsername))
+                throw new ValidationException(ValidationException::USERNAME_TAKEN);
+        } else {
+            $newEmail = $identity->email;
+        }
+
+        // If one field fails, no changes are made to either field
+        $this->userRepo->updateUser($identity->id, $newUsername, $newEmail);
+    }
+
+    public function deleteAccount(string $username): void
+    {
+        // TODO: Implement deleteAccount() method.
+    }
+    // -------------------- Public Auth Methods END --------------------
+
+
+    // -------------------- Public Router Methods START --------------------
     /** Checks if the current user is authenticated (logged in) if the route requires it
      * @throws AuthException if route requires authentication but user is not authenticated
      */
@@ -130,10 +170,7 @@ final class AuthService implements AuthServiceInterface
             throw new AuthException(AuthException::ALREADY_LOGGED_IN);
     }
 
-    // -------------------- Public Methods END --------------------
-
-
-    // -------------------- Private Methods START --------------------
+    // -------------------- Public Router Methods END --------------------
 
     /** Sets session auth data for logged in or newly registered user */
     private function setSessionData(UserIdentityDto $user): void
@@ -146,6 +183,4 @@ final class AuthService implements AuthServiceInterface
             'ts' => time() // Currently not used for session expiration
         ];
     }
-
-    // -------------------- Private Methods END --------------------
 }

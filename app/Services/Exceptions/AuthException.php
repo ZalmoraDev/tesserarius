@@ -16,4 +16,5 @@ final class AuthException extends \RuntimeException
     public const string ALREADY_LOGGED_IN = 'You are already logged in.';
     public const string PROJECT_ACCESS_DENIED = 'You do not have access to this project.';
     public const string PROJECT_INSUFFICIENT_PERMISSIONS = 'You do not have sufficient permissions for this action.';
+    public const string USER_NOT_FOUND = 'User not found.';
 }
