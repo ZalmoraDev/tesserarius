@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Csrf;
+use App\Core\Escaper;
 use App\Models\Enums\UserRole;
 
 /** @var array $data /app/Core/View.php View::render */
@@ -31,7 +32,7 @@ use App\Models\Enums\UserRole;
     <!-- Right -->
     <a href="/settings" class="flex gap-2 justify-end items-center hover:brightness-50 cursor-pointer">
         <div class="flex flex-col items-end">
-            <span><?= escape($data['user']['username']) ?? "NO_USER" ?></span>
+            <span><?= Escaper::html($data['user']['username']) ?? "NO_USER" ?></span>
             <?php if (!empty($data['user']['role'])): ?>
                 <span class="text-sm text-gray-400"><?= $data['user']['role']->value ?></span>
             <?php endif; ?>

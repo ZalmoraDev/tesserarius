@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Csrf;
+use App\Core\Escaper;
 use App\Models\Enums\UserRole;
 
 /** @var array $data /app/Core/View.php View::render */
@@ -13,8 +14,8 @@ $invites = $data['invites'] ?? []; // ProjectInvite[]
 
 // injected by Router::dispatch() via AuthServiceInterface::requireProjectAccess
 $userId = (int)$data['user']['id'] ?? null;
-$username = escape($data['user']['username']) ?? null;
-$email = escape($data['user']['email']) ?? null;
+$username = Escaper::html($data['user']['username']) ?? null;
+$email = Escaper::html($data['user']['email']) ?? null;
 ?>
 
 <body class="tess-base-body flex flex-col">

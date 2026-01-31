@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Csrf;
+use App\Core\Escaper;
 use App\Models\Enums\UserRole;
 
 /** @var array $data /app/Core/View.php View::render*/
@@ -21,7 +22,7 @@ $userRole = $data['user']['role'] ?? null;
 
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto relative mb-4">
     <div class="flex flex-col gap-6">
-        <h1 class="tess-base-container-sm text-2xl w-full max-w-full mt-4">Edit project: <?= escape($project->name) ?></h1>
+        <h1 class="tess-base-container-sm text-2xl w-full max-w-full mt-4">Edit project: <?= Escaper::html($project->name) ?></h1>
 
         <!-- 2x2 / 1x4 GRID -->
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
@@ -46,11 +47,11 @@ $userRole = $data['user']['role'] ?? null;
                         <?php foreach ($invites as $invite): ?>
                             <!-- activatedAt uses 2 ternary checks: if activatedAt, show date, else if expired show EXPIRED, else show '-' -->
                             <tr class="border-b">
-                                <td class="p-2"><?= escape($invite->inviteCode) ?></td>
-                                <td class="p-2"><?= escape($invite->createdBy) ?></td>
-                                <td class="p-2"><?= escape($invite->createdAt->format('Y-m-d H:i')) ?></td>
-                                <td class="p-2"><?= escape($invite->expiresAt->format('Y-m-d H:i')) ?></td>
-                                <td class="p-2"><?= $invite->activatedAt ? escape($invite->activatedAt->format('Y-m-d H:i')) :
+                                <td class="p-2"><?= Escaper::html($invite->inviteCode) ?></td>
+                                <td class="p-2"><?= Escaper::html($invite->createdBy) ?></td>
+                                <td class="p-2"><?= Escaper::html($invite->createdAt->format('Y-m-d H:i')) ?></td>
+                                <td class="p-2"><?= Escaper::html($invite->expiresAt->format('Y-m-d H:i')) ?></td>
+                                <td class="p-2"><?= $invite->activatedAt ? Escaper::html($invite->activatedAt->format('Y-m-d H:i')) :
                                             (new DateTimeImmutable() > $invite->expiresAt ? '<span class="text-red-600 font-semibold">EXPIRED</span>' : '-') ?></td>
                                 <td class="p-2">
                                     <form method="POST"
@@ -105,8 +106,8 @@ $userRole = $data['user']['role'] ?? null;
                         <!-- LIST MEMBERS -->
                         <?php foreach ($members as $member): ?>
                             <tr class="border-b">
-                                <td class="p-2"><?= escape($member->username) ?></td>
-                                <td class="p-2"><?= escape($member->userRole->value) ?></td>
+                                <td class="p-2"><?= Escaper::html($member->username) ?></td>
+                                <td class="p-2"><?= Escaper::html($member->userRole->value) ?></td>
 
                                 <td class="p-2">
                                     <div class="flex gap-2">
@@ -164,9 +165,9 @@ $userRole = $data['user']['role'] ?? null;
                           class="flex flex-col justify-center items-center gap-2 w-full">
                         <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                         <input type="text" class="tess-input-md w-full" placeholder="Project Name [3-32]" name="name"
-                               value="<?= escape($project->name) ?>" required>
+                               value="<?= Escaper::html($project->name) ?>" required>
                         <textarea class="tess-input-md min-h-32 w-full" placeholder="Description [0-128]"
-                                  name="description"><?= escape($project->description) ?></textarea>
+                                  name="description"><?= Escaper::html($project->description) ?></textarea>
                         <button type="submit" class="tess-btn-sec w-full mt-4 cursor-pointer">Confirm edit</button>
                     </form>
                 </div>
@@ -198,7 +199,7 @@ $userRole = $data['user']['role'] ?? null;
 </body>
 
 <!-- Lambda JS function to auto-set invite expiry date to 48 hours from now -->
-<script>
+<script nonce="<?= $data['csp_nonce'] ?? '' ?>">
     (() => {
         const input = document.getElementById('expires_at');
         const d = new Date();

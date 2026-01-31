@@ -111,7 +111,7 @@ $projectTask = new projectTaskComp();
 </main>
 </body>
 
-<script>
+<script nonce="<?= $data['csp_nonce'] ?? '' ?>">
     // Move tickets between columns
     // TODO: NOT REAL TIME FOR OTHER USERS, ONLY ON PAGE RELOAD WILL TICKETS BE MOVED FOR OTHERS
     document.addEventListener("DOMContentLoaded", function () {

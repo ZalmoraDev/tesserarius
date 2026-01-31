@@ -2,16 +2,17 @@
 
 namespace App\Views\Components;
 
+use App\Core\Escaper;
 use App\Dto\ProjectListItemDto;
 
 class projectHomeTabComp
 {
     public function printProjectsTabs(ProjectListItemDto $project): string
     {
-        $id = escape($project->id) ?? "";
-        $name = escape($project->name) ?? "";
-        $description = escape($project->description) ?? "";
-        $ownerName = escape($project->ownerName) ?? "";
+        $id = Escaper::html($project->id) ?? "";
+        $name = Escaper::html($project->name) ?? "";
+        $description = Escaper::html($project->description) ?? "";
+        $ownerName = Escaper::html($project->ownerName) ?? "";
 
         return "       
         <a class='tess-project-card cursor-pointer hover:brightness-50 flex flex-col justify-between min-h-32' href='" . "/project/view/{$id}'>

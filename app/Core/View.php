@@ -28,6 +28,8 @@ final readonly class View
                 'info' => $_SESSION['flash_info'] ?? [],
                 'errors' => $_SESSION['flash_errors'] ?? [],
             ],
+
+            'csp_nonce' => $_SESSION['csp_nonce'] ?? '',
         ];
 
         // Merge controller data, and extract to variables for use in views

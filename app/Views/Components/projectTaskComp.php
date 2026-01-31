@@ -2,6 +2,7 @@
 
 namespace App\Views\Components;
 
+use App\Core\Escaper;
 use App\Models\ProjectTask;
 
 // TODO: Distgusting code, needs to be redone
@@ -9,9 +10,9 @@ class projectTaskComp
 {
     public function printProjectTask(ProjectTask $task): string
     {
-        $title = escape($task->title ?? "");
-        $description = escape($task->description ?? "");
-        $taskId = escape($task->id ?? "");
+        $title = Escaper::html($task->title ?? "");
+        $description = Escaper::html($task->description ?? "");
+        $taskId = Escaper::html($task->id ?? "");
 
         return "
     <div class='tess-project-card flex flex-col justify-between h-44' data-task-id='$taskId'>

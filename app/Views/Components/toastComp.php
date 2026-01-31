@@ -47,7 +47,7 @@ foreach ($toastTypes as $type => $config) {
         <?php endforeach; ?>
     </div>
 
-    <script>
+    <script nonce="<?= $data['csp_nonce'] ?? '' ?>">
         // Lambda on load to setup notification dismissal
         (() => {
             const container = document.getElementById('toast-container');
