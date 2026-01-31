@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Repositories\Interfaces\TaskRepositoryInterface;
 use App\Services\Interfaces\TaskServiceInterface;
 
-final class TaskService implements TaskServiceInterface
+final readonly class TaskService implements TaskServiceInterface
 {
     private TaskRepositoryInterface $taskRepo;
 

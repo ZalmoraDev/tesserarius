@@ -14,8 +14,7 @@ use PDO;
 
 final class ProjectMembersRepository extends BaseRepository implements ProjectMembersRepositoryInterface
 {
-    /** Fetches all project members by project ID.
-     * @return ProjectMemberDto[] */
+    //region Member Retrieval
     public function findProjectMembersByProjectId(int $projectId): array
     {
         $stmt = $this->connection->prepare('
@@ -45,8 +44,6 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
         return $members;
     }
 
-    /** Fetches all invite codes for a project by project ID.
-     * @return ProjectInvite[] */
     public function findProjectInvitesByProjectId(int $projectId): array
     {
         $stmt = $this->connection->prepare('
@@ -77,11 +74,70 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
         }
         return $invites;
     }
+    //endregion
 
 
-    /** Join a user to a project by invite code.
-     * @return int ID of the project the user has joined.
-     * @throws RepositoryException if invite code is invalid or used/expired. */
+    //region Member Management
+    public function addProjectMember(int $projectId, int $userId, UserRole $role): void
+    {
+        $stmt = $this->connection->prepare('
+        INSERT INTO project_members (project_id, user_id, role, joined_at)
+        VALUES (:projectId, :userId, :role, NOW())'
+        );
+
+        $stmt->execute([
+            'projectId' => $projectId,
+            'userId' => $userId,
+            'role' => $role->value
+        ]);
+    }
+
+    public function promoteProjectMember(int $projectId, int $userId): void
+    {
+        $stmt = $this->connection->prepare('
+        UPDATE project_members
+        SET role = :newRole
+        WHERE project_id = :projectId AND user_id = :userId'
+        );
+
+        $stmt->execute([
+            'newRole' => UserRole::Admin->value,
+            'projectId' => $projectId,
+            'userId' => $userId
+        ]);
+    }
+
+    public function demoteProjectMember(int $projectId, int $userId): void
+    {
+        $stmt = $this->connection->prepare('
+        UPDATE project_members
+        SET role = :newRole
+        WHERE project_id = :projectId AND user_id = :userId'
+        );
+
+        $stmt->execute([
+            'newRole' => UserRole::Member->value,
+            'projectId' => $projectId,
+            'userId' => $userId
+        ]);
+    }
+
+    public function removeProjectMember(int $projectId, int $userId): void
+    {
+        $stmt = $this->connection->prepare('
+        DELETE FROM project_members
+        WHERE project_id = :projectId AND user_id = :userId'
+        );
+
+        $stmt->execute([
+            'projectId' => $projectId,
+            'userId' => $userId
+        ]);
+    }
+    //endregion
+
+
+    //region Invite Codes
     public function joinProjectByInviteCode(string $inviteCode, int $userId): int
     {
         // Start transaction, which on rollback undoes all the following query operations
@@ -139,9 +195,6 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
         return $projectId;
     }
 
-    /** Uses Service made invite-code(s), which contains projectId, creator etc.
-     * Used by repository to create entry/entries in DB
-     * @return bool True on success */
     public function createProjectInviteCodes(array $invites): bool
     {
         $stmt = $this->connection->prepare('
@@ -163,69 +216,6 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
         return true;
     }
 
-    /** Adds a user as a member to a project with given role. */
-    public function addProjectMember(int $projectId, int $userId, UserRole $role): void
-    {
-        $stmt = $this->connection->prepare('
-        INSERT INTO project_members (project_id, user_id, role, joined_at)
-        VALUES (:projectId, :userId, :role, NOW())'
-        );
-
-        $stmt->execute([
-            'projectId' => $projectId,
-            'userId' => $userId,
-            'role' => $role->value
-        ]);
-    }
-
-    /** Promote 'Member' to 'Admin' in the project (Owner ONLY)*/
-    public function promoteProjectMember(int $projectId, int $userId): void
-    {
-        $stmt = $this->connection->prepare('
-        UPDATE project_members
-        SET role = :newRole
-        WHERE project_id = :projectId AND user_id = :userId'
-        );
-
-        $stmt->execute([
-            'newRole' => UserRole::Admin->value,
-            'projectId' => $projectId,
-            'userId' => $userId
-        ]);
-    }
-
-    /** Demote 'Admin' to 'Member' in the project (Owner ONLY)*/
-    public function demoteProjectMember(int $projectId, int $userId): void
-    {
-        $stmt = $this->connection->prepare('
-        UPDATE project_members
-        SET role = :newRole
-        WHERE project_id = :projectId AND user_id = :userId'
-        );
-
-        $stmt->execute([
-            'newRole' => UserRole::Member->value,
-            'projectId' => $projectId,
-            'userId' => $userId
-        ]);
-    }
-
-    /** Removes a user from the project members (Admin / Owner ONLY)*/
-    public function removeProjectMember(int $projectId, int $userId): void
-    {
-        $stmt = $this->connection->prepare('
-        DELETE FROM project_members
-        WHERE project_id = :projectId AND user_id = :userId'
-        );
-
-        $stmt->execute([
-            'projectId' => $projectId,
-            'userId' => $userId
-        ]);
-    }
-
-    /** Deletes a project invite code by its ID.
-     * @return bool True if the invite was deleted, false otherwise. */
     public function deleteProjectInviteCode(int $projectId, int $inviteId): bool
     {
         $stmt = $this->connection->prepare('
@@ -240,4 +230,5 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
 
         return $stmt->rowCount() > 0;
     }
+    //endregion
 }

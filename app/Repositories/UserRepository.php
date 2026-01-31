@@ -8,9 +8,36 @@ use PDO;
 
 final class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-    /** Retrieve a user by their id, returns UserIdentityDto or null if not found */
-    public
-    function findUserIdentityById(int $id): ?UserIdentityDto
+    //region Retrieval
+    public function existsByUsername(string $username): bool
+    {
+        $stmt = $this->connection->prepare('
+        SELECT EXISTS (
+            SELECT 1
+            FROM users
+            WHERE username = :name
+        )');
+
+        $stmt->execute(['name' => $username]);
+
+        return (bool)$stmt->fetchColumn();
+    }
+
+    public function existsByEmail(string $email): bool
+    {
+        $stmt = $this->connection->prepare('
+        SELECT EXISTS (
+            SELECT 1
+            FROM users
+            WHERE email = :email
+        )');
+
+        $stmt->execute(['email' => $email]);
+
+        return (bool)$stmt->fetchColumn();
+    }
+
+    public function findUserIdentityById(int $id): ?UserIdentityDto
     {
         $stmt = $this->connection->prepare('
                 SELECT *
@@ -29,40 +56,10 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
             $row['email'],
         ) : null;
     }
+    //endregion
 
-    /** Checks if a user with the given username already exists.
-     * @return bool true if exists, false otherwise */
-    public function existsByUsername(string $username): bool
-    {
-        $stmt = $this->connection->prepare('
-        SELECT EXISTS (
-            SELECT 1
-            FROM users
-            WHERE username = :name
-        )');
 
-        $stmt->execute(['name' => $username]);
-
-        return (bool)$stmt->fetchColumn();
-    }
-
-    /** Check if a user with the given email already exists.
-     * @return bool true if exists, false otherwise */
-    public function existsByEmail(string $email): bool
-    {
-        $stmt = $this->connection->prepare('
-        SELECT EXISTS (
-            SELECT 1
-            FROM users
-            WHERE email = :email
-        )');
-
-        $stmt->execute(['email' => $email]);
-
-        return (bool)$stmt->fetchColumn();
-    }
-
-    /** Update a user's username and email by their id */
+    //region Modification
     public function updateUser(int $id, string $newUsername, string $newEmail): void
     {
         $stmt = $this->connection->prepare('
@@ -78,8 +75,6 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
         ]);
     }
 
-    /** Delete a user by their id
-     * @return bool true if a row was deleted, false otherwise */
     public function deleteUser(int $id): bool
     {
         $stmt = $this->connection->prepare('
@@ -93,4 +88,5 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
 
         return $stmt->rowCount() > 0;
     }
+    //endregion
 }

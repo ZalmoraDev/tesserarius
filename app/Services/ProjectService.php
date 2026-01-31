@@ -9,7 +9,7 @@ use App\Repositories\Interfaces\ProjectRepositoryInterface;
 use App\Services\Exceptions\ProjectException;
 use App\Services\Interfaces\ProjectServiceInterface;
 
-final class ProjectService implements ProjectServiceInterface
+final readonly class ProjectService implements ProjectServiceInterface
 {
     private ProjectRepositoryInterface $projectRepo;
     private ProjectMembersRepositoryInterface $projectMembersRepo;
@@ -20,8 +20,16 @@ final class ProjectService implements ProjectServiceInterface
         $this->projectMembersRepo = $projectMembersRepo;
     }
 
-    /** Returns an array of projects owned by or shared with the specified user.
-     * This is then split into 'Your' and 'Member' projects for display on the home page. */
+    //region Retrieve
+    public function getProjectByProjectId(int $projectId): Project
+    {
+        $project = $this->projectRepo->findProjectByProjectId($projectId);
+        if ($project === null)
+            throw new ProjectException(ProjectException::PROJECT_NOT_FOUND);
+
+        return $project;
+    }
+
     public function getHomeProjects(int $userId): array
     {
         $projects = $this->projectRepo->findProjectListItemsByUserId($userId);
@@ -39,20 +47,10 @@ final class ProjectService implements ProjectServiceInterface
             'member' => $member,
         ];
     }
+    //endregion
 
-    /** Returns a project by its ID.
-     * @throws ProjectException if the project is not found. */
-    public function getProjectByProjectId(int $projectId): Project
-    {
-        $project = $this->projectRepo->findProjectByProjectId($projectId);
-        if ($project === null)
-            throw new ProjectException(ProjectException::PROJECT_NOT_FOUND);
 
-        return $project;
-    }
-
-    /** Creates a new project for the currently logged-in user.
-     * And returns its ID to the ProjectController for redirecting to the new project's page. */
+    //region Modify
     public function createProject(string $name, string $description): int
     {
         $name = trim($name);
@@ -80,8 +78,6 @@ final class ProjectService implements ProjectServiceInterface
         return $newProjectId;
     }
 
-    /** Edits an existing project's name and description.
-     * @throws ProjectException if validation fails or the edit operation fails. */
     public function editProject(int $projectId, string $name, string $description): void
     {
         $name = trim($name);
@@ -103,8 +99,6 @@ final class ProjectService implements ProjectServiceInterface
             throw new ProjectException(ProjectException::EDIT_FAILED);
     }
 
-    /** Deletes a project after confirming the project name.
-     * @Throws ProjectException if validation fails or the deletion operation fails. */
     public function deleteProject(int $projectId, string $confirmName): void
     {
         // We could fetch the project, and it's name through the view,
@@ -120,6 +114,6 @@ final class ProjectService implements ProjectServiceInterface
         $success = $this->projectRepo->deleteProject($projectId);
         if (!$success)
             throw new ProjectException(ProjectException::DELETION_FAILED);
-        // Note: Route to POST this request is for 'Owner' only, but repository also checks for this to be sure
     }
+    //endregion
 }

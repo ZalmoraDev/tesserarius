@@ -5,13 +5,13 @@ namespace App\Services;
 use App\Dto\UserIdentityDto;
 use App\Models\Enums\AccessRole;
 use App\Models\Enums\UserRole;
-use App\Repositories\Interfaces\AuthRepositoryInterface;
-use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
 use App\Services\Interfaces\AuthServiceInterface;
+use App\Repositories\Interfaces\AuthRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 
-final class AuthService implements AuthServiceInterface
+final readonly class AuthService implements AuthServiceInterface
 {
     private AuthRepositoryInterface $authRepo;
     private UserRepositoryInterface $userRepo;
@@ -22,13 +22,10 @@ final class AuthService implements AuthServiceInterface
         $this->userRepo = $userRepo;
     }
 
-    // -------------------- Public Auth Methods START --------------------
-
-    /** Attempts to log in a user with provided credentials.
-     * @throws AuthException if credentials are invalid.
-     */
+    //region Auth
     public function login(string $email, string $password): void
     {
+
         $auth = $this->authRepo->findAuthByEmail($email);
         if ($auth === null)
             throw new AuthException(AuthException::INVALID_CREDENTIALS);
@@ -39,7 +36,6 @@ final class AuthService implements AuthServiceInterface
         $this->setSessionData($identity);
     }
 
-    /** Logs out by unsetting session auth data */
     public function logout(): void
     {
         // Only unset auth session data, regen session ID for CSRF protection.
@@ -47,9 +43,6 @@ final class AuthService implements AuthServiceInterface
         session_regenerate_id(true);
     }
 
-    /** Attempts to register a new user with provided data.
-     * @throws ValidationException if any validation fails.
-     */
     public function signup(string $username, string $email, string $password, string $passwordConfirm): void
     {
         $username = trim($username);
@@ -85,14 +78,10 @@ final class AuthService implements AuthServiceInterface
 
         $this->setSessionData($identity);
     }
+    //endregion Auth
 
-    // -------------------- Public Auth Methods END --------------------
 
-
-    // -------------------- Public Router Methods START --------------------
-    /** Checks if the current user is authenticated (logged in) if the route requires it
-     * @throws AuthException if route requires authentication but user is not authenticated
-     */
+    //region Router
     public function requireAuthentication($routeReqRole): void
     {
         // AUTHENTICATION: If route requires authenticated user, but user is not authenticated, redirect to /login
@@ -100,11 +89,6 @@ final class AuthService implements AuthServiceInterface
             throw new AuthException(AuthException::REQUIRES_LOGIN);
     }
 
-
-    /** Checks if the currently authenticated user has access to the specified project with required role or higher
-     * @return UserRole The user's role in the project
-     * @throws AuthException if user is not part of project or has insufficient permissions
-     */
     public function requireProjectAccess(int $projectId, AccessRole $routeReqAccess): UserRole
     {
         if (!isset($_SESSION['auth']))
@@ -122,17 +106,14 @@ final class AuthService implements AuthServiceInterface
         return $userRole;
     }
 
-    /** Checks if user is already logged in when accessing login/signup pages
-     * @throws AuthException if user is already logged in and tries to access login/signup pages
-     */
     public function denyAuthenticatedOnAuthRoutes(string $routeName): void
     {
         if (($routeName === 'loginPage' || $routeName === 'signupPage') && isset($_SESSION['auth']['userId']))
             throw new AuthException(AuthException::ALREADY_LOGGED_IN);
     }
+    //endregion Router
 
-    // -------------------- Public Router Methods END --------------------
-
+    
     /** Sets session auth data for logged in or newly registered user */
     private function setSessionData(UserIdentityDto $user): void
     {

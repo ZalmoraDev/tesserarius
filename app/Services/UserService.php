@@ -7,7 +7,7 @@ use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
 use App\Services\Interfaces\UserServiceInterface;
 
-final class UserService implements UserServiceInterface
+final readonly class UserService implements UserServiceInterface
 {
     private UserRepositoryInterface $userRepo;
 
@@ -16,9 +16,6 @@ final class UserService implements UserServiceInterface
         $this->userRepo = $userRepo;
     }
 
-    /** Edit the logged-in user's account details
-     * @throws ValidationException if validation fails
-     */
     public function editAccount(string $newUsername, string $newEmail): void
     {
         if (empty($newUsername) || empty($newEmail))
@@ -58,9 +55,6 @@ final class UserService implements UserServiceInterface
         $this->userRepo->updateUser($identity->id, $newUsername, $newEmail);
     }
 
-    /** Delete the logged-in user's account
-     * @throws AuthException if deletion fails
-     */
     public function deleteAccount(string $confirmName): void
     {
         $username = $_SESSION['auth']['username'];

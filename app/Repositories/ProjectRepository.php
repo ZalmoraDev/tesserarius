@@ -11,8 +11,21 @@ use PDO;
 
 final class ProjectRepository extends BaseRepository implements ProjectRepositoryInterface
 {
-    /** Used when accessing a project by its ID.
-     * Loads the full Project model to pass to the view, no DTO used as all data is needed */
+    //region Retrieval
+    public function existsByName(string $name): bool
+    {
+        $stmt = $this->connection->prepare('
+        SELECT EXISTS (
+            SELECT 1
+            FROM projects
+            WHERE name = :name
+        )');
+
+        $stmt->execute(['name' => $name]);
+
+        return (bool)$stmt->fetchColumn();
+    }
+
     public function findProjectByProjectId(int $projectId): ?Project
     {
         $stmt = $this->connection->prepare('
@@ -35,8 +48,6 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
         ) : null;
     }
 
-    /** Retrieves only the project name by its ID.
-     * Used for project deletion name confirmation. */
     public function findProjectNameByProjectId(int $projectId): ?string
     {
         $stmt = $this->connection->prepare('
@@ -53,26 +64,6 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
         return $row ? $row['name'] : null;
     }
 
-    /** Checks if a project with the given name already exists.
-     * Checked to enforce unique project names per user during creation. */
-    public function existsByName(string $name): bool
-    {
-        $stmt = $this->connection->prepare('
-        SELECT EXISTS (
-            SELECT 1
-            FROM projects
-            WHERE name = :name
-        )');
-
-        $stmt->execute(['name' => $name]);
-
-        return (bool)$stmt->fetchColumn();
-    }
-
-    /** Retrieve projects for a user based on their roles.
-     *
-     * Used for populating the homepage with projects the user is involved in.
-     */
     public function findProjectListItemsByUserId(int $userId): array
     {
         $stmt = $this->connection->prepare('
@@ -102,9 +93,10 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
         }
         return $projects;
     }
+    //endregion
 
-    /** Creates a new project for the currently logged-in user.
-     * Returns the new project's ID for the controller to redirect to the new project page. */
+
+    //region Modification
     public function createProject(int $ownerId, string $name, string $description): ?int
     {
         // A user must be logged in at this point, retrieve their user ID to set the owner_id
@@ -128,9 +120,6 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
         return $newProjectId;
     }
 
-    /** Edits an existing project's details.
-     * @return bool: true if the project was updated, false if no changes were made.
-     */
     public function editProject(int $projectId, string $name, string $description): bool
     {
         $stmt = $this->connection->prepare('
@@ -149,9 +138,6 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
         return $stmt->rowCount() > 0;
     }
 
-    /** Deletes a project by its ID.
-     * @return bool: true if the project was deleted, false if no project was found with that ID.
-     */
     public function deleteProject(int $projectId): bool
     {
         $stmt = $this->connection->prepare('
@@ -165,4 +151,5 @@ final class ProjectRepository extends BaseRepository implements ProjectRepositor
 
         return $stmt->rowCount() > 0;
     }
+    //endregion
 }

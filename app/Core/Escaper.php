@@ -1,6 +1,7 @@
 <?php
 namespace App\Core;
 
+/** Utility class for escaping strings for safe output in different contexts. */
 final readonly class Escaper
 {
     /** Escape HTML special characters in a string to prevent XSS attacks */

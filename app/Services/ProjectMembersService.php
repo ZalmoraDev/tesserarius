@@ -2,16 +2,16 @@
 
 namespace App\Services;
 
-use App\Dto\ProjectMemberDto;
+use DateTimeImmutable;
+
 use App\Models\ProjectInvite;
+use App\Services\Exceptions\ProjectMembersException;
+use App\Services\Interfaces\ProjectMembersServiceInterface;
 use App\Repositories\Exceptions\ProjectMembers\InviteCodeExpiredOrUsedException;
 use App\Repositories\Exceptions\ProjectMembers\InviteNotFoundException;
 use App\Repositories\Interfaces\ProjectMembersRepositoryInterface;
-use App\Services\Exceptions\ProjectMembersException;
-use App\Services\Interfaces\ProjectMembersServiceInterface;
-use DateTimeImmutable;
 
-final class ProjectMembersService implements ProjectMembersServiceInterface
+final readonly class ProjectMembersService implements ProjectMembersServiceInterface
 {
     private ProjectMembersRepositoryInterface $projectMembersRepo;
 
@@ -20,26 +20,39 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
         $this->projectMembersRepo = $projectMembersRepo;
     }
 
-    /** Returns array of ProjectMemberDto by $projectId
-     * @return ProjectMemberDto[]
-     */
+    //region Member Retrieval
     public function getProjectMembersByProjectId(int $projectId): array
     {
         return $this->projectMembersRepo->findProjectMembersByProjectId($projectId);
     }
 
-    /** Returns array of ProjectInvite by $projectId
-     * @return ProjectInvite[]
-     */
     public function getProjectInvitesByProjectId(int $projectId): array
     {
         return $this->projectMembersRepo->findProjectInvitesByProjectId($projectId);
     }
+    //endregion
 
-    /** Generate one-or-more $projectInviteCode's for given $projectId,
-     * with expiration date and total amount to generate.
-     * @throws ProjectMembersException if generation fails.
-     */
+
+    //region Member Management
+    public function promoteProjectMember(int $projectId, int $userId): void
+    {
+        $this->projectMembersRepo->promoteProjectMember($projectId, $userId);
+    }
+
+    public function demoteProjectMember(int $projectId, int $userId): void
+    {
+        $this->projectMembersRepo->demoteProjectMember($projectId, $userId);
+    }
+
+    public function removeProjectMember(int $projectId, int $userId): void
+    {
+        $this->projectMembersRepo->removeProjectMember($projectId, $userId);
+    }
+
+    //endregion
+
+
+    //region Invite Codes
     public function generateProjectInviteCodes(int $projectId, DateTimeImmutable $expiresAt, int $count): void
     {
         $now = new DateTimeImmutable(); // Gets set in database to current time
@@ -60,19 +73,6 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
         $this->projectMembersRepo->createProjectInviteCodes($invites);
     }
 
-    /** Delete a project invite code by its ID.
-     * @throws ProjectMembersException if removal fails. */
-    public function deleteProjectInviteCode(int $projectId, int $inviteId): void
-    {
-        $success = $this->projectMembersRepo->deleteProjectInviteCode($projectId, $inviteId);
-        if (!$success)
-            throw new ProjectMembersException(ProjectMembersException::INVITE_REMOVAL_FAILED);
-    }
-
-    /** Joins the project associated with the given invite code for the current user.
-     * @return int ID of the project the user has joined.
-     * @throws ProjectMembersException if invite code is invalid, expired, or already used.
-     */
     public function joinProjectByInviteCode(string $inviteCode): int
     {
         if (!isset($inviteCode))
@@ -89,23 +89,14 @@ final class ProjectMembersService implements ProjectMembersServiceInterface
         }
     }
 
-    /** Promote 'Member' to 'Admin' in the project (Owner ONLY)*/
-    public function promoteProjectMember(int $projectId, int $userId): void
+    public function deleteProjectInviteCode(int $projectId, int $inviteId): void
     {
-        $this->projectMembersRepo->promoteProjectMember($projectId, $userId);
+        $success = $this->projectMembersRepo->deleteProjectInviteCode($projectId, $inviteId);
+        if (!$success)
+            throw new ProjectMembersException(ProjectMembersException::INVITE_REMOVAL_FAILED);
     }
+    //endregion
 
-    /** Demote 'Admin' to 'Member' in the project (Owner ONLY)*/
-    public function demoteProjectMember(int $projectId, int $userId): void
-    {
-        $this->projectMembersRepo->demoteProjectMember($projectId, $userId);
-    }
-
-    /** Removes a user from the project members (Admin / Owner ONLY)*/
-    public function removeProjectMember(int $projectId, int $userId): void
-    {
-        $this->projectMembersRepo->removeProjectMember($projectId, $userId);
-    }
 
     /** Generates a random invite code of specified length.
      * @return string of 16 random alphanumeric characters
