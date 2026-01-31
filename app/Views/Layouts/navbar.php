@@ -17,11 +17,11 @@ use App\Models\Enums\UserRole;
             <h1 class="text-xl"><?= $_ENV['SITE_NAME'] ?></h1>
         </a>
         <?php if ($data['user']['role'] !== UserRole::Member && !empty($data['project']->id ?? null)): ?>
-            <a href="/project/view/<?= $data['project']->id ?>"
+            <a href="/project/view/<?= (int)$data['project']->id ?>"
                class="text-xl hover:brightness-50">
                 View
             </a>
-            <a href="/project/edit/<?= $data['project']->id ?>"
+            <a href="/project/edit/<?= (int)$data['project']->id ?>"
                class="text-xl hover:brightness-50">
                 Edit
             </a>
@@ -31,7 +31,7 @@ use App\Models\Enums\UserRole;
     <!-- Right -->
     <a href="/settings" class="flex gap-2 justify-end items-center hover:brightness-50 cursor-pointer">
         <div class="flex flex-col items-end">
-            <span><?= $data['user']['username'] ?? "NO_USER" ?></span>
+            <span><?= escape($data['user']['username']) ?? "NO_USER" ?></span>
             <?php if (!empty($data['user']['role'])): ?>
                 <span class="text-sm text-gray-400"><?= $data['user']['role']->value ?></span>
             <?php endif; ?>

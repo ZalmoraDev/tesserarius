@@ -19,8 +19,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-// @vlucas/phpdotenv | https://packagist.org/packages/vlucas/phpdotenv
-// Set up environment variables, autoload /.env file
+/** vlucas/phpdotenv, set up environment variables, autoload /.env file
+ * @see https://packagist.org/packages/vlucas/phpdotenv */
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 $dotenv->required([
@@ -28,7 +28,7 @@ $dotenv->required([
     'DB_TYPE', 'DB_HOST', 'DB_PORT', 'DB_DATABASE',
     'DB_USERNAME', 'DB_PASSWORD']);
 
-// TODO: Replace scrip-src 'unsafe-inline' with random hash nonce-based approach (source 3 below)
+// TODO: Replace scrip-src 'unsafe-inline' with nonce-based approach (see source 3 below)
 
 // -------------------- Security Headers --------------------
 // See HTTP headers:
@@ -39,7 +39,7 @@ header("Access-Control-Allow-Methods: GET, POST"); // Only allow GET and POST re
 header("Access-Control-Allow-Origin: " . $_ENV['SITE_URL']); // Only allow requests from this host's URL
 header("Content-Security-Policy: " .
     "default-src 'self'; " .
-    "script-src 'self' 'unsafe-inline';"); // CSP to mitigate XSS attacks
+    "script-src 'self' 'unsafe-inline';"); // CSP to mitigate XSS attacks (NEEDS NONCE-BASED APPROACH)
 header("X-Content-Type-Options: nosniff"); // Prevent MIME type sniffing
 header("X-Frame-Options: SAMEORIGIN"); // Prevent clickjacking
 header("Referrer-Policy: strict-origin-when-cross-origin"); // Control referrer information

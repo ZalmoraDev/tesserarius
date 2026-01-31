@@ -8,10 +8,10 @@ class projectHomeTabComp
 {
     public function printProjectsTabs(ProjectListItemDto $project): string
     {
-        $id = htmlspecialchars($project->id) ?? "";
-        $name = htmlspecialchars($project->name) ?? "";
-        $description = htmlspecialchars($project->description) ?? "";
-        $ownerName = htmlspecialchars($project->ownerName) ?? "";
+        $id = escape($project->id) ?? "";
+        $name = escape($project->name) ?? "";
+        $description = escape($project->description) ?? "";
+        $ownerName = escape($project->ownerName) ?? "";
 
         return "       
         <a class='tess-project-card cursor-pointer hover:brightness-50 flex flex-col justify-between min-h-32' href='" . "/project/view/{$id}'>

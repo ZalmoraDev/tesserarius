@@ -12,9 +12,9 @@ $members = $data['members'] ?? []; // Project
 $invites = $data['invites'] ?? []; // ProjectInvite[]
 
 // injected by Router::dispatch() via AuthServiceInterface::requireProjectAccess
-$userId = $data['user']['id'] ?? null;
-$username = $data['user']['username'] ?? null;
-$email = $data['user']['email'] ?? null;
+$userId = (int)$data['user']['id'] ?? null;
+$username = escape($data['user']['username']) ?? null;
+$email = escape($data['user']['email']) ?? null;
 ?>
 
 <body class="tess-base-body flex flex-col">

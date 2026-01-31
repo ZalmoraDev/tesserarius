@@ -21,7 +21,7 @@ $userRole = $data['user']['role'] ?? null;
 
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto relative mb-4">
     <div class="flex flex-col gap-6">
-        <h1 class="tess-base-container-sm text-2xl w-full max-w-full mt-4">Edit project: <?= $project->name ?></h1>
+        <h1 class="tess-base-container-sm text-2xl w-full max-w-full mt-4">Edit project: <?= escape($project->name) ?></h1>
 
         <!-- 2x2 / 1x4 GRID -->
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
@@ -46,15 +46,15 @@ $userRole = $data['user']['role'] ?? null;
                         <?php foreach ($invites as $invite): ?>
                             <!-- activatedAt uses 2 ternary checks: if activatedAt, show date, else if expired show EXPIRED, else show '-' -->
                             <tr class="border-b">
-                                <td class="p-2"><?= htmlspecialchars($invite->inviteCode) ?></td>
-                                <td class="p-2"><?= htmlspecialchars($invite->createdBy) ?></td>
-                                <td class="p-2"><?= htmlspecialchars($invite->createdAt->format('Y-m-d H:i')) ?></td>
-                                <td class="p-2"><?= htmlspecialchars($invite->expiresAt->format('Y-m-d H:i')) ?></td>
-                                <td class="p-2"><?= $invite->activatedAt ? htmlspecialchars($invite->activatedAt->format('Y-m-d H:i')) :
+                                <td class="p-2"><?= escape($invite->inviteCode) ?></td>
+                                <td class="p-2"><?= escape($invite->createdBy) ?></td>
+                                <td class="p-2"><?= escape($invite->createdAt->format('Y-m-d H:i')) ?></td>
+                                <td class="p-2"><?= escape($invite->expiresAt->format('Y-m-d H:i')) ?></td>
+                                <td class="p-2"><?= $invite->activatedAt ? escape($invite->activatedAt->format('Y-m-d H:i')) :
                                             (new DateTimeImmutable() > $invite->expiresAt ? '<span class="text-red-600 font-semibold">EXPIRED</span>' : '-') ?></td>
                                 <td class="p-2">
                                     <form method="POST"
-                                          action="/project-members/delete-invite/<?= $project->id ?>/<?= $invite->id ?>">
+                                          action="/project-members/delete-invite/<?= (int)$project->id ?>/<?= (int)$invite->id ?>">
                                         <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                                         <button type="submit"
                                                 class="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded cursor-pointer">
@@ -66,7 +66,7 @@ $userRole = $data['user']['role'] ?? null;
                         <?php endforeach; ?>
                         </tbody>
                     </table>
-                    <form action="/project-members/create-invites/<?= $project->id ?>" method="POST" class="w-full">
+                    <form action="/project-members/create-invites/<?= (int)$project->id ?>" method="POST" class="w-full">
                         <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                         <div class="flex gap-4 w-full mt-4">
                             <div class="flex flex-col w-full">
@@ -105,8 +105,8 @@ $userRole = $data['user']['role'] ?? null;
                         <!-- LIST MEMBERS -->
                         <?php foreach ($members as $member): ?>
                             <tr class="border-b">
-                                <td class="p-2"><?= htmlspecialchars($member->username) ?></td>
-                                <td class="p-2"><?= htmlspecialchars($member->userRole->value) ?></td>
+                                <td class="p-2"><?= escape($member->username) ?></td>
+                                <td class="p-2"><?= escape($member->userRole->value) ?></td>
 
                                 <td class="p-2">
                                     <div class="flex gap-2">
@@ -114,7 +114,7 @@ $userRole = $data['user']['role'] ?? null;
                                         <!-- PROMOTE, Owner Only -->
                                         <?php if ($userRole === UserRole::Owner && $member->userRole === UserRole::Member): ?>
                                             <form method="POST"
-                                                  action="/project-members/promote/<?= $project->id ?>/<?= $member->userId ?>">
+                                                  action="/project-members/promote/<?= (int)$project->id ?>/<?= (int)$member->userId ?>">
                                                 <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                                                 <button type="submit"
                                                         class="w-9 h-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded cursor-pointer">
@@ -126,7 +126,7 @@ $userRole = $data['user']['role'] ?? null;
                                         <!-- DEMOTE, Owner only -->
                                         <?php if ($userRole === UserRole::Owner && $member->userRole === UserRole::Admin): ?>
                                             <form method="POST"
-                                                  action="/project-members/demote/<?= $project->id ?>/<?= $member->userId ?>">
+                                                  action="/project-members/demote/<?= (int)$project->id ?>/<?= (int)$member->userId ?>">
                                                 <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                                                 <button type="submit"
                                                         class="w-9 h-9 flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded cursor-pointer">
@@ -139,7 +139,7 @@ $userRole = $data['user']['role'] ?? null;
                                         <?php if ($member->userRole !== UserRole::Owner && ($userRole === UserRole::Owner ||
                                                         ($userRole === UserRole::Admin && $member->userRole === UserRole::Member))): ?>
                                             <form method="POST"
-                                                  action="/project-members/remove/<?= $project->id ?>/<?= $member->userId ?>">
+                                                  action="/project-members/remove/<?= (int)$project->id ?>/<?= (int)$member->userId ?>">
                                                 <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                                                 <button type="submit"
                                                         class="w-9 h-9 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded cursor-pointer">
@@ -160,13 +160,13 @@ $userRole = $data['user']['role'] ?? null;
             <div class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
                 <h2 class="text-2xl justify-center">Edit project</h2>
                 <div class="flex-1 flex flex-col justify-center w-full">
-                    <form action="/project/edit/<?= $project->id ?>" method="POST"
+                    <form action="/project/edit/<?= (int)$project->id ?>" method="POST"
                           class="flex flex-col justify-center items-center gap-2 w-full">
                         <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                         <input type="text" class="tess-input-md w-full" placeholder="Project Name [3-32]" name="name"
-                               value="<?= $project->name ?>" required>
+                               value="<?= escape($project->name) ?>" required>
                         <textarea class="tess-input-md min-h-32 w-full" placeholder="Description [0-128]"
-                                  name="description"><?= $project->description ?></textarea>
+                                  name="description"><?= escape($project->description) ?></textarea>
                         <button type="submit" class="tess-btn-sec w-full mt-4 cursor-pointer">Confirm edit</button>
                     </form>
                 </div>
@@ -177,7 +177,7 @@ $userRole = $data['user']['role'] ?? null;
                 <div class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
                     <h2 class="text-2xl justify-center">Delete project</h2>
                     <div class="flex-1 flex flex-col justify-center w-full">
-                        <form action="/project/delete/<?= $project->id ?>" method="POST" class="w-full flex flex-col">
+                        <form action="/project/delete/<?= (int)$project->id ?>" method="POST" class="w-full flex flex-col">
                             <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                             <p class="mb-2"> Repeat project name to confirm deletion: </p>
                             <input type="text" class="tess-input-md w-full" placeholder="Project Name"
