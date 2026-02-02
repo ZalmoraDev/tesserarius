@@ -6,7 +6,7 @@ use App\Models\Enums\TaskStatus;
 use DateTimeImmutable;
 use JsonSerializable;
 
-final readonly class ProjectTask implements JsonSerializable
+final readonly class Task implements JsonSerializable
 {
     public function __construct(
         public int    $id,

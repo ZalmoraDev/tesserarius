@@ -2,13 +2,13 @@
 
 namespace App\Repositories;
 
-use App\Models\ProjectTask;
+use App\Models\Task;
 use App\Repositories\Interfaces\TaskRepositoryInterface;
 use PDO;
 
 final class TaskRepository extends BaseRepository implements TaskRepositoryInterface
 {
-    public function getAllColumnTasks(int $projectId): array
+    public function getAllProjectTasks(int $projectId): array
     {
         // TODO: Replace with enum/TaskColumn.php
         $columnNames = ['backlog', 'to-do', 'doing', 'review', 'done'];
@@ -30,7 +30,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
 
                 while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     // Create a task object for each task in current column
-                    $task = new ProjectTask(
+                    $task = new Task(
                         $data["id"],
                         $data["project_id"],
                         $data["title"],
@@ -53,7 +53,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
     }
 
 // Function to update a task's column in the database
-    public function moveTaskToColumn(int $taskId, string $newColumn): bool
+    public function changeTaskStatus(int $taskId, string $newColumn): bool
     {
         try {
             // Directly use the string column names like 'backlog', 'todo', etc.

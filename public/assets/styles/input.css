@@ -33,7 +33,7 @@
     }
 
     .tess-btn-sec {
-        @apply cursor-pointer w-full px-4 py-2 rounded-xl text-sm text-neutral-900  bg-neutral-400  hover:bg-neutral-500;
+        @apply cursor-pointer w-full px-4 py-2 rounded-xl text-sm text-neutral-900 bg-neutral-400  hover:bg-neutral-500;
     }
 
     .tess-project-card {

@@ -31,7 +31,7 @@ class TaskControllerApi
             }
 
             // Pass the string column name directly to the service
-            $result = $this->taskService->moveTaskToColumn($taskId, $newColumn);
+            $result = $this->taskService->changeTaskStatus($taskId, $newColumn);
 
             // Return a success or error message based on the result
             if ($result) {

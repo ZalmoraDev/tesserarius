@@ -92,7 +92,7 @@ CREATE INDEX IF NOT EXISTS idx_project_invites_expires
 -- END: Project Invites
 
 -- START: Project Tasks
-CREATE TABLE IF NOT EXISTS project_tasks
+CREATE TABLE IF NOT EXISTS tasks
 (
     task_id     SERIAL PRIMARY KEY,
     project_id  INT              NOT NULL,

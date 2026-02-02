@@ -38,7 +38,7 @@ final readonly class ProjectController
         $project = $this->projectService->getProjectByProjectId($projectId);
 
         // TODO: Rework this completely
-        $allColumnTasksArray = $this->taskService->getAllColumnTasks($projectId);
+        $allColumnTasksArray = $this->taskService->getAllProjectTasks($projectId);
 
         View::render('/Project/projectView.php', $project->name . View::addSiteName(), [
             'project' => $project,

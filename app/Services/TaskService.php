@@ -14,15 +14,13 @@ final readonly class TaskService implements TaskServiceInterface
         $this->taskRepo = $taskRepo;
     }
 
-    public function getAllColumnTasks(int $projectId): array
+    public function getAllProjectTasks(int $projectId): array
     {
-        // column = backlog, to-do, doing, review, done
-        // TODO: Implement existing TaskColumn.php enum
-        return $this->taskRepo->getAllColumnTasks($projectId);
+        return $this->taskRepo->getAllProjectTasks($projectId);
     }
 
-    public function moveTaskToColumn(int $taskId, string $newColumn): bool
+    public function changeTaskStatus(int $taskId, string $newColumn): bool
     {
-        return $this->taskRepo->moveTaskToColumn($taskId, $newColumn);
+        return $this->taskRepo->changeTaskStatus($taskId, $newColumn);
     }
 }
