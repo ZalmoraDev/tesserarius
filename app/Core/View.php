@@ -3,6 +3,7 @@
 namespace App\Core;
 
 use App\Models\Enums\UserRole;
+use App\Views\Components\ToastComp;
 
 /** View renderer for passing view, title & parameters */
 final readonly class View
@@ -32,9 +33,9 @@ final readonly class View
             'csp_nonce' => $_SESSION['csp_nonce'] ?? '',
         ];
 
-        // Merge controller data, and extract to variables for use in views
+        // Merge controller data, and extract to variables for use in Views
         $data = array_merge($data, $controllerData);
-        self::addConditionalData($data);
+        self::addToastNotifications($data);
         extract($data, EXTR_SKIP);
 
         // Unset all flash data, preventing showing in unrelated views
@@ -54,10 +55,10 @@ final readonly class View
     }
 
     /** Handles conditional additions to views, such as toast notifications or extra navbar elements on project views */
-    private static function addConditionalData($data): void
+    private static function addToastNotifications($data): void
     {
-        // Include toast component if there are flash errors to show
+        // Render toast component if there are flash messages to show
         if ($data['flash']['successes'] || $data['flash']['info'] || !empty($data['flash']['errors']))
-            include __DIR__ . '/../Views/Components/toastComp.php';
+            ToastComp::render($data['flash'], $data['csp_nonce']);
     }
 }

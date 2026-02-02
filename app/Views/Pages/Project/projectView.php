@@ -1,112 +1,14 @@
 <?php
 
-use App\Views\Components\projectTaskComp;
+use App\Views\Components\ProjectTaskComp;
 
-// TODO: REMOVE THIS GLOBAL
-global $allColumnTasksArray;
-
-// TODO: Use ViewModel
-
-// REFACTOR: Move logic to controller params?
-$tasks1Backlog = $allColumnTasksArray[0] ?? [];
-$tasks2ToDo = $allColumnTasksArray[1] ?? [];
-$tasks3Doing = $allColumnTasksArray[2] ?? [];
-$tasks4Review = $allColumnTasksArray[3] ?? [];
-$tasks5Done = $allColumnTasksArray[4] ?? [];
-
-$projectTask = new projectTaskComp();
 ?>
 
 <body class="tess-base-body flex flex-col">
 <?php include_once __DIR__ . "/../../Layouts/navbar.php"; ?>
-<main class="flex-1 flex justify-center items-start px-4 py-6">
-    <div class="flex gap-4 items-start">
-
-        <!--TODO: Create columns components through components/compProjectTask -->
-        <div class="tess-base-container-sm rounded-xl flex flex-col w-56 min-w-48 gap-2">
-            <div class="flex flex-col gap-2 w-full items-center">
-                <h1 class="text-lg font-bold text-amber-400">1 <span class="text-white">Backlog</span></h1>
-                <hr class='w-full px-4 border-neutral-600'>
-            </div>
-            <div id="taskColumn1" class="flex flex-col gap-2">
-                <?php
-                foreach ($tasks1Backlog ?? [] as $task) {
-                    echo $projectTask->printProjectTask($task);
-                }
-                ?>
-            </div>
-            <div>
-                <?= $projectTask->printAddProjectTask(); ?>
-            </div>
-        </div>
-
-        <div class="tess-base-container-sm rounded-xl flex flex-col w-56 min-w-48 gap-2">
-            <div class="flex flex-col gap-2 w-full items-center">
-                <h1 class="text-lg font-bold text-amber-400">2 <span class="text-white">To-Do</span></h1>
-                <hr class='w-full px-4 border-neutral-600'>
-            </div>
-            <div id="taskColumn2" class="flex flex-col gap-2">
-                <?php
-                foreach ($tasks2ToDo ?? [] as $task) {
-                    echo $projectTask->printProjectTask($task);
-                }
-                ?>
-            </div>
-            <div>
-                <?= $projectTask->printAddProjectTask(); ?>
-            </div>
-        </div>
-
-        <div class="tess-base-container-sm rounded-xl flex flex-col w-56 min-w-48 gap-2">
-            <div class="flex flex-col gap-2 w-full items-center">
-                <h1 class="text-lg font-bold text-amber-400">3 <span class="text-white">Doing</span></h1>
-                <hr class='w-full px-4 border-neutral-600'>
-            </div>
-            <div id="taskColumn3" class="flex flex-col gap-2">
-                <?php
-                foreach ($tasks3Doing ?? [] as $task) {
-                    echo $projectTask->printProjectTask($task);
-                }
-                ?>
-            </div>
-            <div>
-                <?= $projectTask->printAddProjectTask(); ?>
-            </div>
-        </div>
-
-        <div class="tess-base-container-sm rounded-xl flex flex-col w-56 min-w-48 gap-2">
-            <div class="flex flex-col gap-2 w-full items-center">
-                <h1 class="text-lg font-bold text-amber-400">4 <span class="text-white">Review</span></h1>
-                <hr class='w-full px-4 border-neutral-600'>
-            </div>
-            <div id="taskColumn4" class="flex flex-col gap-2">
-                <?php
-                foreach ($tasks4Review ?? [] as $task) {
-                    echo $projectTask->printProjectTask($task);
-                }
-                ?>
-            </div>
-            <div>
-                <?= $projectTask->printAddProjectTask(); ?>
-            </div>
-        </div>
-
-        <div class="tess-base-container-sm rounded-xl flex flex-col w-56 min-w-48 gap-2">
-            <div class="flex flex-col gap-2 w-full items-center">
-                <h1 class="text-lg font-bold text-amber-400">5 <span class="text-white">Done</span></h1>
-                <hr class='w-full px-4 border-neutral-600'>
-            </div>
-            <div id="taskColumn5" class="flex flex-col gap-2">
-                <?php
-                foreach ($tasks5Done ?? [] as $task) {
-                    echo $projectTask->printProjectTask($task);
-                }
-                ?>
-            </div>
-            <div>
-                <?= $projectTask->printAddProjectTask(); ?>
-            </div>
-        </div>
+<main class="flex-1 flex justify-start items-start px-4 py-6 overflow-x-auto">
+    <div class="flex gap-4 items-start min-w-max">
+        <?php ProjectTaskComp::renderColumns($allColumnTasksArray); ?>
     </div>
 </main>
 </body>

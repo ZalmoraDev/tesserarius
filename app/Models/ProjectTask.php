@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Enums\TaskStatus;
 use DateTimeImmutable;
 use JsonSerializable;
 
@@ -12,7 +13,7 @@ final readonly class ProjectTask implements JsonSerializable
         public int    $projectId,
         public string $title,
         public string $description,
-        public string $columnName, // TODO: Change to Enum
+        public TaskStatus $status,
         public DateTimeImmutable $createdAt
     )
     {
@@ -20,6 +21,13 @@ final readonly class ProjectTask implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return get_object_vars($this);
+        return [
+            'id' => $this->id,
+            'projectId' => $this->projectId,
+            'title' => $this->title,
+            'description' => $this->description,
+            'status' => $this->status->value,
+            'createdAt' => $this->createdAt->format('Y-m-d H:i:s')
+        ];
     }
 }
