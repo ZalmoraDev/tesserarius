@@ -36,13 +36,13 @@ final readonly class ProjectController
     public function showView($projectId): void
     {
         $project = $this->projectService->getProjectByProjectId($projectId);
-
-        // TODO: Rework this completely
-        $allColumnTasksArray = $this->taskService->getAllProjectTasks($projectId);
+        $members = $this->projectMemberService->getProjectMembersByProjectId($projectId);
+        $tasks = $this->taskService->getAllProjectTasks($projectId);
 
         View::render('/Project/projectView.php', $project->name . View::addSiteName(), [
             'project' => $project,
-            'allColumnTasksArray' => $allColumnTasksArray
+            'members' => $members,
+            'tasks' => $tasks
         ]);
     }
 

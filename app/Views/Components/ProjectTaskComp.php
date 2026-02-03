@@ -22,8 +22,12 @@ final class ProjectTaskComp
     }
 
     /** Render add task modal */
-    public static function renderAddTaskModal(): void
+    public static function renderAddTaskModal($currentUser, array $members = []): void
     {
+        /** @var array $data /app/Core/View.php View::render */
+
+        //$currentUser = $data['current_user']->username;
+
         ?>
         <!-- Add Task Modal -->
         <div id="addTaskModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-9999">
@@ -37,10 +41,12 @@ final class ProjectTaskComp
                     <h2 class="text-2xl font-bold mb-4 text-white text-center">Add New Task</h2>
                     <hr class='w-full px-4 border-neutral-600'>
                 </div>
+
+                <!-- Task Form -->
                 <form id="addTaskForm" class="flex flex-col gap-4">
                     <!-- Title & Description -->
                     <div>
-                        <label for="title" class="text-lg font-bold">Title:</label>
+                        <label for="title" class="text-lg font-bold">Title*:</label>
                         <input type="text" id="title" class="tess-input-md w-full" placeholder="Title [3-128]"
                                name="name"
                                required>
@@ -84,9 +90,30 @@ final class ProjectTaskComp
                             <p>-</p>
                         </div>
                         <div class="flex gap-2 items-center">
-                            <label for="expires_at" class="text-lg font-bold">Due:</label>
-                            <input type="datetime-local" id="expires_at" name="expires_at" required
+                            <label for="due_date" class="text-lg font-bold">Due:</label>
+                            <input type="datetime-local" id="due_date" name="due_date"
                                    class="tess-input-md w-full">
+                        </div>
+                    </div>
+
+                    <!-- Creator & Assignee -->
+                    <hr class='w-full px-4 border-neutral-600'>
+                    <div class="flex flex-col gap-2">
+                        <div class="flex gap-2 items-center">
+                            <label for="creator" class="text-lg font-bold">Creator:</label>
+                            <p><?= $currentUser ?></p>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <label for="taskAssignee" class="text-lg font-bold">Assignee:</label>
+                            <select id="taskAssignee" name="assignee"
+                                    class="tess-input-sm bg-neutral-800 text-white border-neutral-700 border-2 rounded-xl p-2">
+                                <option value="">Select assignee</option>
+                                <?php foreach ($members as $member): ?>
+                                    <option value="<?= Escaper::html($member->userId) ?>">
+                                        <?= Escaper::html($member->username) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
 
