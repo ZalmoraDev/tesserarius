@@ -32,7 +32,7 @@ interface ProjectServiceInterface
     /** Edits an existing project's name and description.
      * @throws ProjectException if validation fails or the edit operation fails.
      */
-    public function editProject(int $projectId, string $name, string $description): void;
+    public function editProject(int $projectId, string $name, string $description, string $currentName): void;
 
     /** Deletes a project after confirming the project name.
      * @Throws ProjectException if validation fails or the deletion operation fails.

@@ -12,13 +12,18 @@ use App\Models\Task;
 final class ProjectTaskComp
 {
     //region Public Methods
-
     /** Render all task columns */
-    public static function renderColumns(array $tasksByStatus): void
+    public static function renderColumns(array $tasksByStatus, array $members = [], ?int $currentUserId = null): void
     {
+        // Create member lookup map for quick access
+        $memberLookup = [];
+        foreach ($members as $member) {
+            $memberLookup[$member->userId] = $member->username;
+        }
+
         foreach (TaskStatus::cases() as $status) {
             $tasks = $tasksByStatus[$status->value] ?? [];
-            self::renderColumn($status, $tasks);
+            self::renderColumn($status, $tasks, $memberLookup, $currentUserId);
         }
     }
 
@@ -144,7 +149,7 @@ final class ProjectTaskComp
             <div class="tess-base-container-md rounded-xl p-6 w-full max-w-md relative">
                 <!-- Header & Close Button -->
                 <button id="closeEditModalBtn"
-                        class="absolute top-6 right-6 hover:brightness-75 cursor-pointer text-2xl leading-none">
+                        class="absolute top-6 left-6 hover:brightness-75 cursor-pointer text-2xl leading-none">
                     <img src="/assets/icons/close-FFF.svg" alt="Close" class="w-8 h-8">
                 </button>
                 <div class="w-full">
@@ -253,7 +258,7 @@ final class ProjectTaskComp
 
     //region Private Methods
     /** Render a task column with header, tasks, and add button */
-    private static function renderColumn(TaskStatus $status, array $tasks): void
+    private static function renderColumn(TaskStatus $status, array $tasks, array $memberLookup, ?int $currentUserId): void
     {
         ?>
         <div class="tess-base-container-sm rounded-xl flex flex-col w-72 min-w-60 gap-2">
@@ -264,7 +269,7 @@ final class ProjectTaskComp
             <div id="taskColumn-<?= Escaper::html($status->value) ?>" class="flex flex-col w-full gap-2">
                 <?php
                 foreach ($tasks as $task)
-                    self::renderTask($task);
+                    self::renderTask($task, $memberLookup, $currentUserId);
                 self::renderAddTask($status); ?>
             </div>
         </div>
@@ -272,7 +277,7 @@ final class ProjectTaskComp
     }
 
     /** Render a project task card */
-    private static function renderTask(Task $task): void
+    private static function renderTask(Task $task, array $memberLookup, ?int $currentUserId): void
     {
         $title = Escaper::html($task->title ?? "");
         $description = Escaper::html($task->description ?? "");
@@ -282,21 +287,63 @@ final class ProjectTaskComp
         $assigneeId = Escaper::html($task->assigneeId ?? "");
         $dueDate = $task->dueDate ? $task->dueDate->format('Y-m-d\TH:i') : "";
         $createdAt = $task->creationDate ? $task->creationDate->format('Y-m-d H:i') : "";
+
+        // Get assignee name from lookup
+        $assigneeName = "";
+        if ($task->assigneeId && isset($memberLookup[$task->assigneeId])) {
+            $assigneeName = Escaper::html($memberLookup[$task->assigneeId]);
+        }
+
+        // Check if current user is the assignee
+        $isCurrentUserAssignee = $currentUserId && $task->assigneeId === $currentUserId;
+
+        // Format due date for display
+        $dueDateDisplay = "";
+        if ($task->dueDate) {
+            $dueDateDisplay = $task->dueDate->format('M j, H:i');
+        }
+
+        // Determine circle color based on priority
+        $priorityColorClass = match ($task->priority) {
+            TaskPriority::Low => 'bg-blue-500',
+            TaskPriority::Medium => 'bg-yellow-500',
+            TaskPriority::High => 'bg-red-500',
+            TaskPriority::None => 'bg-white',
+        };
         ?>
-        <div class='tess-project-card w-full flex flex-col justify-between h-44 cursor-pointer hover:brightness-75 task-card'
+        <div class='tess-project-card w-full flex flex-col h-32 cursor-pointer hover:brightness-75 task-card'
              data-task-id='<?= $taskId ?>'
              data-task-title='<?= $title ?>'
              data-task-description='<?= $description ?>'
              data-task-status='<?= $status ?>'
              data-task-priority='<?= $priority ?>'
              data-task-assignee='<?= $assigneeId ?>'
+             data-task-assignee-name='<?= $assigneeName ?>'
              data-task-due-date='<?= $dueDate ?>'
              data-task-created-at='<?= $createdAt ?>'>
-            <div>
-                <span class='text-white block truncate'><?= $title ?></span>
-                <p class='text-xs font-medium line-clamp-5 wrap-break-word hyphens-auto'>
+            <div class='flex-1 min-h-0 flex flex-col'>
+                <div class='flex items-center gap-2 flex-shrink-0'>
+                    <div class='<?= $priorityColorClass ?> w-3 h-3 rounded-full flex-shrink-0'></div>
+                    <span class='text-white block truncate'><?= $title ?></span>
+                </div>
+                <p class='text-xs font-medium line-clamp-3 wrap-break-word hyphens-auto overflow-hidden'>
                     <?= $description ?>
                 </p>
+            </div>
+            <div class='flex justify-between items-center text-xs text-neutral-400 mt-1 flex-shrink-0'>
+                <div class='flex items-center gap-1'>
+                    <?php if ($assigneeName): ?>
+                        <?php if ($isCurrentUserAssignee): ?>
+                            <img src='/assets/icons/account_FFF.svg' alt='Assignee' class='w-4 h-4'>
+                        <?php endif; ?>
+                        <span class='truncate'><?= $assigneeName ?></span>
+                    <?php endif; ?>
+                </div>
+                <div>
+                    <?php if ($dueDateDisplay): ?>
+                        <span><?= Escaper::html($dueDateDisplay) ?></span>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
         <?php

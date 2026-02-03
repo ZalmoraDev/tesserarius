@@ -164,6 +164,7 @@ $userRole = $data['user']['role'] ?? null;
                     <form action="/project/edit/<?= (int)$project->id ?>" method="POST"
                           class="flex flex-col justify-center items-center gap-2 w-full">
                         <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
+                        <input type="hidden" name="projectName" value="<?= $project->name ?>">
                         <input type="text" class="tess-input-md w-full" placeholder="Project Name [3-32]" name="name"
                                value="<?= Escaper::html($project->name) ?>" required>
                         <textarea class="tess-input-md min-h-32 w-full" placeholder="Description [0-128]"

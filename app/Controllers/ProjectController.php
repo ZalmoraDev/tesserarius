@@ -88,7 +88,8 @@ final readonly class ProjectController
             $this->projectService->editProject(
                 $projectId,
                 $_POST['name'] ?? '',
-                $_POST['description'] ?? '');
+                $_POST['description'] ?? '',
+                $_POST['projectName'] ?? '');
             $_SESSION['flash_successes'][] = "Project updated successfully.";
         } catch (ProjectException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();

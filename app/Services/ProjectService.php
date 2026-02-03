@@ -78,7 +78,7 @@ final readonly class ProjectService implements ProjectServiceInterface
         return $newProjectId;
     }
 
-    public function editProject(int $projectId, string $name, string $description): void
+    public function editProject(int $projectId, string $name, string $description, string $currentName): void
     {
         $name = trim($name);
         $description = trim($description);
@@ -89,8 +89,8 @@ final readonly class ProjectService implements ProjectServiceInterface
         if (!preg_match('/^.{0,128}$/', $description))
             throw new ProjectException(ProjectException::DESCRIPTION_INVALID);
 
-        // username already has a project by this name
-        if ($this->projectRepo->existsByName($name))
+        // Only check if name is taken when the name is actually changing
+        if ($name !== $currentName && $this->projectRepo->existsByName($name))
             throw new ProjectException(ProjectException::NAME_TAKEN);
 
         // failed attempt editing the project

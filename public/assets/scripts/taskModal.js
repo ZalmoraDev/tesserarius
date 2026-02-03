@@ -65,6 +65,58 @@
         return div.innerHTML;
     };
 
+    // Helper function to get priority color class
+    const getPriorityColorClass = (priority) => {
+        switch (priority) {
+            case 'Low':
+                return 'bg-blue-500';
+            case 'Medium':
+                return 'bg-yellow-500';
+            case 'High':
+                return 'bg-red-500';
+            case 'None':
+            default:
+                return 'bg-white';
+        }
+    };
+
+    // Helper function to format due date for display
+    const formatDueDate = (dueDate) => {
+        if (!dueDate) return '';
+        try {
+            const date = new Date(dueDate);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const month = months[date.getMonth()];
+            const day = date.getDate();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${month} ${day}, ${hours}:${minutes}`;
+        } catch (e) {
+            return '';
+        }
+    };
+
+    // Get current user ID from the page (store in data attribute or global variable)
+    const getCurrentUserId = () => {
+        // Try to get from a data attribute on the body or a global variable
+        const userIdElement = document.querySelector('[data-current-user-id]');
+        return userIdElement ? parseInt(userIdElement.getAttribute('data-current-user-id')) : null;
+    };
+
+    // Helper function to get member name by ID
+    const getMemberNameById = (memberId) => {
+        if (!memberId) return '';
+        // Find assignee name from select options in the modals
+        const assigneeSelect = document.getElementById('taskAssignee') || document.getElementById('edit_taskAssignee');
+        if (assigneeSelect) {
+            const option = assigneeSelect.querySelector(`option[value="${memberId}"]`);
+            if (option) {
+                return option.textContent.trim();
+            }
+        }
+        return '';
+    };
+
     // Helper function to create and add task card to the appropriate column
     const addTaskToColumn = (task) => {
         // Find the target column by status
@@ -78,7 +130,7 @@
 
         // Create the task card HTML
         const taskCard = document.createElement('div');
-        taskCard.className = 'tess-project-card w-full flex flex-col justify-between h-44 cursor-pointer hover:brightness-90 task-card';
+        taskCard.className = 'tess-project-card w-full flex flex-col h-32 cursor-pointer hover:brightness-90 task-card';
         taskCard.setAttribute('data-task-id', task.id);
 
         // Escape user-generated content to prevent XSS
@@ -94,12 +146,45 @@
         taskCard.setAttribute('data-task-due-date', task.dueDate);
         taskCard.setAttribute('data-task-created-at', task.creationDate);
 
+        // Get priority color
+        const priorityColorClass = getPriorityColorClass(task.priority);
+
+        // Get assignee name and format due date
+        const assigneeName = getMemberNameById(task.assigneeId);
+        taskCard.setAttribute('data-task-assignee-name', assigneeName);
+        const dueDateDisplay = formatDueDate(task.dueDate);
+
+        // Check if current user is the assignee
+        const currentUserId = getCurrentUserId();
+        const isCurrentUserAssignee = currentUserId && task.assigneeId && parseInt(task.assigneeId) === currentUserId;
+
+        // Build assignee display HTML
+        let assigneeHtml = '';
+        if (assigneeName) {
+            const iconHtml = isCurrentUserAssignee ? `<img src='/assets/icons/account_FFF.svg' alt='Assignee' class='w-4 h-4'>` : '';
+            assigneeHtml = `${iconHtml}<span class='truncate'>${escapeHtml(assigneeName)}</span>`;
+        }
+
+        // Build due date display HTML
+        const dueDateHtml = dueDateDisplay ? `<span>${escapeHtml(dueDateDisplay)}</span>` : '';
+
         taskCard.innerHTML = `
-            <div>
-                <span class='text-white block truncate'>${title}</span>
-                <p class='text-xs font-medium line-clamp-5 wrap-break-word hyphens-auto'>
+            <div class='flex-1 min-h-0 flex flex-col'>
+                <div class='flex items-center gap-2 flex-shrink-0'>
+                    <div class='${priorityColorClass} w-3 h-3 rounded-full shrink-0'></div>
+                    <span class='text-white block truncate'>${title}</span>
+                </div>
+                <p class='text-xs font-medium line-clamp-3 wrap-break-word hyphens-auto overflow-hidden'>
                     ${description}
                 </p>
+            </div>
+            <div class='flex justify-between items-center text-xs text-neutral-400 mt-1 flex-shrink-0'>
+                <div class='flex items-center gap-1'>
+                    ${assigneeHtml}
+                </div>
+                <div>
+                    ${dueDateHtml}
+                </div>
             </div>
         `;
 
@@ -160,13 +245,46 @@
             existingCard.setAttribute('data-task-assignee', task.assigneeId || '');
             existingCard.setAttribute('data-task-due-date', task.dueDate);
 
+            // Get priority color
+            const priorityColorClass = getPriorityColorClass(task.priority);
+
+            // Get assignee name and format due date
+            const assigneeName = getMemberNameById(task.assigneeId);
+            existingCard.setAttribute('data-task-assignee-name', assigneeName);
+            const dueDateDisplay = formatDueDate(task.dueDate);
+
+            // Check if current user is the assignee
+            const currentUserId = getCurrentUserId();
+            const isCurrentUserAssignee = currentUserId && task.assigneeId && parseInt(task.assigneeId) === currentUserId;
+
+            // Build assignee display HTML
+            let assigneeHtml = '';
+            if (assigneeName) {
+                const iconHtml = isCurrentUserAssignee ? `<img src='/assets/icons/account_FFF.svg' alt='Assignee' class='w-4 h-4'>` : '';
+                assigneeHtml = `${iconHtml}<span class='truncate'>${escapeHtml(assigneeName)}</span>`;
+            }
+
+            // Build due date display HTML
+            const dueDateHtml = dueDateDisplay ? `<span>${escapeHtml(dueDateDisplay)}</span>` : '';
+
             // Update displayed content
             existingCard.innerHTML = `
-                <div>
-                    <span class='text-white block truncate'>${title}</span>
-                    <p class='text-xs font-medium line-clamp-5 wrap-break-word hyphens-auto'>
+                <div class='flex-1 min-h-0 flex flex-col'>
+                    <div class='flex items-center gap-2 flex-shrink-0'>
+                        <div class='${priorityColorClass} w-3 h-3 rounded-full shrink-0'></div>
+                        <span class='text-white block truncate'>${title}</span>
+                    </div>
+                    <p class='text-xs font-medium line-clamp-3 wrap-break-word hyphens-auto overflow-hidden'>
                         ${description}
                     </p>
+                </div>
+                <div class='flex justify-between items-center text-xs text-neutral-400 mt-1 flex-shrink-0'>
+                    <div class='flex items-center gap-1'>
+                        ${assigneeHtml}
+                    </div>
+                    <div>
+                        ${dueDateHtml}
+                    </div>
                 </div>
             `;
 
