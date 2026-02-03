@@ -3,7 +3,11 @@
 use App\Core\Csp;
 use App\Routing\{Routes, Router};
 
-use App\Controllers\{AuthController, ProjectMembersController, UserController, ProjectController};
+use App\Controllers\{Api\TaskControllerApi,
+    AuthController,
+    ProjectMembersController,
+    UserController,
+    ProjectController};
 use App\Services\{AuthService, ProjectMembersService, ProjectService, TaskService, UserService};
 use App\Repositories\{AuthRepository, ProjectMembersRepository, ProjectRepository, TaskRepository, UserRepository};
 
@@ -59,11 +63,13 @@ $projectMembersService = new ProjectMembersService($projectMembersRepo);
 $taskService = new TaskService($taskRepo);
 $userService = new UserService($userRepo);
 
-// Controllers
+// ControllersWeb
 $authController = new AuthController($authService);
 $projectController = new ProjectController($projectService, $projectMembersService, $taskService);
 $projectMembersController = new ProjectMembersController($projectMembersService);
 $userController = new UserController($userService, $projectService);
+// ControllersAPI
+$taskApi = new TaskControllerApi($taskService);
 
 // -------------------- Routing setup & Router dispatch --------------------
 // Controller map for router

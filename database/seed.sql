@@ -4,6 +4,7 @@ SET TIMEZONE = 'Europe/Amsterdam';
 -- Admins are the same as owners, except not being able to delete the project their part of.
 CREATE TYPE role_enum AS ENUM ('Member', 'Admin', 'Owner');
 CREATE TYPE task_status_enum AS ENUM ('Backlog', 'ToDo', 'Doing', 'Review', 'Done');
+CREATE TYPE task_priority_enum AS ENUM ('None', 'Low', 'Medium', 'High');
 
 
 -- START: Users
@@ -95,13 +96,17 @@ CREATE INDEX IF NOT EXISTS idx_project_invites_expires
 CREATE TABLE IF NOT EXISTS tasks
 (
     task_id     SERIAL PRIMARY KEY,
-    project_id  INT              NOT NULL,
+    project_id  INT                NOT NULL,
 
-    description TEXT             NOT NULL,
-    status      task_status_enum NOT NULL DEFAULT 'Backlog',
+    title       VARCHAR(256)       NOT NULL,
+    description TEXT,
+    status      task_status_enum   NOT NULL DEFAULT 'Backlog',
+    priority    task_priority_enum NOT NULL DEFAULT 'None',
 
-    created_by  INT              NOT NULL,
-    created_at  TIMESTAMPTZ      NOT NULL DEFAULT NOW(),
+    created_by  INT                NOT NULL,
+    created_at  TIMESTAMPTZ        NOT NULL DEFAULT NOW(),
+    assignee_id INT,
+    due_date    TIMESTAMPTZ        NOT NULL,
 
     CONSTRAINT fk_project FOREIGN KEY (project_id)
         REFERENCES projects (id)
@@ -109,6 +114,18 @@ CREATE TABLE IF NOT EXISTS tasks
 
     CONSTRAINT fk_creator FOREIGN KEY (created_by)
         REFERENCES users (id)
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_assignee FOREIGN KEY (assignee_id)
+        REFERENCES users (id)
+        ON DELETE SET NULL
 );
+CREATE INDEX IF NOT EXISTS idx_tasks_project_id
+    ON tasks (project_id);
+
+CREATE INDEX IF NOT EXISTS idx_tasks_assignee_id
+    ON tasks (assignee_id);
+
+CREATE INDEX IF NOT EXISTS idx_tasks_status
+    ON tasks (project_id, status);
 -- END: Project Tasks

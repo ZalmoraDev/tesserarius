@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Task;
 use App\Repositories\Interfaces\TaskRepositoryInterface;
 use App\Services\Interfaces\TaskServiceInterface;
 
@@ -19,8 +20,18 @@ final readonly class TaskService implements TaskServiceInterface
         return $this->taskRepo->getAllProjectTasks($projectId);
     }
 
-    public function changeTaskStatus(int $taskId, string $newColumn): bool
+    public function createTask(string $title, string $description, int $projectId, ?int $assigneeId): Task
+    {
+        // TODO: Implement createTask() method.
+    }
+
+    public function editTask(int $taskId, string $newColumn): bool
     {
         return $this->taskRepo->changeTaskStatus($taskId, $newColumn);
+    }
+    
+    public function deleteTask(int $taskId): void
+    {
+        // TODO: Implement deleteTask() method.
     }
 }

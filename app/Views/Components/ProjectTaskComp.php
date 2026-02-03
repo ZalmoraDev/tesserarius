@@ -45,54 +45,45 @@ final class ProjectTaskComp
                 <!-- Task Form -->
                 <form id="addTaskForm" class="flex flex-col gap-4">
                     <!-- Title & Description -->
-                    <div>
-                        <label for="title" class="text-lg font-bold">Title*:</label>
-                        <input type="text" id="title" class="tess-input-md w-full" placeholder="Title [3-128]"
-                               name="name"
-                               required>
-                    </div>
-                    <div>
-                        <label for="description" class="text-lg font-bold">Description:</label>
-                        <textarea id="description" class="tess-input-md min-h-32 w-full"
-                                  placeholder="Description [0-128]"
-                                  name="description"></textarea>
-                    </div>
-                    <hr class='w-full px-4 border-neutral-600'>
-                    <!-- Status & Priority -->
-                    <div class="flex gap-2 items-center">
-                        <label for="taskStatus" class="text-lg font-bold">Status:</label>
-                        <select id="taskStatus" name="status"
-                                class="tess-input-sm bg-neutral-800 text-white border-neutral-700 border-2 rounded-xl p-2">
-                            <?php foreach (TaskStatus::cases() as $status): ?>
-                                <option value="<?= Escaper::html($status->value) ?>">
-                                    <?= Escaper::html($status->value) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="flex gap-2 items-center">
-                        <label for="taskPriority" class="text-lg font-bold">Priority:</label>
-                        <select id="taskPriority" name="priority"
-                                class="tess-input-sm bg-neutral-800 text-white border-neutral-700 border-2 rounded-xl p-2">
-                            <?php foreach (TaskPriority::cases() as $priority): ?>
-                                <option value="<?= Escaper::html($priority->value) ?>">
-                                    <?= Escaper::html($priority->value) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+                    <div class="flex flex-col gap-2">
+                        <div>
+                            <label for="title" class="text-lg font-bold">Title*:</label>
+                            <input type="text" id="title" class="tess-input-md w-full" placeholder="Title [3-128]"
+                                   name="name"
+                                   required>
+                        </div>
+                        <div>
+                            <label for="description" class="text-lg font-bold">Description:</label>
+                            <textarea id="description" class="tess-input-md min-h-32 w-full"
+                                      placeholder="Description [0-128]"
+                                      name="description"></textarea>
+                        </div>
                     </div>
 
-                    <!-- Dates -->
+                    <!-- Status & Priority -->
                     <hr class='w-full px-4 border-neutral-600'>
                     <div class="flex flex-col gap-2">
                         <div class="flex gap-2 items-center">
-                            <label for="expires_at" class="text-lg font-bold">Created:</label>
-                            <p>-</p>
+                            <label for="taskStatus" class="text-lg font-bold">Status:</label>
+                            <select id="taskStatus" name="status"
+                                    class="tess-input-sm bg-neutral-800 text-white border-neutral-700 border-2 rounded-xl p-2">
+                                <?php foreach (TaskStatus::cases() as $status): ?>
+                                    <option value="<?= Escaper::html($status->value) ?>">
+                                        <?= Escaper::html($status->value) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <div class="flex gap-2 items-center">
-                            <label for="due_date" class="text-lg font-bold">Due:</label>
-                            <input type="datetime-local" id="due_date" name="due_date"
-                                   class="tess-input-md w-full">
+                            <label for="taskPriority" class="text-lg font-bold">Priority:</label>
+                            <select id="taskPriority" name="priority"
+                                    class="tess-input-sm bg-neutral-800 text-white border-neutral-700 border-2 rounded-xl p-2">
+                                <?php foreach (TaskPriority::cases() as $priority): ?>
+                                    <option value="<?= Escaper::html($priority->value) ?>">
+                                        <?= Escaper::html($priority->value) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
 
@@ -114,6 +105,20 @@ final class ProjectTaskComp
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+                    </div>
+
+                    <!-- Dates -->
+                    <hr class='w-full px-4 border-neutral-600'>
+                    <div class="flex flex-col gap-2">
+                        <div class="flex gap-2 items-center">
+                            <label for="expires_at" class="text-lg font-bold">Created:</label>
+                            <p>-</p>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <label for="due_date" class="text-lg font-bold">Due:</label>
+                            <input type="datetime-local" id="due_date" name="due_date"
+                                   class="tess-input-md w-full">
                         </div>
                     </div>
 

@@ -2,7 +2,7 @@
 
 use App\Views\Components\ProjectTaskComp;
 
-/** @var array $data /app/Core/View.php View::render*/
+/** @var array $data /app/Core/View.php View::render */
 
 ?>
 

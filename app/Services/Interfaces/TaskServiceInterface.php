@@ -16,9 +16,13 @@ interface TaskServiceInterface
      */
     public function getAllProjectTasks(int $projectId): array;
 
+    public function createTask(string $title, string $description, int $projectId, ?int $assigneeId): Task;
+
     /** Changes the status (column) of a task.
      * @return bool true on success, false on failure
      * @throws TaskException on failure
      */
-    public function changeTaskStatus(int $taskId, string $newColumn): bool;
+    public function editTask(int $taskId, string $newColumn): bool;
+    public function deleteTask(int $taskId): void;
+
 }

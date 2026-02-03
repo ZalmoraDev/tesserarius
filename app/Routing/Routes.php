@@ -17,7 +17,8 @@ final class Routes
     }
 
     /** nikic/fast-route | https://packagist.org/packages/nikic/fast-route.
-     * Route definitions with additional access rights logic, to be evaluated by router. */
+     * Route definitions with additional access rights logic, to be evaluated by router.
+     * Uses route aliases instead of full $r->addRoute(METHOD, ...)*/
     public function dispatcher(): FastRoute\Dispatcher
     {
         return FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
@@ -27,8 +28,9 @@ final class Routes
             $projectMembers = $this->controllers['projectMembers'];
             $user = $this->controllers['user'];
 
-            // Uses route aliases instead of full $r->addRoute(METHOD, ...)
+            $taskApi = $this->controllers['taskApi'];
 
+            //region Web Routes
             // AuthController routes
             $r->get('/login', $this->route([$auth, 'loginPage'], AccessRole::Anyone));
             $r->get('/signup', $this->route([$auth, 'signupPage'], AccessRole::Anyone));
@@ -60,6 +62,14 @@ final class Routes
             $r->get('/settings', $this->route([$user, 'settingsPage'], AccessRole::Authenticated));
             $r->post('/user/edit', $this->route([$user, 'handleEdit'], AccessRole::Authenticated));
             $r->post('/user/delete', $this->route([$user, 'handleDeletion'], AccessRole::Authenticated));
+            //endregion
+
+
+            //region API Routes
+            $r->post('/task/create', $this->route([$taskApi, 'handleCreation'], AccessRole::Member));
+            $r->post('/task/edit', $this->route([$taskApi, 'handleEdit'], AccessRole::Member));
+            $r->post('/task/delete', $this->route([$taskApi, 'handleDeletion'], AccessRole::Member));
+            //endregion
         });
     }
 

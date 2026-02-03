@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Enums\TaskPriority;
 use App\Models\Enums\TaskStatus;
 use DateTimeImmutable;
 use JsonSerializable;
@@ -9,12 +10,16 @@ use JsonSerializable;
 final readonly class Task implements JsonSerializable
 {
     public function __construct(
-        public int    $id,
-        public int    $projectId,
-        public string $title,
-        public string $description,
-        public TaskStatus $status,
-        public DateTimeImmutable $createdAt
+        public int               $id,
+        public int               $projectId,
+        public string            $title,
+        public ?string           $description,
+        public TaskStatus        $status,
+        public TaskPriority      $priority,
+        public int               $creatorId,
+        public ?int              $assigneeId,
+        public DateTimeImmutable $creationDate,
+        public DateTimeImmutable $dueDate
     )
     {
     }
