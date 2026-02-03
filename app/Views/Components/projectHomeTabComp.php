@@ -15,7 +15,7 @@ class projectHomeTabComp
         $ownerName = Escaper::html($project->ownerName) ?? "";
 
         return "       
-        <a class='tess-project-card cursor-pointer hover:brightness-50 flex flex-col justify-between min-h-32' href='" . "/project/view/{$id}'>
+        <a class='tess-project-card cursor-pointer hover:brightness-75 flex flex-col justify-between min-h-32' href='" . "/project/view/{$id}'>
         <div>
             <span class='text-white block truncate'>$name</span>
             <span class='text-xs font-medium line-clamp-3'>$description</span>
@@ -28,7 +28,7 @@ class projectHomeTabComp
     public function printAddProjectTab(): string
     {
         return "       
-    <a href='/project/create' class='tess-project-card flex flex-col items-center justify-center text-6xl font-bold cursor-pointer hover:brightness-50'>
+    <a href='/project/create' class='tess-project-card flex flex-col items-center justify-center text-6xl font-bold cursor-pointer hover:brightness-75'>
         <span>+</span>
         <span class='text-lg font-medium'>New Project</span>
     </a>

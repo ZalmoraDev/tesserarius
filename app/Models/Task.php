@@ -36,7 +36,7 @@ final readonly class Task implements JsonSerializable
             'creatorId' => $this->creatorId,
             'assigneeId' => $this->assigneeId,
             'creationDate' => $this->creationDate->format('Y-m-d H:i:s'),
-            'dueDate' => $this->dueDate ? $this->dueDate->format('Y-m-d H:i:s') : null
+            'dueDate' => $this->dueDate?->format('Y-m-d H:i:s')
         ];
     }
 }

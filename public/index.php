@@ -3,7 +3,7 @@
 use App\Core\Csp;
 use App\Routing\{Routes, Router};
 
-use App\Controllers\{Api\TaskControllerApi,
+use App\Controllers\{Api\TaskApiController,
     AuthController,
     ProjectMembersController,
     UserController,
@@ -69,7 +69,7 @@ $projectController = new ProjectController($projectService, $projectMembersServi
 $projectMembersController = new ProjectMembersController($projectMembersService);
 $userController = new UserController($userService, $projectService);
 // ControllersAPI
-$taskApi = new TaskControllerApi($authService, $taskService);
+$taskApi = new TaskApiController($authService, $taskService);
 
 // -------------------- Routing setup & Router dispatch --------------------
 // Controller map for Routes.php

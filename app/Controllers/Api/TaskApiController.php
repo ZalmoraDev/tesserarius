@@ -10,7 +10,7 @@ use App\Services\Interfaces\AuthServiceInterface;
 use App\Services\Interfaces\TaskServiceInterface;
 use Exception;
 
-class TaskControllerApi extends BaseApiController
+class TaskApiController extends BaseApiController
 {
     private TaskServiceInterface $taskService;
 
