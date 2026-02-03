@@ -36,6 +36,24 @@ interface TaskServiceInterface
      * @throws TaskException on failure
      */
     public function editTask(int $taskId, string $newColumn): bool;
+
+    /** Updates a task.
+     * @return Task the updated task
+     * @throws TaskException on validation failure or database error
+     */
+    public function updateTask(
+        int $taskId,
+        string $title,
+        ?string $description,
+        string $status,
+        string $priority,
+        ?int $assigneeId,
+        string $dueDate
+    ): Task;
+
+    /** Deletes a task.
+     * @throws TaskException on failure
+     */
     public function deleteTask(int $taskId): void;
 
 }

@@ -23,6 +23,7 @@ foreach ($data['tasks'] ?? [] as $task)
     </div>
 </main>
 <?php ProjectTaskComp::renderAddTaskModal($data['user']['username'], $data['members'], $data['project']); ?>
+<?php ProjectTaskComp::renderEditTaskModal($data['members'], $data['project']); ?>
 
 <script src="/assets/scripts/taskModal.js" nonce="<?= $data['csp_nonce'] ?? '' ?>"></script>
 </body>

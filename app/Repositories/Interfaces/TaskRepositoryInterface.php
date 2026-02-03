@@ -31,4 +31,20 @@ interface TaskRepositoryInterface
     /** Changes the status (column) of a task.
      * @return bool true on success, false on failure*/
     public function changeTaskStatus(int $taskId, string $newColumn): bool;
+
+    /** Updates a task in the database.
+     * @return Task the updated task object*/
+    public function updateTask(
+        int $taskId,
+        string $title,
+        ?string $description,
+        TaskStatus $status,
+        TaskPriority $priority,
+        ?int $assigneeId,
+        DateTimeImmutable $dueDate
+    ): Task;
+
+    /** Deletes a task from the database.
+     * @return bool true on success, false on failure*/
+    public function deleteTask(int $taskId): bool;
 }

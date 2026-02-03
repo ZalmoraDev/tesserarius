@@ -120,4 +120,76 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
             return false;
         }
     }
+
+    public function updateTask(
+        int $taskId,
+        string $title,
+        ?string $description,
+        TaskStatus $status,
+        TaskPriority $priority,
+        ?int $assigneeId,
+        DateTimeImmutable $dueDate
+    ): Task
+    {
+        try {
+            $stmt = $this->connection->prepare("
+                UPDATE tasks 
+                SET title = :title, 
+                    description = :description, 
+                    status = :status, 
+                    priority = :priority, 
+                    assignee_id = :assignee_id, 
+                    due_date = :due_date
+                WHERE task_id = :task_id
+                RETURNING task_id, project_id, title, description, status, priority, created_by, assignee_id, created_at, due_date
+            ");
+
+            $statusValue = $status->value;
+            $priorityValue = $priority->value;
+            $dueDateStr = $dueDate->format('Y-m-d H:i:s');
+
+            $stmt->bindParam(':task_id', $taskId, PDO::PARAM_INT);
+            $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+            $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+            $stmt->bindParam(':status', $statusValue, PDO::PARAM_STR);
+            $stmt->bindParam(':priority', $priorityValue, PDO::PARAM_STR);
+            $stmt->bindParam(':assignee_id', $assigneeId, PDO::PARAM_INT);
+            $stmt->bindParam(':due_date', $dueDateStr, PDO::PARAM_STR);
+
+            $stmt->execute();
+            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$data) {
+                throw new TaskRepositoryException("Failed to update task");
+            }
+
+            return new Task(
+                (int)$data['task_id'],
+                (int)$data['project_id'],
+                $data['title'],
+                $data['description'],
+                TaskStatus::from($data['status']),
+                TaskPriority::from($data['priority']),
+                (int)$data['created_by'],
+                $data['assignee_id'] ? (int)$data['assignee_id'] : null,
+                new DateTimeImmutable($data['created_at']),
+                new DateTimeImmutable($data['due_date'])
+            );
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            throw new TaskRepositoryException("Failed to update task: " . $e->getMessage());
+        }
+    }
+
+    public function deleteTask(int $taskId): bool
+    {
+        try {
+            $stmt = $this->connection->prepare("DELETE FROM tasks WHERE task_id = :task_id");
+            $stmt->bindParam(':task_id', $taskId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return false;
+        }
+    }
 }
