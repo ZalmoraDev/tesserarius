@@ -408,6 +408,12 @@
                     closeModal();
                     addTaskToColumn(data.task);
                 } else {
+                    // Handle 403 Forbidden - user no longer has access
+                    if (response.status === 403) {
+                        alert('Access denied: ' + (data.error || 'You no longer have access to this project'));
+                        window.location.href = '/';
+                        return;
+                    }
                     // Show error message
                     alert('Error: ' + (data.error || 'Failed to create task'));
                 }
@@ -457,6 +463,12 @@
                     closeEditModal();
                     updateTaskInColumn(data.task);
                 } else {
+                    // Handle 403 Forbidden - user no longer has access
+                    if (response.status === 403) {
+                        alert('Access denied: ' + (data.error || 'You no longer have access to this project'));
+                        window.location.href = '/';
+                        return;
+                    }
                     // Show error message
                     alert('Error: ' + (data.error || 'Failed to update task'));
                 }
@@ -508,6 +520,12 @@
                     closeEditModal();
                     removeTaskFromColumn(taskId);
                 } else {
+                    // Handle 403 Forbidden - user no longer has access
+                    if (response.status === 403) {
+                        alert('Access denied: ' + (data.error || 'You no longer have access to this project'));
+                        window.location.href = '/';
+                        return;
+                    }
                     // Show error message
                     alert('Error: ' + (data.error || 'Failed to delete task'));
                 }

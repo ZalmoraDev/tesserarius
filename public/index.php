@@ -69,7 +69,7 @@ $projectController = new ProjectController($projectService, $projectMembersServi
 $projectMembersController = new ProjectMembersController($projectMembersService);
 $userController = new UserController($userService, $projectService);
 // ControllersAPI
-$taskApi = new TaskControllerApi($taskService);
+$taskApi = new TaskControllerApi($authService, $taskService);
 
 // -------------------- Routing setup & Router dispatch --------------------
 // Controller map for Routes.php

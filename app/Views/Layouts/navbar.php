@@ -17,16 +17,28 @@ use App\Models\Enums\UserRole;
                  class="w-8 h-8"/>
             <h1 class="text-xl"><?= $_ENV['SITE_NAME'] ?></h1>
         </a>
-        <?php if ($data['user']['role'] !== UserRole::Member && !empty($data['project']->id ?? null)): ?>
-            <a href="/project/view/<?= (int)$data['project']->id ?>"
-               class="text-xl hover:brightness-50">
-                View
-            </a>
-            <a href="/project/edit/<?= (int)$data['project']->id ?>"
-               class="text-xl hover:brightness-50">
-                Edit
-            </a>
-        <?php endif; ?>
+        <?php
+        // If user is Admin/Owner and on a project page, show View/Edit links
+        if ($data['user']['role'] !== UserRole::Member && !empty($data['project']->id ?? null)):
+            $currentUri = $_SERVER['REQUEST_URI'];
+            $projectId = (int)$data['project']->id;
+            $isViewPage = str_starts_with($currentUri, "/project/view/{$projectId}");
+            $isEditPage = str_starts_with($currentUri, "/project/edit/{$projectId}");
+
+            if ($isViewPage): ?>
+                <a href="/project/edit/<?= $projectId ?>"
+                   class="text-xl hover:brightness-50">
+                    Edit
+                </a>
+            <?php
+            endif;
+            if ($isEditPage): ?>
+                <a href="/project/view/<?= $projectId ?>"
+                   class="text-xl hover:brightness-50">
+                    View
+                </a>
+            <?php endif;
+        endif; ?>
     </div>
 
     <!-- Right -->
