@@ -17,19 +17,12 @@ interface TaskServiceInterface
     public function getAllProjectTasks(int $projectId): array;
 
     /** Creates a new task.
+     * @param Task $task Task model with form data
+     * @param int $creatorId ID of the user creating the task
      * @return Task the created task
      * @throws TaskException on validation failure or database error
      */
-    public function createTask(
-        int $projectId,
-        string $title,
-        ?string $description,
-        string $status,
-        string $priority,
-        int $creatorId,
-        ?int $assigneeId,
-        string $dueDate
-    ): Task;
+    public function createTask(Task $task, int $creatorId): Task;
 
     /** Changes the status (column) of a task.
      * @return bool true on success, false on failure
@@ -38,18 +31,11 @@ interface TaskServiceInterface
     public function editTask(int $taskId, string $newColumn): bool;
 
     /** Updates a task.
+     * @param Task $task Task model with updated form data
      * @return Task the updated task
      * @throws TaskException on validation failure or database error
      */
-    public function updateTask(
-        int $taskId,
-        string $title,
-        ?string $description,
-        string $status,
-        string $priority,
-        ?int $assigneeId,
-        string $dueDate
-    ): Task;
+    public function updateTask(Task $task): Task;
 
     /** Deletes a task.
      * @throws TaskException on failure

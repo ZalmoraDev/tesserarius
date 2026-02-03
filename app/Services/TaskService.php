@@ -25,63 +25,45 @@ final readonly class TaskService implements TaskServiceInterface
         return $this->taskRepo->getAllProjectTasks($projectId);
     }
 
-    public function createTask(
-        int $projectId,
-        string $title,
-        ?string $description,
-        string $status,
-        string $priority,
-        int $creatorId,
-        ?int $assigneeId,
-        string $dueDate
-    ): Task
+    public function createTask(Task $task, int $creatorId): Task
     {
+        // Validate project ID
+        if ($task->projectId <= 0) {
+            throw new TaskException("Invalid project ID");
+        }
+
         // Validate title
-        $title = trim($title);
+        $title = trim($task->title);
         if (empty($title)) {
-            throw new TaskException("Task title is required");
+            throw new TaskException("Title is required");
         }
         if (strlen($title) < 3 || strlen($title) > 256) {
             throw new TaskException("Task title must be between 3 and 256 characters");
         }
 
         // Validate description
-        $description = trim($description ?? '');
+        $description = trim($task->description ?? '');
         if (strlen($description) > 1000) {
             throw new TaskException("Task description must not exceed 1000 characters");
         }
         $description = empty($description) ? null : $description;
 
-        // Validate status enum
-        $statusEnum = TaskStatus::tryFrom($status);
-        if (!$statusEnum) {
-            throw new TaskException("Invalid task status");
-        }
+        // Status and priority are already enums from the Task object
+        $statusEnum = $task->status;
+        $priorityEnum = $task->priority;
 
-        // Validate priority enum
-        $priorityEnum = TaskPriority::tryFrom($priority);
-        if (!$priorityEnum) {
-            throw new TaskException("Invalid task priority");
-        }
-
-        // Validate and parse due date - OPTIONAL
-        $dueDateObj = null;
-        if (!empty($dueDate)) {
-            try {
-                $dueDateObj = new DateTimeImmutable($dueDate);
-            } catch (\Exception $e) {
-                throw new TaskException("Invalid due date format");
-            }
-        }
+        // Due date is already DateTimeImmutable or null from the Task object
+        $dueDateObj = $task->dueDate;
 
         // Validate assignee (if provided, it should be a valid user ID > 0)
-        if ($assigneeId !== null && $assigneeId <= 0) {
+        $assigneeId = $task->assigneeId;
+        if (is_int($assigneeId) && $assigneeId <= 0) {
             throw new TaskException("Invalid assignee ID");
         }
 
         try {
             return $this->taskRepo->createTask(
-                $projectId,
+                $task->projectId,
                 $title,
                 $description,
                 $statusEnum,
@@ -100,62 +82,45 @@ final readonly class TaskService implements TaskServiceInterface
         return $this->taskRepo->changeTaskStatus($taskId, $newColumn);
     }
 
-    public function updateTask(
-        int $taskId,
-        string $title,
-        ?string $description,
-        string $status,
-        string $priority,
-        ?int $assigneeId,
-        string $dueDate
-    ): Task
+    public function updateTask(Task $task): Task
     {
+        // Validate task ID
+        if ($task->id <= 0) {
+            throw new TaskException("Invalid task ID");
+        }
+
         // Validate title
-        $title = trim($title);
+        $title = trim($task->title);
         if (empty($title)) {
-            throw new TaskException("Task title is required");
+            throw new TaskException("Title is required");
         }
         if (strlen($title) < 3 || strlen($title) > 256) {
             throw new TaskException("Task title must be between 3 and 256 characters");
         }
 
         // Validate description
-        $description = trim($description ?? '');
+        $description = trim($task->description ?? '');
         if (strlen($description) > 1000) {
             throw new TaskException("Task description must not exceed 1000 characters");
         }
         $description = empty($description) ? null : $description;
 
-        // Validate status enum
-        $statusEnum = TaskStatus::tryFrom($status);
-        if (!$statusEnum) {
-            throw new TaskException("Invalid task status");
-        }
+        // Status and priority are already enums from the Task object
+        $statusEnum = $task->status;
+        $priorityEnum = $task->priority;
 
-        // Validate priority enum
-        $priorityEnum = TaskPriority::tryFrom($priority);
-        if (!$priorityEnum) {
-            throw new TaskException("Invalid task priority");
-        }
-
-        // Validate and parse due date - OPTIONAL
-        $dueDateObj = null;
-        if (!empty($dueDate)) {
-            try {
-                $dueDateObj = new DateTimeImmutable($dueDate);
-            } catch (\Exception $e) {
-                throw new TaskException("Invalid due date format");
-            }
-        }
+        // Due date is already DateTimeImmutable or null from the Task object
+        $dueDateObj = $task->dueDate;
 
         // Validate assignee (if provided, it should be a valid user ID > 0)
-        if ($assigneeId !== null && $assigneeId <= 0) {
+        $assigneeId = $task->assigneeId;
+        if (is_int($assigneeId) && $assigneeId <= 0) {
             throw new TaskException("Invalid assignee ID");
         }
 
         try {
             return $this->taskRepo->updateTask(
-                $taskId,
+                $task->id,
                 $title,
                 $description,
                 $statusEnum,
@@ -170,6 +135,11 @@ final readonly class TaskService implements TaskServiceInterface
 
     public function deleteTask(int $taskId): void
     {
+        // Validate task ID
+        if ($taskId <= 0) {
+            throw new TaskException("Invalid task ID");
+        }
+
         try {
             $success = $this->taskRepo->deleteTask($taskId);
             if (!$success) {

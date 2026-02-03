@@ -37,8 +37,8 @@ final class ProjectTaskComp
             <div class="tess-base-container-md rounded-xl p-6 w-full max-w-md relative">
                 <!-- Header & Close Button -->
                 <button id="closeModalBtn"
-                        class="absolute top-6 right-6 hover:brightness-75 cursor-pointer text-2xl leading-none">
-                    <img src="/assets/icons/close-FFF.svg" alt="Close" class="w-8 h-8">
+                        class="absolute top-6 left-6 hover:brightness-75 cursor-pointer text-2xl leading-none">
+                    <img src="/assets/icons/close_FFF.svg" alt="Close" class="w-8 h-8">
                 </button>
                 <div class="w-full">
                     <h2 class="text-2xl font-bold mb-4 text-white text-center">Add New Task</h2>
@@ -150,7 +150,7 @@ final class ProjectTaskComp
                 <!-- Header & Close Button -->
                 <button id="closeEditModalBtn"
                         class="absolute top-6 left-6 hover:brightness-75 cursor-pointer text-2xl leading-none">
-                    <img src="/assets/icons/close-FFF.svg" alt="Close" class="w-8 h-8">
+                    <img src="/assets/icons/close_FFF.svg" alt="Close" class="w-8 h-8">
                 </button>
                 <div class="w-full">
                     <h2 class="text-2xl font-bold mb-4 text-white text-center">Edit Task</h2>

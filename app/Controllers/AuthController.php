@@ -21,8 +21,7 @@ final readonly class AuthController
         $this->authService = $authService;
     }
 
-    // -------------------- GET Requests --------------------
-
+    //region GET Requests
     /** GET /login, acts as login page */
     public function loginPage(): void
     {
@@ -34,9 +33,10 @@ final readonly class AuthController
     {
         View::render('signup.php', "Signup" . View::addSiteName());
     }
+    //endregion
 
-    // -------------------- POST Requests --------------------
 
+    //region POST Requests
     /** POST /auth/login, processes login form submission */
     public function login(): void
     {
@@ -84,4 +84,5 @@ final readonly class AuthController
         $_SESSION['flash_info'][] = "You have been logged out.";
         header("Location: /login", true, 302);
     }
+    //endregion
 }
