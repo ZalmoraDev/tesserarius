@@ -22,12 +22,9 @@ final class ProjectTaskComp
     }
 
     /** Render add task modal */
-    public static function renderAddTaskModal($currentUser, array $members = []): void
+    public static function renderAddTaskModal($currentUser, array $members = [], $project = null): void
     {
-        /** @var array $data /app/Core/View.php View::render */
-
-        //$currentUser = $data['current_user']->username;
-
+        $projectId = $project->id ?? 0;
         ?>
         <!-- Add Task Modal -->
         <div id="addTaskModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-9999">
@@ -44,12 +41,15 @@ final class ProjectTaskComp
 
                 <!-- Task Form -->
                 <form id="addTaskForm" class="flex flex-col gap-4">
+                    <input type="hidden" name="csrf" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
+                    <input type="hidden" name="project_id" value="<?= $projectId ?>">
+
                     <!-- Title & Description -->
                     <div class="flex flex-col gap-2">
                         <div>
                             <label for="title" class="text-lg font-bold">Title*:</label>
                             <input type="text" id="title" class="tess-input-md w-full" placeholder="Title [3-128]"
-                                   name="name"
+                                   name="title"
                                    required>
                         </div>
                         <div>

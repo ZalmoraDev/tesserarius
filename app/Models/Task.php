@@ -32,7 +32,11 @@ final readonly class Task implements JsonSerializable
             'title' => $this->title,
             'description' => $this->description,
             'status' => $this->status->value,
-            'createdAt' => $this->createdAt->format('Y-m-d H:i:s')
+            'priority' => $this->priority->value,
+            'creatorId' => $this->creatorId,
+            'assigneeId' => $this->assigneeId,
+            'creationDate' => $this->creationDate->format('Y-m-d H:i:s'),
+            'dueDate' => $this->dueDate->format('Y-m-d H:i:s')
         ];
     }
 }

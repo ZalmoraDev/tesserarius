@@ -72,12 +72,13 @@ $userController = new UserController($userService, $projectService);
 $taskApi = new TaskControllerApi($taskService);
 
 // -------------------- Routing setup & Router dispatch --------------------
-// Controller map for router
+// Controller map for Routes.php
 $controllers = [
     'auth' => $authController,
     'project' => $projectController,
     'projectMembers' => $projectMembersController,
     'user' => $userController,
+    'taskApi' => $taskApi,
 ];
 
 $routes = new Routes($controllers);

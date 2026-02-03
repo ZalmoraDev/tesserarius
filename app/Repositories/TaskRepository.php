@@ -2,53 +2,107 @@
 
 namespace App\Repositories;
 
+use App\Models\Enums\TaskPriority;
+use App\Models\Enums\TaskStatus;
 use App\Models\Task;
+use App\Repositories\Exceptions\TaskRepositoryException;
 use App\Repositories\Interfaces\TaskRepositoryInterface;
+use DateTimeImmutable;
 use PDO;
 
 final class TaskRepository extends BaseRepository implements TaskRepositoryInterface
 {
     public function getAllProjectTasks(int $projectId): array
     {
-        // TODO: Replace with enum/TaskColumn.php
-        $columnNames = ['backlog', 'to-do', 'doing', 'review', 'done'];
-        $columns = []; // 1st dimension array to be filled with tasks arrays
-
         try {
-            // For each column, fill an array with tasks of said column
-            foreach ($columnNames as $columnName) {
-                $stmt = $this->connection->prepare("
-                SELECT *
+            $stmt = $this->connection->prepare("
+                SELECT task_id, project_id, title, description, status, priority, 
+                       created_by, assignee_id, created_at, due_date
                 FROM tasks
-                WHERE project_id = :projectId AND column_name = :columnName
+                WHERE project_id = :projectId
+                ORDER BY created_at DESC
             ");
-                $stmt->bindParam(':projectId', $projectId, PDO::PARAM_INT);
-                $stmt->bindParam(':columnName', $columnName);
-                $stmt->execute();
+            $stmt->bindParam(':projectId', $projectId, PDO::PARAM_INT);
+            $stmt->execute();
 
-                $columnTasks = [];
+            $tasks = [];
 
-                while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    // Create a task object for each task in current column
-                    $task = new Task(
-                        $data["id"],
-                        $data["project_id"],
-                        $data["title"],
-                        $data["description"],
-                        $data["column_name"],
-                        $data["created_at"]
-                    );
-                    // Add the task object to the column tasks array
-                    $columnTasks[] = $task;
-                }
-                // Add the 2D column array of tasks to the main 1D columns array
-                $columns[] = $columnTasks;
+            while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $task = new Task(
+                    (int)$data["task_id"],
+                    (int)$data["project_id"],
+                    $data["title"],
+                    $data["description"],
+                    TaskStatus::from($data["status"]),
+                    TaskPriority::from($data["priority"]),
+                    (int)$data["created_by"],
+                    $data["assignee_id"] ? (int)$data["assignee_id"] : null,
+                    new DateTimeImmutable($data["created_at"]),
+                    new DateTimeImmutable($data["due_date"])
+                );
+                $tasks[] = $task;
             }
-            return $columns; // return the 2D array of column tasks
+            return $tasks;
 
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());
             return [];
+        }
+    }
+
+    public function createTask(
+        int $projectId,
+        string $title,
+        ?string $description,
+        TaskStatus $status,
+        TaskPriority $priority,
+        int $creatorId,
+        ?int $assigneeId,
+        DateTimeImmutable $dueDate
+    ): Task
+    {
+        try {
+            $stmt = $this->connection->prepare("
+                INSERT INTO tasks (project_id, title, description, status, priority, created_by, assignee_id, due_date, created_at)
+                VALUES (:project_id, :title, :description, :status, :priority, :created_by, :assignee_id, :due_date, NOW())
+                RETURNING task_id, project_id, title, description, status, priority, created_by, assignee_id, created_at, due_date
+            ");
+
+            $statusValue = $status->value;
+            $priorityValue = $priority->value;
+            $dueDateStr = $dueDate->format('Y-m-d H:i:s');
+
+            $stmt->bindParam(':project_id', $projectId, PDO::PARAM_INT);
+            $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+            $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+            $stmt->bindParam(':status', $statusValue, PDO::PARAM_STR);
+            $stmt->bindParam(':priority', $priorityValue, PDO::PARAM_STR);
+            $stmt->bindParam(':created_by', $creatorId, PDO::PARAM_INT);
+            $stmt->bindParam(':assignee_id', $assigneeId, PDO::PARAM_INT);
+            $stmt->bindParam(':due_date', $dueDateStr, PDO::PARAM_STR);
+
+            $stmt->execute();
+            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$data) {
+                throw new TaskRepositoryException("Failed to create task");
+            }
+
+            return new Task(
+                (int)$data['task_id'],
+                (int)$data['project_id'],
+                $data['title'],
+                $data['description'],
+                TaskStatus::from($data['status']),
+                TaskPriority::from($data['priority']),
+                (int)$data['created_by'],
+                $data['assignee_id'] ? (int)$data['assignee_id'] : null,
+                new DateTimeImmutable($data['created_at']),
+                new DateTimeImmutable($data['due_date'])
+            );
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            throw new TaskRepositoryException("Failed to create task: " . $e->getMessage());
         }
     }
 

@@ -23,6 +23,7 @@ final class Routes
     {
         return FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
             // Retrieve controllers and use them as conciser abbreviations in route handler definitions
+            // Array mapvalues retrieved from index.php when initializing Routes class
             $auth = $this->controllers['auth'];
             $project = $this->controllers['project'];
             $projectMembers = $this->controllers['projectMembers'];
@@ -66,9 +67,11 @@ final class Routes
 
 
             //region API Routes
-            $r->post('/task/create', $this->route([$taskApi, 'handleCreation'], AccessRole::Member));
-            $r->post('/task/edit', $this->route([$taskApi, 'handleEdit'], AccessRole::Member));
-            $r->post('/task/delete', $this->route([$taskApi, 'handleDeletion'], AccessRole::Member));
+            $r->get('/api/project/{projectId:\d+}/tasks', $this->route([$taskApi, 'getAllProjectTasks'], AccessRole::Member));
+            $r->post('/api/task/create', $this->route([$taskApi, 'handleCreation'], AccessRole::Member));
+            $r->post('/api/project/{projectId:\d+}/task/create', $this->route([$taskApi, 'handleCreation'], AccessRole::Member));
+            $r->post('/api/task/edit', $this->route([$taskApi, 'handleEdit'], AccessRole::Member));
+            $r->post('/api/task/delete', $this->route([$taskApi, 'handleDeletion'], AccessRole::Member));
             //endregion
         });
     }

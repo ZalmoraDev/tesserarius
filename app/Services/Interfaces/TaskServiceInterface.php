@@ -16,7 +16,20 @@ interface TaskServiceInterface
      */
     public function getAllProjectTasks(int $projectId): array;
 
-    public function createTask(string $title, string $description, int $projectId, ?int $assigneeId): Task;
+    /** Creates a new task.
+     * @return Task the created task
+     * @throws TaskException on validation failure or database error
+     */
+    public function createTask(
+        int $projectId,
+        string $title,
+        ?string $description,
+        string $status,
+        string $priority,
+        int $creatorId,
+        ?int $assigneeId,
+        string $dueDate
+    ): Task;
 
     /** Changes the status (column) of a task.
      * @return bool true on success, false on failure
