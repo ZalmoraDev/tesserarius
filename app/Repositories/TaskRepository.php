@@ -20,7 +20,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                        created_by, assignee_id, created_at, due_date
                 FROM tasks
                 WHERE project_id = :projectId
-                ORDER BY created_at DESC
+                ORDER BY created_at ASC
             ");
             $stmt->bindParam(':projectId', $projectId, PDO::PARAM_INT);
             $stmt->execute();

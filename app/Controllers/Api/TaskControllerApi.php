@@ -2,6 +2,8 @@
 
 namespace App\Controllers\Api;
 
+use App\Core\Csrf;
+use App\Services\Exceptions\TaskException;
 use App\Services\Interfaces\TaskServiceInterface;
 
 class TaskControllerApi
@@ -15,30 +17,82 @@ class TaskControllerApi
 
     public function handleCreation(): void
     {
+        // Set JSON response header
+        header('Content-Type: application/json');
 
+        try {
+            // Verify CSRF token
+            Csrf::requireVerification($_POST['csrf'] ?? null);
+
+            // Get current user ID from session
+            $userId = $_SESSION['auth']['userId'] ?? null;
+            if (!$userId) {
+                http_response_code(401);
+                echo json_encode(['success' => false, 'error' => 'Not authenticated']);
+                return;
+            }
+
+            // Extract and validate form data
+            $projectId = filter_var($_POST['project_id'] ?? 0, FILTER_VALIDATE_INT);
+            $title = trim($_POST['title'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            $status = $_POST['status'] ?? '';
+            $priority = $_POST['priority'] ?? '';
+            $assigneeId = filter_var($_POST['assignee'] ?? null, FILTER_VALIDATE_INT);
+            $dueDate = $_POST['due_date'] ?? '';
+
+            // Validate required fields
+            if (!$projectId) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Invalid project ID']);
+                return;
+            }
+
+            if (empty($title)) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Title is required']);
+                return;
+            }
+
+            if (empty($dueDate)) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Due date is required']);
+                return;
+            }
+
+            // Create task through service
+            $task = $this->taskService->createTask(
+                $projectId,
+                $title,
+                $description ?: null,
+                $status,
+                $priority,
+                $userId,
+                $assigneeId ?: null,
+                $dueDate
+            );
+
+            // Return success response with created task data
+            http_response_code(201);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Task created successfully',
+                'task' => $task->jsonSerialize()
+            ]);
+
+        } catch (TaskException $e) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'An unexpected error occurred']);
+            error_log("Task creation error: " . $e->getMessage());
+        }
     }
 
     public function handleEdit(): void
     {
-        // Get the task_id and new_column values from the POST data (API call)
-        $taskId = $_POST['task_id'] ?? null;
-        $newColumn = $_POST['new_column'] ?? null;
 
-        if (!$taskId || !$newColumn) {
-            // Return error if task_id or new_column is not provided
-            echo json_encode(['status' => 'error', 'message' => 'Missing task ID or column']);
-            return;
-        }
-
-        // Pass the string column name directly to the service
-        $result = $this->taskService->editTask($taskId, $newColumn);
-
-        // Return a success or error message based on the result
-        if ($result) {
-            echo json_encode(['status' => 'success', 'message' => 'Task moved successfully']);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Failed to move task']);
-        }
     }
 
     public function handleDeletion(): void

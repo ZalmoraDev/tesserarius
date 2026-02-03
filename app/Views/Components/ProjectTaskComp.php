@@ -2,6 +2,7 @@
 
 namespace App\Views\Components;
 
+use App\Core\Csrf;
 use App\Core\Escaper;
 use App\Models\Enums\TaskPriority;
 use App\Models\Enums\TaskStatus;
@@ -41,7 +42,7 @@ final class ProjectTaskComp
 
                 <!-- Task Form -->
                 <form id="addTaskForm" class="flex flex-col gap-4">
-                    <input type="hidden" name="csrf" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
+                    <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                     <input type="hidden" name="project_id" value="<?= $projectId ?>">
 
                     <!-- Title & Description -->
@@ -117,7 +118,7 @@ final class ProjectTaskComp
                         </div>
                         <div class="flex gap-2 items-center">
                             <label for="due_date" class="text-lg font-bold">Due:</label>
-                            <input type="datetime-local" id="due_date" name="due_date"
+                            <input type="datetime-local" id="due_date" name="due_date" required
                                    class="tess-input-md w-full">
                         </div>
                     </div>
