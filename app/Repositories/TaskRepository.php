@@ -38,7 +38,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                     (int)$data["created_by"],
                     $data["assignee_id"] ? (int)$data["assignee_id"] : null,
                     new DateTimeImmutable($data["created_at"]),
-                    new DateTimeImmutable($data["due_date"])
+                    $data["due_date"] ? new DateTimeImmutable($data["due_date"]) : null
                 );
                 $tasks[] = $task;
             }
@@ -58,7 +58,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
         TaskPriority $priority,
         int $creatorId,
         ?int $assigneeId,
-        DateTimeImmutable $dueDate
+        ?DateTimeImmutable $dueDate
     ): Task
     {
         try {
@@ -70,7 +70,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
 
             $statusValue = $status->value;
             $priorityValue = $priority->value;
-            $dueDateStr = $dueDate->format('Y-m-d H:i:s');
+            $dueDateStr = $dueDate ? $dueDate->format('Y-m-d H:i:s') : null;
 
             $stmt->bindParam(':project_id', $projectId, PDO::PARAM_INT);
             $stmt->bindParam(':title', $title, PDO::PARAM_STR);
@@ -98,7 +98,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                 (int)$data['created_by'],
                 $data['assignee_id'] ? (int)$data['assignee_id'] : null,
                 new DateTimeImmutable($data['created_at']),
-                new DateTimeImmutable($data['due_date'])
+                $data['due_date'] ? new DateTimeImmutable($data['due_date']) : null
             );
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());
@@ -128,7 +128,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
         TaskStatus $status,
         TaskPriority $priority,
         ?int $assigneeId,
-        DateTimeImmutable $dueDate
+        ?DateTimeImmutable $dueDate
     ): Task
     {
         try {
@@ -146,7 +146,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
 
             $statusValue = $status->value;
             $priorityValue = $priority->value;
-            $dueDateStr = $dueDate->format('Y-m-d H:i:s');
+            $dueDateStr = $dueDate ? $dueDate->format('Y-m-d H:i:s') : null;
 
             $stmt->bindParam(':task_id', $taskId, PDO::PARAM_INT);
             $stmt->bindParam(':title', $title, PDO::PARAM_STR);
@@ -173,7 +173,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                 (int)$data['created_by'],
                 $data['assignee_id'] ? (int)$data['assignee_id'] : null,
                 new DateTimeImmutable($data['created_at']),
-                new DateTimeImmutable($data['due_date'])
+                $data['due_date'] ? new DateTimeImmutable($data['due_date']) : null
             );
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());

@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS tasks
     created_by  INT                NOT NULL,
     created_at  TIMESTAMPTZ        NOT NULL DEFAULT NOW(),
     assignee_id INT,
-    due_date    TIMESTAMPTZ        NOT NULL,
+    due_date    TIMESTAMPTZ,
 
     CONSTRAINT fk_project FOREIGN KEY (project_id)
         REFERENCES projects (id)

@@ -25,7 +25,7 @@ interface TaskRepositoryInterface
         TaskPriority $priority,
         int $creatorId,
         ?int $assigneeId,
-        DateTimeImmutable $dueDate
+        ?DateTimeImmutable $dueDate
     ): Task;
 
     /** Changes the status (column) of a task.
@@ -41,7 +41,7 @@ interface TaskRepositoryInterface
         TaskStatus $status,
         TaskPriority $priority,
         ?int $assigneeId,
-        DateTimeImmutable $dueDate
+        ?DateTimeImmutable $dueDate
     ): Task;
 
     /** Deletes a task from the database.

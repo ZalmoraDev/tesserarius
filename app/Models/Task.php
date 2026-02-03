@@ -19,7 +19,7 @@ final readonly class Task implements JsonSerializable
         public int               $creatorId,
         public ?int              $assigneeId,
         public DateTimeImmutable $creationDate,
-        public DateTimeImmutable $dueDate
+        public ?DateTimeImmutable $dueDate
     )
     {
     }
@@ -36,7 +36,7 @@ final readonly class Task implements JsonSerializable
             'creatorId' => $this->creatorId,
             'assigneeId' => $this->assigneeId,
             'creationDate' => $this->creationDate->format('Y-m-d H:i:s'),
-            'dueDate' => $this->dueDate->format('Y-m-d H:i:s')
+            'dueDate' => $this->dueDate ? $this->dueDate->format('Y-m-d H:i:s') : null
         ];
     }
 }

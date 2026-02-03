@@ -64,11 +64,14 @@ final readonly class TaskService implements TaskServiceInterface
             throw new TaskException("Invalid task priority");
         }
 
-        // Validate and parse due date
-        try {
-            $dueDateObj = new DateTimeImmutable($dueDate);
-        } catch (\Exception $e) {
-            throw new TaskException("Invalid due date format");
+        // Validate and parse due date - OPTIONAL
+        $dueDateObj = null;
+        if (!empty($dueDate)) {
+            try {
+                $dueDateObj = new DateTimeImmutable($dueDate);
+            } catch (\Exception $e) {
+                throw new TaskException("Invalid due date format");
+            }
         }
 
         // Validate assignee (if provided, it should be a valid user ID > 0)
@@ -135,11 +138,14 @@ final readonly class TaskService implements TaskServiceInterface
             throw new TaskException("Invalid task priority");
         }
 
-        // Validate and parse due date
-        try {
-            $dueDateObj = new DateTimeImmutable($dueDate);
-        } catch (\Exception $e) {
-            throw new TaskException("Invalid due date format");
+        // Validate and parse due date - OPTIONAL
+        $dueDateObj = null;
+        if (!empty($dueDate)) {
+            try {
+                $dueDateObj = new DateTimeImmutable($dueDate);
+            } catch (\Exception $e) {
+                throw new TaskException("Invalid due date format");
+            }
         }
 
         // Validate assignee (if provided, it should be a valid user ID > 0)

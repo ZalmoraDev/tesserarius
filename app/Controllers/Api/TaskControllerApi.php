@@ -54,12 +54,6 @@ class TaskControllerApi
                 return;
             }
 
-            if (empty($dueDate)) {
-                http_response_code(400);
-                echo json_encode(['success' => false, 'error' => 'Due date is required']);
-                return;
-            }
-
             // Create task through service
             $task = $this->taskService->createTask(
                 $projectId,
@@ -136,11 +130,6 @@ class TaskControllerApi
                 return;
             }
 
-            if (empty($dueDate)) {
-                http_response_code(400);
-                echo json_encode(['success' => false, 'error' => 'Due date is required']);
-                return;
-            }
 
             // Update task through service
             $task = $this->taskService->updateTask(

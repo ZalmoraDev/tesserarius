@@ -118,7 +118,7 @@ final class ProjectTaskComp
                         </div>
                         <div class="flex gap-2 items-center">
                             <label for="due_date" class="text-lg font-bold">Due:</label>
-                            <input type="datetime-local" id="due_date" name="due_date" required
+                            <input type="datetime-local" id="due_date" name="due_date"
                                    class="tess-input-md w-full">
                         </div>
                     </div>
@@ -227,7 +227,7 @@ final class ProjectTaskComp
                     <div class="flex flex-col gap-2">
                         <div class="flex gap-2 items-center">
                             <label for="edit_due_date" class="text-lg font-bold">Due:</label>
-                            <input type="datetime-local" id="edit_due_date" name="due_date" required
+                            <input type="datetime-local" id="edit_due_date" name="due_date"
                                    class="tess-input-md w-full">
                         </div>
                     </div>
