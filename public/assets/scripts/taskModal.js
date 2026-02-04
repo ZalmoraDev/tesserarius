@@ -117,14 +117,14 @@
         return '';
     };
 
-    // Helper function to create and add task card to the appropriate column
+    // Helper function to create and add task card to the appropriate status section
     const addTaskToColumn = (task) => {
-        // Find the target column by status
+        // Find the target status section by status
         const columnId = `taskColumn-${task.status}`;
         const column = document.getElementById(columnId);
 
         if (!column) {
-            console.error('Could not find column:', columnId);
+            console.error('Could not find status section:', columnId);
             return;
         }
 
@@ -208,7 +208,7 @@
         if (addTaskBtn) {
             column.insertBefore(taskCard, addTaskBtn);
         } else {
-            // If no add button found, just append to the column
+            // If no add button found, just append to the status section
             column.appendChild(taskCard);
         }
     };
@@ -226,11 +226,11 @@
         const oldStatus = existingCard.getAttribute('data-task-status');
         const newStatus = task.status;
 
-        // If status changed, move to different column
+        // If status changed, move to different status section
         if (oldStatus !== newStatus) {
-            // Remove from old column
+            // Remove from old status section
             existingCard.remove();
-            // Add to new column
+            // Add to new status section
             addTaskToColumn(task);
         } else {
             // Update in place
@@ -319,7 +319,7 @@
     document.querySelectorAll('.add-task-btn').forEach(button => {
         button.addEventListener('click', function () {
             const status = this.getAttribute('data-status');
-            // Set the dropdown to the clicked column's status
+            // Set the dropdown to the clicked status section's status
             if (taskStatusSelect && status) {
                 taskStatusSelect.value = status;
             }

@@ -24,7 +24,7 @@ interface TaskServiceInterface
      */
     public function createTask(Task $task, int $creatorId): Task;
 
-    /** Changes the status (column) of a task.
+    /** Changes the status of a task.
      * @return bool true on success, false on failure
      * @throws TaskException on failure
      */

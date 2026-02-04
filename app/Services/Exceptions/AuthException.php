@@ -3,7 +3,7 @@
 namespace App\Services\Exceptions;
 
 /** Exceptions for authentication or authorization errors. */
-final class AuthException extends \RuntimeException
+final class AuthException extends ServiceException
 {
     // Not logged in
     public const string INVALID_CREDENTIALS = 'Invalid username or password,<br>please try again.';

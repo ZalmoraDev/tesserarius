@@ -12,7 +12,7 @@ use App\Models\Task;
 final class ProjectTaskComp
 {
     //region Public Methods
-    /** Render all task columns */
+    /** Render all task status sections */
     public static function renderColumns(array $tasksByStatus, array $members = [], ?int $currentUserId = null): void
     {
         // Create member lookup map for quick access
@@ -61,7 +61,7 @@ final class ProjectTaskComp
                         <div>
                             <label for="description" class="text-lg font-bold">Description:</label>
                             <textarea id="description" class="tess-input-md min-h-32 w-full"
-                                      placeholder="Description [0-128]"
+                                      placeholder="Description [0-512]"
                                       name="description"></textarea>
                         </div>
                     </div>
@@ -174,7 +174,7 @@ final class ProjectTaskComp
                         <div>
                             <label for="edit_description" class="text-lg font-bold">Description:</label>
                             <textarea id="edit_description" class="tess-input-md min-h-32 w-full"
-                                      placeholder="Description [0-128]"
+                                      placeholder="Description [0-512]"
                                       name="description"></textarea>
                         </div>
                     </div>
@@ -257,7 +257,7 @@ final class ProjectTaskComp
 
 
     //region Private Methods
-    /** Render a task column with header, tasks, and add button */
+    /** Render a task status section with header, tasks, and add button */
     private static function renderColumn(TaskStatus $status, array $tasks, array $memberLookup, ?int $currentUserId): void
     {
         ?>

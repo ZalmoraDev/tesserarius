@@ -3,7 +3,7 @@
 namespace App\Services\Exceptions;
 
 /** Exceptions for project-related errors. */
-final class ProjectException extends \RuntimeException
+final class ProjectException extends ServiceException
 {
     public const string PROJECT_NOT_FOUND = 'The requested project was not found.';
 

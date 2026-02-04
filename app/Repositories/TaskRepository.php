@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Enums\TaskPriority;
 use App\Models\Enums\TaskStatus;
 use App\Models\Task;
-use App\Repositories\Exceptions\TaskRepositoryException;
+use App\Repositories\Exceptions\TaskRepoException;
 use App\Repositories\Interfaces\TaskRepositoryInterface;
 use DateTimeImmutable;
 use PDO;
@@ -22,8 +22,10 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                 WHERE project_id = :projectId
                 ORDER BY created_at ASC
             ");
-            $stmt->bindParam(':projectId', $projectId, PDO::PARAM_INT);
-            $stmt->execute();
+
+            $stmt->execute([
+                'projectId' => $projectId
+            ]);
 
             $tasks = [];
 
@@ -62,28 +64,21 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                 RETURNING task_id, created_at
             ");
 
-            $projectId = $task->projectId;
-            $title = $task->title;
-            $description = $task->description;
-            $statusValue = $task->status->value;
-            $priorityValue = $task->priority->value;
-            $assigneeId = $task->assigneeId;
-            $dueDateStr = $task->dueDate?->format('Y-m-d H:i:s');
+            $stmt->execute([
+                'project_id' => $task->projectId,
+                'title' => $task->title,
+                'description' => $task->description,
+                'status' => $task->status->value,
+                'priority' => $task->priority->value,
+                'created_by' => $creatorId,
+                'assignee_id' => $task->assigneeId,
+                'due_date' => $task->dueDate?->format('Y-m-d H:i:s')
+            ]);
 
-            $stmt->bindParam(':project_id', $projectId, PDO::PARAM_INT);
-            $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-            $stmt->bindParam(':description', $description, PDO::PARAM_STR);
-            $stmt->bindParam(':status', $statusValue, PDO::PARAM_STR);
-            $stmt->bindParam(':priority', $priorityValue, PDO::PARAM_STR);
-            $stmt->bindParam(':created_by', $creatorId, PDO::PARAM_INT);
-            $stmt->bindParam(':assignee_id', $assigneeId, PDO::PARAM_INT);
-            $stmt->bindParam(':due_date', $dueDateStr, PDO::PARAM_STR);
-
-            $stmt->execute();
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$data) {
-                throw new TaskRepositoryException("Failed to create task");
+                throw new TaskRepoException("Failed to create task");
             }
 
             // Return new Task with input data + database-generated fields
@@ -101,19 +96,20 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
             );
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());
-            throw new TaskRepositoryException("Failed to create task: " . $e->getMessage());
+            throw new TaskRepoException("Failed to create task: " . $e->getMessage());
         }
     }
 
-// Function to update a task's column in the database
-    public function changeTaskStatus(int $taskId, string $newColumn): bool
+    // Function to update a task's status in the database
+    public function changeTaskStatus(int $taskId, string $newStatus): bool
     {
         try {
-            // Directly use the string column names like 'backlog', 'todo', etc.
-            $stmt = $this->connection->prepare("UPDATE tasks SET column_name = :newColumn WHERE id = :taskId");
-            $stmt->bindParam(':newColumn', $newColumn);
-            $stmt->bindParam(':taskId', $taskId, PDO::PARAM_INT);
-            return $stmt->execute();
+            $stmt = $this->connection->prepare("UPDATE tasks SET status = :newStatus WHERE task_id = :taskId");
+
+            return $stmt->execute([
+                'newStatus' => $newStatus,
+                'taskId' => $taskId
+            ]);
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());
             return false;
@@ -134,33 +130,25 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                 WHERE task_id = :task_id
             ");
 
-            $taskId = $task->id;
-            $title = $task->title;
-            $description = $task->description;
-            $statusValue = $task->status->value;
-            $priorityValue = $task->priority->value;
-            $assigneeId = $task->assigneeId;
-            $dueDateStr = $task->dueDate?->format('Y-m-d H:i:s');
-
-            $stmt->bindParam(':task_id', $taskId, PDO::PARAM_INT);
-            $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-            $stmt->bindParam(':description', $description, PDO::PARAM_STR);
-            $stmt->bindParam(':status', $statusValue, PDO::PARAM_STR);
-            $stmt->bindParam(':priority', $priorityValue, PDO::PARAM_STR);
-            $stmt->bindParam(':assignee_id', $assigneeId, PDO::PARAM_INT);
-            $stmt->bindParam(':due_date', $dueDateStr, PDO::PARAM_STR);
-
-            $success = $stmt->execute();
+            $success = $stmt->execute([
+                'task_id' => $task->id,
+                'title' => $task->title,
+                'description' => $task->description,
+                'status' => $task->status->value,
+                'priority' => $task->priority->value,
+                'assignee_id' => $task->assigneeId,
+                'due_date' => $task->dueDate?->format('Y-m-d H:i:s')
+            ]);
 
             if (!$success) {
-                throw new TaskRepositoryException("Failed to update task");
+                throw new TaskRepoException("Failed to update task");
             }
 
             // Return the same task object since all fields are already up-to-date
             return $task;
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());
-            throw new TaskRepositoryException("Failed to update task: " . $e->getMessage());
+            throw new TaskRepoException("Failed to update task: " . $e->getMessage());
         }
     }
 
@@ -168,8 +156,10 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
     {
         try {
             $stmt = $this->connection->prepare("DELETE FROM tasks WHERE task_id = :task_id");
-            $stmt->bindParam(':task_id', $taskId, PDO::PARAM_INT);
-            return $stmt->execute();
+
+            return $stmt->execute([
+                'task_id' => $taskId
+            ]);
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());
             return false;

@@ -22,9 +22,9 @@ interface TaskRepositoryInterface
      */
     public function createTask(Task $task, int $creatorId): Task;
 
-    /** Changes the status (column) of a task.
+    /** Changes the status of a task.
      * @return bool true on success, false on failure*/
-    public function changeTaskStatus(int $taskId, string $newColumn): bool;
+    public function changeTaskStatus(int $taskId, string $newStatus): bool;
 
     /** Updates a task in the database.
      * @param Task $task Task object with updated data

@@ -2,14 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\Enums\TaskPriority;
-use App\Models\Enums\TaskStatus;
 use App\Models\Task;
-use App\Repositories\Exceptions\TaskRepositoryException;
+use App\Repositories\Exceptions\TaskRepoException;
 use App\Repositories\Interfaces\TaskRepositoryInterface;
 use App\Services\Exceptions\TaskException;
 use App\Services\Interfaces\TaskServiceInterface;
-use DateTimeImmutable;
 
 final readonly class TaskService implements TaskServiceInterface
 {
@@ -20,95 +17,79 @@ final readonly class TaskService implements TaskServiceInterface
         $this->taskRepo = $taskRepo;
     }
 
+    /** Retrieves all tasks for a given project ID,
+     * which get divided into subarrays of 'status' => 'tasks' in projectView.php
+     * @return array<int, Task[]>
+     */
     public function getAllProjectTasks(int $projectId): array
     {
         return $this->taskRepo->getAllProjectTasks($projectId);
     }
 
+    /** Creates a new task after validating input data */
     public function createTask(Task $task, int $creatorId): Task
     {
-        // Validate project ID
-        if ($task->projectId <= 0) {
-            throw new TaskException("Invalid project ID");
-        }
+        if ($task->projectId <= 0)
+            throw new TaskException(TaskException::INVALID_PROJECT_ID);
 
-        // Validate title
-        $title = trim($task->title);
-        if (empty($title)) {
-            throw new TaskException("Title is required");
-        }
-        if (strlen($title) < 3 || strlen($title) > 256) {
-            throw new TaskException("Task title must be between 3 and 256 characters");
-        }
-
-        // Validate description
-        $description = trim($task->description ?? '');
-        if (strlen($description) > 1000) {
-            throw new TaskException("Task description must not exceed 1000 characters");
-        }
-
-        // Validate assignee (if provided, it should be a valid user ID > 0)
-        if (is_int($task->assigneeId) && $task->assigneeId <= 0) {
-            throw new TaskException("Invalid assignee ID");
-        }
+        $this->validateInput($task);
 
         try {
-            // Pass the Task object directly to repository
+            // Pass the Task object to repository, letting repository handle adding/updating fields
             return $this->taskRepo->createTask($task, $creatorId);
-        } catch (TaskRepositoryException $e) {
-            throw new TaskException("Failed to create task: " . $e->getMessage());
+        } catch (TaskRepoException $e) {
+            throw new TaskException(TaskException::CREATION_FAILED . $e->getMessage());
         }
     }
 
+    /** Updates an existing task after validating input data */
     public function updateTask(Task $task): Task
     {
-        // Validate task ID
-        if ($task->id <= 0) {
-            throw new TaskException("Invalid task ID");
-        }
+        if ($task->id <= 0)
+            throw new TaskException(TaskException::INVALID_TASK_ID);
 
-        // Validate title
-        $title = trim($task->title);
-        if (empty($title)) {
-            throw new TaskException("Title is required");
-        }
-        if (strlen($title) < 3 || strlen($title) > 256) {
-            throw new TaskException("Task title must be between 3 and 256 characters");
-        }
-
-        // Validate description
-        $description = trim($task->description ?? '');
-        if (strlen($description) > 1000) {
-            throw new TaskException("Task description must not exceed 1000 characters");
-        }
-
-        // Validate assignee (if provided, it should be a valid user ID > 0)
-        if (is_int($task->assigneeId) && $task->assigneeId <= 0) {
-            throw new TaskException("Invalid assignee ID");
-        }
+        $this->validateInput($task);
 
         try {
-            // Pass the Task object directly to repository
+            // Pass the Task object to repository, letting repository handle adding/updating fields
             return $this->taskRepo->updateTask($task);
-        } catch (TaskRepositoryException $e) {
-            throw new TaskException("Failed to update task: " . $e->getMessage());
+        } catch (TaskRepoException $e) {
+            throw new TaskException(TaskException::UPDATE_FAILED . $e->getMessage());
         }
     }
 
+    /** Deletes a task by its ID */
     public function deleteTask(int $taskId): void
     {
-        // Validate task ID
-        if ($taskId <= 0) {
-            throw new TaskException("Invalid task ID");
-        }
+        if ($taskId <= 0)
+            throw new TaskException(TaskException::INVALID_TASK_ID);
 
         try {
             $success = $this->taskRepo->deleteTask($taskId);
-            if (!$success) {
-                throw new TaskException("Failed to delete task");
-            }
-        } catch (TaskRepositoryException $e) {
-            throw new TaskException("Failed to delete task: " . $e->getMessage());
+            if (!$success)
+                throw new TaskException(TaskException::DELETION_FAILED);
+        } catch (TaskRepoException $e) {
+            throw new TaskException(TaskException::DELETION_FAILED_WITH_REASON . $e->getMessage());
         }
+    }
+
+    /** Validates task input data */
+    private function validateInput(Task $task): void
+    {
+        // Validate title
+        $title = trim($task->title);
+        if (empty($title))
+            throw new TaskException(TaskException::TITLE_REQUIRED);
+        if (strlen($title) <= 3 || strlen($title) >= 256)
+            throw new TaskException(TaskException::TITLE_LENGTH_INVALID);
+
+        // Validate description
+        $description = trim($task->description ?? '');
+        if (strlen($description) > 512)
+            throw new TaskException(TaskException::DESCRIPTION_TOO_LONG);
+
+        // Validate assignee (if provided, it should be a valid user ID > 0)
+        if (is_int($task->assigneeId) && $task->assigneeId <= 0)
+            throw new TaskException(TaskException::INVALID_ASSIGNEE_ID);
     }
 }

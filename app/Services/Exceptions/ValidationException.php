@@ -2,7 +2,7 @@
 
 namespace App\Services\Exceptions;
 
-final class ValidationException extends \RuntimeException
+final class ValidationException extends ServiceException
 {
     public const string FIELDS_REQUIRED = 'All fields are required,<br>please try again.';
 

@@ -2,14 +2,16 @@
 
 namespace App\Services;
 
+use App\Services\Exceptions\ServiceException;
+use DateMalformedStringException;
 use DateTimeImmutable;
 
 use App\Models\ProjectInvite;
 use App\Services\Exceptions\ProjectMembersException;
 use App\Services\Interfaces\ProjectMembersServiceInterface;
-use App\Repositories\Exceptions\ProjectMembers\InviteCodeExpiredOrUsedException;
-use App\Repositories\Exceptions\ProjectMembers\InviteNotFoundException;
+use App\Repositories\Exceptions\ProjectMembersRepoException;
 use App\Repositories\Interfaces\ProjectMembersRepositoryInterface;
+use Exception;
 
 final readonly class ProjectMembersService implements ProjectMembersServiceInterface
 {
@@ -23,12 +25,34 @@ final readonly class ProjectMembersService implements ProjectMembersServiceInter
     //region Member Retrieval
     public function getProjectMembersByProjectId(int $projectId): array
     {
-        return $this->projectMembersRepo->findProjectMembersByProjectId($projectId);
+        try {
+            return $this->projectMembersRepo->findProjectMembersByProjectId($projectId);
+        } catch (ProjectMembersRepoException $e) {
+            error_log("Repository error in getProjectMembersByProjectId: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::DATABASE_ERROR);
+        } catch (DateMalformedStringException $e) {
+            error_log("Date format error in getProjectMembersByProjectId: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::INVALID_DATE_FORMAT);
+        } catch (Exception $e) {
+            error_log("Unexpected error in getProjectMembersByProjectId: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::UNEXPECTED_ERROR);
+        }
     }
 
     public function getProjectInvitesByProjectId(int $projectId): array
     {
-        return $this->projectMembersRepo->findProjectInvitesByProjectId($projectId);
+        try {
+            return $this->projectMembersRepo->findProjectInvitesByProjectId($projectId);
+        } catch (ProjectMembersRepoException $e) {
+            error_log("Repository error in getProjectInvitesByProjectId: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::DATABASE_ERROR);
+        } catch (DateMalformedStringException $e) {
+            error_log("Date format error in getProjectInvitesByProjectId: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::INVALID_DATE_FORMAT);
+        } catch (Exception $e) {
+            error_log("Unexpected error in getProjectInvitesByProjectId: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::UNEXPECTED_ERROR);
+        }
     }
     //endregion
 
@@ -36,17 +60,41 @@ final readonly class ProjectMembersService implements ProjectMembersServiceInter
     //region Member Management
     public function promoteProjectMember(int $projectId, int $userId): void
     {
-        $this->projectMembersRepo->promoteProjectMember($projectId, $userId);
+        try {
+            $this->projectMembersRepo->promoteProjectMember($projectId, $userId);
+        } catch (ProjectMembersRepoException $e) {
+            error_log("Repository error in promoteProjectMember: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::DATABASE_ERROR);
+        } catch (Exception $e) {
+            error_log("Unexpected error in promoteProjectMember: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::UNEXPECTED_ERROR);
+        }
     }
 
     public function demoteProjectMember(int $projectId, int $userId): void
     {
-        $this->projectMembersRepo->demoteProjectMember($projectId, $userId);
+        try {
+            $this->projectMembersRepo->demoteProjectMember($projectId, $userId);
+        } catch (ProjectMembersRepoException $e) {
+            error_log("Repository error in demoteProjectMember: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::DATABASE_ERROR);
+        } catch (Exception $e) {
+            error_log("Unexpected error in demoteProjectMember: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::UNEXPECTED_ERROR);
+        }
     }
 
     public function removeProjectMember(int $projectId, int $userId): void
     {
-        $this->projectMembersRepo->removeProjectMember($projectId, $userId);
+        try {
+            $this->projectMembersRepo->removeProjectMember($projectId, $userId);
+        } catch (ProjectMembersRepoException $e) {
+            error_log("Repository error in removeProjectMember: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::DATABASE_ERROR);
+        } catch (Exception $e) {
+            error_log("Unexpected error in removeProjectMember: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::UNEXPECTED_ERROR);
+        }
     }
 
     //endregion
@@ -70,7 +118,15 @@ final readonly class ProjectMembersService implements ProjectMembersServiceInter
             $invites[] = new ProjectInvite(0, $projectId, $this->generateInviteCode(
                 16), $expiresAt, null, $createdBy, $now);
 
-        $this->projectMembersRepo->createProjectInviteCodes($invites);
+        try {
+            $this->projectMembersRepo->createProjectInviteCodes($invites);
+        } catch (ProjectMembersRepoException $e) {
+            error_log("Repository error in generateProjectInviteCodes: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::DATABASE_ERROR);
+        } catch (Exception $e) {
+            error_log("Unexpected error in generateProjectInviteCodes: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::UNEXPECTED_ERROR);
+        }
     }
 
     public function joinProjectByInviteCode(string $inviteCode): int
@@ -82,18 +138,43 @@ final readonly class ProjectMembersService implements ProjectMembersServiceInter
         // and re-throw them to user with additional context as 'business' exceptions
         try {
             return $this->projectMembersRepo->joinProjectByInviteCode($inviteCode, (int)$_SESSION['auth']['userId']);
-        } catch (InviteNotFoundException) {
-            throw new ProjectMembersException(ProjectMembersException::INVITE_CODE_INVALID);
-        } catch (InviteCodeExpiredOrUsedException) {
-            throw new ProjectMembersException(ProjectMembersException::INVITE_CODE_EXPIRED_OR_USED);
+        } catch (ProjectMembersRepoException $e) {
+            // Map repository exceptions to service exceptions based on the error
+            if ($e->getMessage() === ProjectMembersRepoException::INVITE_NOT_FOUND)
+                throw new ProjectMembersException(ProjectMembersException::INVITE_CODE_INVALID);
+            elseif ($e->getMessage() === ProjectMembersRepoException::INVITE_EXPIRED || $e->getMessage() === ProjectMembersRepoException::INVITE_ALREADY_USED)
+                throw new ProjectMembersException(ProjectMembersException::INVITE_CODE_EXPIRED_OR_USED);
+            elseif ($e->getMessage() === ProjectMembersRepoException::MEMBER_ALREADY_EXISTS)
+                throw new ProjectMembersException(ProjectMembersException::INVITE_CODE_EXPIRED_OR_USED);
+
+            // Generic repository error
+            error_log("Repository error in joinProjectByInviteCode: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::DATABASE_ERROR);
+        } catch (DateMalformedStringException $e) {
+            error_log("Date format error in joinProjectByInviteCode: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::INVALID_DATE_FORMAT);
+        } catch (Exception $e) {
+            error_log("Unexpected error in joinProjectByInviteCode: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::UNEXPECTED_ERROR);
         }
     }
 
     public function deleteProjectInviteCode(int $projectId, int $inviteId): void
     {
-        $success = $this->projectMembersRepo->deleteProjectInviteCode($projectId, $inviteId);
-        if (!$success)
-            throw new ProjectMembersException(ProjectMembersException::INVITE_REMOVAL_FAILED);
+        try {
+            $success = $this->projectMembersRepo->deleteProjectInviteCode($projectId, $inviteId);
+            if (!$success)
+                throw new ProjectMembersException(ProjectMembersException::INVITE_REMOVAL_FAILED);
+        } catch (ProjectMembersException $e) {
+            // Re-throw business exceptions as-is
+            throw $e;
+        } catch (ProjectMembersRepoException $e) {
+            error_log("Repository error in deleteProjectInviteCode: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::DATABASE_ERROR);
+        } catch (Exception $e) {
+            error_log("Unexpected error in deleteProjectInviteCode: " . $e->getMessage());
+            throw new ProjectMembersException(ServiceException::UNEXPECTED_ERROR);
+        }
     }
     //endregion
 
