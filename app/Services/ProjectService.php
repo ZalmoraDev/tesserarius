@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Repositories\Interfaces\ProjectMembersRepositoryInterface;
 use App\Repositories\Interfaces\ProjectRepositoryInterface;
 use App\Services\Exceptions\ProjectException;
+use App\Services\Exceptions\ServiceException;
 use App\Services\Interfaces\ProjectServiceInterface;
 
 final readonly class ProjectService implements ProjectServiceInterface
@@ -23,7 +24,12 @@ final readonly class ProjectService implements ProjectServiceInterface
     //region Retrieve
     public function getProjectByProjectId(int $projectId): Project
     {
-        $project = $this->projectRepo->findProjectByProjectId($projectId);
+        $project = ServiceException::handleRepoCall(
+            fn() => $this->projectRepo->findProjectByProjectId($projectId),
+            ProjectException::class,
+            __FUNCTION__
+        );
+
         if ($project === null)
             throw new ProjectException(ProjectException::PROJECT_NOT_FOUND);
 
@@ -32,7 +38,12 @@ final readonly class ProjectService implements ProjectServiceInterface
 
     public function getHomeProjects(int $userId): array
     {
-        $projects = $this->projectRepo->findProjectListItemsByUserId($userId);
+        $projects = ServiceException::handleRepoCall(
+            fn() => $this->projectRepo->findProjectListItemsByUserId($userId),
+            ProjectException::class,
+            __FUNCTION__
+        );
+        // Having no projects is not an error, so we don't check for null
 
         $owned = [];  // Owner
         $member = []; // Admin + Member
@@ -43,7 +54,7 @@ final readonly class ProjectService implements ProjectServiceInterface
                 $member[] = $project;
 
         return [
-            'owned' => $owned, // Your projects
+            'owned' => $owned,
             'member' => $member,
         ];
     }
@@ -63,18 +74,29 @@ final readonly class ProjectService implements ProjectServiceInterface
             throw new ProjectException(ProjectException::DESCRIPTION_INVALID);
 
         // username already has a project by this name
-        if ($this->projectRepo->existsByName($name))
+        $nameExists = ServiceException::handleRepoCall(
+            fn() => $this->projectRepo->existsByName($name),
+            ProjectException::class,
+            __FUNCTION__
+        );
+        if ($nameExists)
             throw new ProjectException(ProjectException::NAME_TAKEN);
 
-        // failed attempt creating the new project
+        // Create the new project
         $ownerId = (int)$_SESSION['auth']['userId'];
-        $newProjectId = $this->projectRepo->createProject($ownerId, $name, $description);
-        if ($newProjectId === null)
-            throw new ProjectException(ProjectException::REGISTRATION_FAILED);
+        $newProjectId = ServiceException::handleRepoCall(
+            fn() => $this->projectRepo->createProject($ownerId, $name, $description),
+            ProjectException::class,
+            __FUNCTION__
+        );
 
-        // If no exceptions were thrown, meaning the project was created successfully
-        // -> add this user as 'Owner' to 'project_members' DB table
-        $this->projectMembersRepo->addProjectMember($newProjectId, (int)$_SESSION['auth']['userId'], UserRole::Owner);
+        // Add this user as 'Owner' to the new project
+        ServiceException::handleRepoCall(
+            fn() => $this->projectMembersRepo->addProjectMember($newProjectId, (int)$_SESSION['auth']['userId'], UserRole::Owner),
+            ProjectException::class,
+            __FUNCTION__
+        );
+
         return $newProjectId;
     }
 
@@ -90,30 +112,45 @@ final readonly class ProjectService implements ProjectServiceInterface
             throw new ProjectException(ProjectException::DESCRIPTION_INVALID);
 
         // Only check if name is taken when the name is actually changing
-        if ($name !== $currentName && $this->projectRepo->existsByName($name))
-            throw new ProjectException(ProjectException::NAME_TAKEN);
+        if ($name !== $currentName) {
+            $nameExists = ServiceException::handleRepoCall(
+                fn() => $this->projectRepo->existsByName($name),
+                ProjectException::class,
+                __FUNCTION__
+            );
+            if ($nameExists)
+                throw new ProjectException(ProjectException::NAME_TAKEN);
+        }
 
-        // failed attempt editing the project
-        $success = $this->projectRepo->editProject($projectId, $name, $description);
-        if (!$success)
-            throw new ProjectException(ProjectException::EDIT_FAILED);
+        // Update the project
+        ServiceException::handleRepoCall(
+            fn() => $this->projectRepo->editProject($projectId, $name, $description),
+            ProjectException::class,
+            __FUNCTION__
+        );
     }
 
     public function deleteProject(int $projectId, string $confirmName): void
     {
         // We could fetch the project, and it's name through the view,
         // but to avoid further 'spaghettification', we re-fetch it
-        $projectName = $this->projectRepo->findProjectNameByProjectId($projectId);
+        $projectName = ServiceException::handleRepoCall(
+            fn() => $this->projectRepo->findProjectNameByProjectId($projectId),
+            ProjectException::class,
+            __FUNCTION__
+        );
 
         if ($projectName === null)
             throw new ProjectException(ProjectException::PROJECT_NOT_FOUND);
         if ($confirmName !== $projectName)
             throw new ProjectException(ProjectException::DELETION_NAME_MISMATCH);
 
-        // failed attempt deleting the project
-        $success = $this->projectRepo->deleteProject($projectId);
-        if (!$success)
-            throw new ProjectException(ProjectException::DELETION_FAILED);
+        // Delete the project
+        ServiceException::handleRepoCall(
+            fn() => $this->projectRepo->deleteProject($projectId),
+            ProjectException::class,
+            __FUNCTION__
+        );
     }
     //endregion
 }

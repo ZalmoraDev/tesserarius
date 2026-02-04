@@ -9,6 +9,7 @@ use App\Repositories\Exceptions\TaskRepoException;
 use App\Repositories\Interfaces\TaskRepositoryInterface;
 use DateTimeImmutable;
 use PDO;
+use PDOException;
 
 final class TaskRepository extends BaseRepository implements TaskRepositoryInterface
 {
@@ -45,17 +46,13 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                 $tasks[] = $task;
             }
             return $tasks;
-
-        } catch (\PDOException $e) {
-            error_log("Database error: " . $e->getMessage());
-            return [];
+        } catch (PDOException $e) {
+            error_log("Database error in getAllProjectTasks: " . $e->getMessage());
+            throw new TaskRepoException(TaskRepoException::FAILED_TO_FETCH_TASKS);
         }
     }
 
-    public function createTask(
-        Task $task,
-        int  $creatorId
-    ): Task
+    public function createTask(Task $task, int $creatorId): Task
     {
         try {
             $stmt = $this->connection->prepare("
@@ -77,9 +74,8 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
 
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if (!$data) {
-                throw new TaskRepoException("Failed to create task");
-            }
+            if (!$data)
+                throw new TaskRepoException(TaskRepoException::FAILED_TO_CREATE_TASK);
 
             // Return new Task with input data + database-generated fields
             return new Task(
@@ -94,25 +90,27 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                 creationDate: new DateTimeImmutable($data['created_at']),
                 dueDate: $task->dueDate
             );
-        } catch (\PDOException $e) {
-            error_log("Database error: " . $e->getMessage());
-            throw new TaskRepoException("Failed to create task: " . $e->getMessage());
+        } catch (PDOException $e) {
+            error_log("Database error in createTask: " . $e->getMessage());
+            throw new TaskRepoException(TaskRepoException::FAILED_TO_CREATE_TASK);
         }
     }
 
-    // Function to update a task's status in the database
-    public function changeTaskStatus(int $taskId, string $newStatus): bool
+    public function changeTaskStatus(int $taskId, string $newStatus): void
     {
         try {
             $stmt = $this->connection->prepare("UPDATE tasks SET status = :newStatus WHERE task_id = :taskId");
 
-            return $stmt->execute([
+            $stmt->execute([
                 'newStatus' => $newStatus,
                 'taskId' => $taskId
             ]);
-        } catch (\PDOException $e) {
-            error_log("Database error: " . $e->getMessage());
-            return false;
+
+            if ($stmt->rowCount() === 0)
+                throw new TaskRepoException(TaskRepoException::TASK_NOT_FOUND);
+        } catch (PDOException $e) {
+            error_log("Database error in changeTaskStatus: " . $e->getMessage());
+            throw new TaskRepoException(TaskRepoException::FAILED_TO_UPDATE_TASK);
         }
     }
 
@@ -130,7 +128,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                 WHERE task_id = :task_id
             ");
 
-            $success = $stmt->execute([
+            $stmt->execute([
                 'task_id' => $task->id,
                 'title' => $task->title,
                 'description' => $task->description,
@@ -140,29 +138,31 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                 'due_date' => $task->dueDate?->format('Y-m-d H:i:s')
             ]);
 
-            if (!$success) {
-                throw new TaskRepoException("Failed to update task");
-            }
+            if ($stmt->rowCount() === 0)
+                throw new TaskRepoException(TaskRepoException::TASK_NOT_FOUND);
 
             // Return the same task object since all fields are already up-to-date
             return $task;
-        } catch (\PDOException $e) {
-            error_log("Database error: " . $e->getMessage());
-            throw new TaskRepoException("Failed to update task: " . $e->getMessage());
+        } catch (PDOException $e) {
+            error_log("Database error in updateTask: " . $e->getMessage());
+            throw new TaskRepoException(TaskRepoException::FAILED_TO_UPDATE_TASK);
         }
     }
 
-    public function deleteTask(int $taskId): bool
+    public function deleteTask(int $taskId): void
     {
         try {
             $stmt = $this->connection->prepare("DELETE FROM tasks WHERE task_id = :task_id");
 
-            return $stmt->execute([
+            $stmt->execute([
                 'task_id' => $taskId
             ]);
-        } catch (\PDOException $e) {
-            error_log("Database error: " . $e->getMessage());
-            return false;
+
+            if ($stmt->rowCount() === 0)
+                throw new TaskRepoException(TaskRepoException::TASK_NOT_FOUND);
+        } catch (PDOException $e) {
+            error_log("Database error in deleteTask: " . $e->getMessage());
+            throw new TaskRepoException(TaskRepoException::FAILED_TO_DELETE_TASK);
         }
     }
 }

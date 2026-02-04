@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Models\Task;
-use App\Repositories\Exceptions\TaskRepoException;
-use App\Repositories\Interfaces\TaskRepositoryInterface;
+use App\Services\Exceptions\ServiceException;
 use App\Services\Exceptions\TaskException;
 use App\Services\Interfaces\TaskServiceInterface;
+use App\Repositories\Interfaces\TaskRepositoryInterface;
 
 final readonly class TaskService implements TaskServiceInterface
 {
@@ -23,7 +23,11 @@ final readonly class TaskService implements TaskServiceInterface
      */
     public function getAllProjectTasks(int $projectId): array
     {
-        return $this->taskRepo->getAllProjectTasks($projectId);
+        return ServiceException::handleRepoCall(
+            fn() => $this->taskRepo->getAllProjectTasks($projectId),
+            TaskException::class,
+            __FUNCTION__
+        );
     }
 
     /** Creates a new task after validating input data */
@@ -34,12 +38,11 @@ final readonly class TaskService implements TaskServiceInterface
 
         $this->validateInput($task);
 
-        try {
-            // Pass the Task object to repository, letting repository handle adding/updating fields
-            return $this->taskRepo->createTask($task, $creatorId);
-        } catch (TaskRepoException $e) {
-            throw new TaskException(TaskException::CREATION_FAILED . $e->getMessage());
-        }
+        return ServiceException::handleRepoCall(
+            fn() => $this->taskRepo->createTask($task, $creatorId),
+            TaskException::class,
+            __FUNCTION__
+        );
     }
 
     /** Updates an existing task after validating input data */
@@ -50,12 +53,11 @@ final readonly class TaskService implements TaskServiceInterface
 
         $this->validateInput($task);
 
-        try {
-            // Pass the Task object to repository, letting repository handle adding/updating fields
-            return $this->taskRepo->updateTask($task);
-        } catch (TaskRepoException $e) {
-            throw new TaskException(TaskException::UPDATE_FAILED . $e->getMessage());
-        }
+        return ServiceException::handleRepoCall(
+            fn() => $this->taskRepo->updateTask($task),
+            TaskException::class,
+            __FUNCTION__
+        );
     }
 
     /** Deletes a task by its ID */
@@ -64,13 +66,11 @@ final readonly class TaskService implements TaskServiceInterface
         if ($taskId <= 0)
             throw new TaskException(TaskException::INVALID_TASK_ID);
 
-        try {
-            $success = $this->taskRepo->deleteTask($taskId);
-            if (!$success)
-                throw new TaskException(TaskException::DELETION_FAILED);
-        } catch (TaskRepoException $e) {
-            throw new TaskException(TaskException::DELETION_FAILED_WITH_REASON . $e->getMessage());
-        }
+        ServiceException::handleRepoCall(
+            fn() => $this->taskRepo->deleteTask($taskId),
+            TaskException::class,
+            __FUNCTION__
+        );
     }
 
     /** Validates task input data */
