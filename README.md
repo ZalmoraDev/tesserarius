@@ -56,12 +56,12 @@
     ```bash
    docker-compose down -v
   
-## Development
+## Features
 
 ### Security
 
-- **Router Authentication**: All routes protected via `Router::handleRequest()` checking session auth status
-- **Router Authorization**: All routes verify a user's `UserRole` against the routes `AccessRole` before allowing access
+- **Router Authentication**: All routes protected via Router's `AuthService::requireAuthentication(...)` checking session auth status
+- **Router Authorization**: All routes verify a user's `UserRole` against the routes `AccessRole` before allowing access through `AuthService::requireAuthentication(...)` ([Router](/app/Routing/Router.php))
 - **SQL Injection Prevention**: All database queries use a base PDO statement
 - **XSS & CSP**: Randomly generated CSP nonces for all JS scripts, with CSP setup to be as strict as possible
 - **CSRF Protection**: Randomly generated CSRF token validation for all POST requests via `Csrf` class
@@ -96,8 +96,9 @@
 - **Error Responses**: JSON error messages with appropriate HTTP status codes (403, 400, 500)
 
 ### Legal & Accessibility
-
+s
 **WCAG 2.1 Compliance (Level AA):**
+- **Semantic HTML**: Proper use of headings, articles, sections, aria-labels, alt-text ([settings page](/app/Views/Pages/User/settings.php))
 - **Color Contrast**: Text colors meet minimum 4.5:1 contrast ratio (See list below)
 - **Keyboard Navigation**: All interactive elements (forms, buttons, modals) accessible via keyboard
 - **Focus Indicators**: Visible focus states on all interactive elements (Tailwind `focus:`)

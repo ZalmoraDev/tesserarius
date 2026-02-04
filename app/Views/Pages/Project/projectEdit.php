@@ -4,7 +4,7 @@ use App\Core\Csrf;
 use App\Core\Escaper;
 use App\Models\Enums\UserRole;
 
-/** @var array $data /app/Core/View.php View::render*/
+/** @var array $data /app/Core/View.php View::render */
 
 // variables injected and path redirected by
 // ProjectController::editProjectView
@@ -21,14 +21,16 @@ $userRole = $data['user']['role'] ?? null;
 <?php include_once __DIR__ . "/../../Layouts/navbar.php"; ?>
 
 <main class="flex-1 flex flex-col gap-10 w-full max-w-full justify-center items-center overflow-y-auto relative mb-4">
-    <div class="flex flex-col gap-6">
-        <h1 class="tess-base-container-sm text-2xl w-full max-w-full mt-4">Edit project: <?= Escaper::html($project->name) ?></h1>
+    <section class="flex flex-col gap-6">
+        <header class="tess-base-container-sm text-2xl w-full max-w-full mt-4">
+            <h1>Edit project: <?= Escaper::html($project->name) ?></h1>
+        </header>
 
         <!-- 2x2 / 1x4 GRID -->
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <article class="grid grid-cols-1 xl:grid-cols-2 gap-4">
 
             <!-- TOP LEFT | Project Invites -->
-            <div class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
+            <section class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
                 <h2 class="text-2xl justify-center">Project Invites</h2>
                 <div class="flex-1 flex flex-col justify-center w-full gap-4">
                     <table class="w-full border-collapse">
@@ -67,7 +69,8 @@ $userRole = $data['user']['role'] ?? null;
                         <?php endforeach; ?>
                         </tbody>
                     </table>
-                    <form action="/project-members/create-invites/<?= (int)$project->id ?>" method="POST" class="w-full">
+                    <form action="/project-members/create-invites/<?= (int)$project->id ?>" method="POST"
+                          class="w-full">
                         <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                         <div class="flex gap-4 w-full mt-4">
                             <div class="flex flex-col w-full">
@@ -86,10 +89,10 @@ $userRole = $data['user']['role'] ?? null;
                         </button>
                     </form>
                 </div>
-            </div>
+            </section>
 
             <!-- TOP RIGHT | Edit members -->
-            <div class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
+            <section class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
                 <h2 class="text-2xl justify-center">Edit members</h2>
 
                 <div class="flex-1 flex flex-col justify-center w-full">
@@ -155,10 +158,10 @@ $userRole = $data['user']['role'] ?? null;
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </section>
 
             <!-- BOTTOM LEFT | Edit Project -->
-            <div class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
+            <section class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
                 <h2 class="text-2xl justify-center">Edit project</h2>
                 <div class="flex-1 flex flex-col justify-center w-full">
                     <form action="/project/edit/<?= (int)$project->id ?>" method="POST"
@@ -166,36 +169,37 @@ $userRole = $data['user']['role'] ?? null;
                         <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                         <input type="hidden" name="projectName" value="<?= $project->name ?>">
                         <input type="text" class="tess-input-md w-full" placeholder="Project Name [3-32]" name="name"
-                               value="<?= Escaper::html($project->name) ?>" required>
+                               value="<?= Escaper::html($project->name) ?>" required aria-label="Project name, 3 to 32 characters">
                         <textarea class="tess-input-md min-h-32 w-full" placeholder="Description [0-128]"
-                                  name="description"><?= Escaper::html($project->description) ?></textarea>
+                                  name="description" aria-label="Project description, 0 to 128 characters"><?= Escaper::html($project->description) ?></textarea>
                         <button type="submit" class="tess-btn-sec w-full mt-4 cursor-pointer">Confirm edit</button>
                     </form>
                 </div>
-            </div>
+            </section>
 
             <!-- BOTTOM RIGHT | Delete Project (Owner-only) -->
             <?php if ($userRole === UserRole::Owner): ?>
-                <div class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
+                <section class="tess-base-container-md gap-4 flex flex-col w-full items-center justify-between">
                     <h2 class="text-2xl justify-center">Delete project</h2>
                     <div class="flex-1 flex flex-col justify-center w-full">
+                        <form action="/project/delete/<?= (int)$project->id ?>" method="POST"
                         <form action="/project/delete/<?= (int)$project->id ?>" method="POST" class="w-full flex flex-col">
                             <input type="hidden" name="csrf" value="<?= Csrf::getToken() ?>">
                             <p class="mb-2"> Repeat project name to confirm deletion: </p>
                             <input type="text" class="tess-input-md w-full" placeholder="Project Name"
                                    name="confirm_name"
-                                   required>
+                                   required aria-label="Confirm project name for deletion">
                             <button type="submit"
                                     class="cursor-pointer tess-btn-pri bg-red-600 hover:bg-red-700 text-white font-bold w-full mt-4">
                                 CONFIRM DELETION
                             </button>
                         </form>
                     </div>
-                </div>
+                </section>
             <?php endif; ?>
 
-        </div>
-    </div>
+        </article>
+    </section>
 </main>
 </body>
 

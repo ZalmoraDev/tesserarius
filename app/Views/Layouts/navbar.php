@@ -43,12 +43,12 @@ use App\Models\Enums\UserRole;
 
     <!-- Right -->
     <a href="/settings" class="flex gap-2 justify-end items-center hover:brightness-50 cursor-pointer">
-        <div class="flex flex-col items-end">
+        <header class="flex flex-col items-end">
             <span><?= Escaper::html($data['user']['username']) ?? "NO_USER" ?></span>
             <?php if (!empty($data['user']['role'])): ?>
                 <span class="text-sm text-gray-400"><?= $data['user']['role']->value ?></span>
             <?php endif; ?>
-        </div>
+        </header>
         <img src="/assets/icons/account_FFF.svg"
              alt="settings"
              height="32" width="32"
