@@ -4,11 +4,10 @@ namespace App\Controllers;
 
 use App\Core\View;
 use Exception;
-use App\Services\{Exceptions\ProjectException,
-    Interfaces\ProjectServiceInterface,
-    Interfaces\TaskServiceInterface,
-    ProjectMembersService
-};
+use App\Services\Exceptions\ServiceException;
+use App\Services\Interfaces\ProjectServiceInterface;
+use App\Services\Interfaces\TaskServiceInterface;
+use App\Services\ProjectMembersService;
 
 /** Controller handling project requests
  * - GET: Displaying project creation, viewing, and editing pages
@@ -74,7 +73,7 @@ final readonly class ProjectController
             );
             $_SESSION['flash_successes'][] = "Project created successfully.";
             $redirect = "/project/view/" . $id;
-        } catch (ProjectException $e) {
+        } catch (ServiceException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
             $redirect = "/project/create";
         } catch (Exception) {
@@ -95,12 +94,13 @@ final readonly class ProjectController
                 $_POST['description'] ?? '',
                 $_POST['projectName'] ?? '');
             $_SESSION['flash_successes'][] = "Project updated successfully.";
-        } catch (ProjectException $e) {
+        } catch (ServiceException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
-        } catch (\Exception) {
+        } catch (Exception) {
             $_SESSION['flash_errors'][] = "An unexpected error occurred.";
         }
-        header("Location: /project/edit/" . $projectId, true, 302);
+        $redirect = "/project/edit/" . $projectId;
+        header("Location: $redirect", true, 302);
         exit;
     }
 
@@ -114,14 +114,14 @@ final readonly class ProjectController
             );
             $_SESSION['flash_successes'][] = "Project deleted successfully.";
             $redirect = "/";
-        } catch (ProjectException $e) {
+        } catch (ServiceException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
             $redirect = "/project/edit/" . $projectId;
-        } catch (\Exception) {
+        } catch (Exception) {
             $_SESSION['flash_errors'][] = "An unexpected error occurred.";
             $redirect = "/project/edit/" . $projectId;
         }
-        header("Location: $redirect" . $projectId, true, 302);
+        header("Location: $redirect", true, 302);
         exit;
     }
     //endregion

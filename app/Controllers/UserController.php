@@ -3,10 +3,10 @@
 namespace App\Controllers;
 
 use App\Core\View;
-use App\Services\Exceptions\AuthException;
-use App\Services\Exceptions\ValidationException;
+use App\Services\Exceptions\ServiceException;
 use App\Services\Interfaces\ProjectServiceInterface;
 use App\Services\Interfaces\UserServiceInterface;
+use Exception;
 
 /** Controller for user-related actions
  * - GET: Display user homepage and settings
@@ -52,12 +52,13 @@ final readonly class UserController
                 $_POST['email'] ?? ''
             );
             $_SESSION['flash_successes'][] = "Account updated successfully.";
-        } catch (ValidationException $e) {
+        } catch (ServiceException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
-        } catch (\Exception) {
+        } catch (Exception) {
             $_SESSION['flash_errors'][] = "An unexpected error occurred.";
         }
-        header("Location: /settings", true, 302);
+        $redirect = "/settings";
+        header("Location: $redirect", true, 302);
         exit;
     }
 
@@ -70,10 +71,10 @@ final readonly class UserController
             );
             $_SESSION['flash_successes'][] = "Account deleted successfully.";
             $redirect = "/login";
-        } catch (AuthException $e) {
+        } catch (ServiceException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
             $redirect = "/settings";
-        } catch (\Exception) {
+        } catch (Exception) {
             $_SESSION['flash_errors'][] = "An unexpected error occurred.";
             $redirect = "/settings";
         }

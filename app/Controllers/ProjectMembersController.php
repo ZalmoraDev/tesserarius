@@ -3,8 +3,9 @@
 namespace App\Controllers;
 
 use DateTimeImmutable;
-use App\Services\Exceptions\ProjectMembersException;
+use App\Services\Exceptions\ServiceException;
 use App\Services\ProjectMembersService;
+use Exception;
 
 /** Controller handling project member related actions
  * - POST: create & delete project
@@ -21,6 +22,7 @@ final readonly class ProjectMembersController
 
 
     //region POST Requests
+
     /** POST /project-members/create-invite/{$projectId}, handles the creation of a project invite */
     public function handleInviteCreation(int $projectId): void
     {
@@ -30,12 +32,14 @@ final readonly class ProjectMembersController
                 new DateTimeImmutable($_POST['expires_at']),
                 $_POST['count']
             );
-        } catch (ProjectMembersException $e) {
+            $_SESSION['flash_successes'][] = 'Invite code(s) created successfully.';
+        } catch (ServiceException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
-        } catch (\Exception) {
+        } catch (Exception) {
             $_SESSION['flash_errors'][] = "An unexpected error occurred.";
         }
-        header("Location: /project/edit/" . $projectId, true, 302);
+        $redirect = "/project/edit/" . $projectId;
+        header("Location: $redirect", true, 302);
         exit;
     }
 
@@ -45,12 +49,13 @@ final readonly class ProjectMembersController
         try {
             $this->projectMemberService->deleteProjectInviteCode($projectId, $inviteId);
             $_SESSION['flash_successes'][] = 'Invite deleted successfully.';
-        } catch (ProjectMembersException $e) {
+        } catch (ServiceException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
-        } catch (\Exception) {
+        } catch (Exception) {
             $_SESSION['flash_errors'][] = "An unexpected error occurred.";
         }
-        header("Location: /project/edit/" . $projectId, true, 302);
+        $redirect = "/project/edit/" . $projectId;
+        header("Location: $redirect", true, 302);
         exit;
     }
 
@@ -61,10 +66,10 @@ final readonly class ProjectMembersController
             $joinedProjectId = $this->projectMemberService->joinProjectByInviteCode($_POST['invite_code']);
             $_SESSION['flash_successes'][] = 'Successfully joined project.';
             $redirect = "/project/view/" . $joinedProjectId;
-        } catch (ProjectMembersException $e) {
+        } catch (ServiceException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
             $redirect = "/";
-        } catch (\Exception) {
+        } catch (Exception) {
             $_SESSION['flash_errors'][] = "An unexpected error occurred.";
             $redirect = "/";
         }
@@ -79,7 +84,9 @@ final readonly class ProjectMembersController
         try {
             $this->projectMemberService->promoteProjectMember($projectId, $memberId);
             $_SESSION['flash_successes'][] = 'Member promoted successfully.';
-        } catch (\Exception) {
+        } catch (ServiceException $e) {
+            $_SESSION['flash_errors'][] = $e->getMessage();
+        } catch (Exception) {
             $_SESSION['flash_errors'][] = "An unexpected error occurred.";
         }
         $redirect = "/project/edit/" . $projectId;
@@ -94,7 +101,9 @@ final readonly class ProjectMembersController
         try {
             $this->projectMemberService->demoteProjectMember($projectId, $memberId);
             $_SESSION['flash_successes'][] = 'Member demoted successfully.';
-        } catch (\Exception) {
+        } catch (ServiceException $e) {
+            $_SESSION['flash_errors'][] = $e->getMessage();
+        } catch (Exception) {
             $_SESSION['flash_errors'][] = "An unexpected error occurred.";
         }
         $redirect = "/project/edit/" . $projectId;
@@ -109,7 +118,9 @@ final readonly class ProjectMembersController
         try {
             $this->projectMemberService->removeProjectMember($projectId, $memberId);
             $_SESSION['flash_successes'][] = 'Member removed successfully.';
-        } catch (\Exception) {
+        } catch (ServiceException $e) {
+            $_SESSION['flash_errors'][] = $e->getMessage();
+        } catch (Exception) {
             $_SESSION['flash_errors'][] = "An unexpected error occurred.";
         }
         $redirect = "/project/edit/" . $projectId;

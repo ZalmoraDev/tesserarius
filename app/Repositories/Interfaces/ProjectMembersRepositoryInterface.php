@@ -67,9 +67,8 @@ interface ProjectMembersRepositoryInterface
     public function createProjectInviteCodes(array $invites): bool;
 
     /** Deletes a project invite code by its ID.
-     * @return bool True if the invite was deleted, false otherwise.
-     * @throws ProjectMembersRepoException if database operation fails
+     * @throws ProjectMembersRepoException if invite not found or database operation fails
      */
-    public function deleteProjectInviteCode(int $projectId, int $inviteId): bool;
+    public function deleteProjectInviteCode(int $projectId, int $inviteId): void;
     //endregion
 }

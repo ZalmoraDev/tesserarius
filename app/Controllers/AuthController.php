@@ -3,8 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\View;
-use App\Services\Exceptions\AuthException;
-use App\Services\Exceptions\ValidationException;
+use App\Services\Exceptions\ServiceException;
 use App\Services\Interfaces\AuthServiceInterface;
 use Exception;
 
@@ -45,7 +44,7 @@ final readonly class AuthController
             );
             $_SESSION['flash_successes'][] = "You are now logged in.";
             $redirect = '/';
-        } catch (AuthException $e) {
+        } catch (ServiceException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
             $redirect = '/login';
         } catch (Exception) {
@@ -70,7 +69,7 @@ final readonly class AuthController
             );
             $_SESSION['flash_successes'][] = "Welcome " . $username . "! Your account has been created.";
             $redirect = '/';
-        } catch (ValidationException $e) {
+        } catch (ServiceException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
             $redirect = '/login';
         } catch (Exception) {

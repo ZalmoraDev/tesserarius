@@ -7,7 +7,7 @@ use App\Models\Enums\TaskPriority;
 use App\Models\Enums\TaskStatus;
 use App\Models\Task;
 use App\Services\Exceptions\AuthException;
-use App\Services\Exceptions\TaskException;
+use App\Services\Exceptions\ServiceException;
 use App\Services\Interfaces\AuthServiceInterface;
 use App\Services\Interfaces\TaskServiceInterface;
 use DateTimeImmutable;
@@ -25,6 +25,7 @@ final class TaskApiController extends BaseApiController
     }
 
     //region POST Requests
+
     /** POST /api/tasks/create, handles task creation */
     public function handleCreation(): void
     {
@@ -40,7 +41,7 @@ final class TaskApiController extends BaseApiController
             ]);
         } catch (AuthException $e) {
             $this->jsonError(403, $e->getMessage());
-        } catch (TaskException $e) {
+        } catch (ServiceException $e) {
             $this->jsonError(400, $e->getMessage());
         } catch (Exception) {
             $this->jsonError(500, 'An unexpected error occurred');
@@ -62,7 +63,7 @@ final class TaskApiController extends BaseApiController
             ]);
         } catch (AuthException $e) {
             $this->jsonError(403, $e->getMessage());
-        } catch (TaskException $e) {
+        } catch (ServiceException $e) {
             $this->jsonError(400, $e->getMessage());
         } catch (Exception $e) {
             $this->jsonError(500, 'An unexpected error occurred');
@@ -82,7 +83,7 @@ final class TaskApiController extends BaseApiController
             ]);
         } catch (AuthException $e) {
             $this->jsonError(403, $e->getMessage());
-        } catch (TaskException $e) {
+        } catch (ServiceException $e) {
             $this->jsonError(400, $e->getMessage());
         } catch (Exception $e) {
             $this->jsonError(500, 'An unexpected error occurred');

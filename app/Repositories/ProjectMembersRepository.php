@@ -7,7 +7,6 @@ use App\Models\Enums\UserRole;
 use App\Models\ProjectInvite;
 use App\Repositories\Exceptions\ProjectMembersRepoException;
 use App\Repositories\Interfaces\ProjectMembersRepositoryInterface;
-use DateMalformedStringException;
 use DateTimeImmutable;
 use PDO;
 use PDOException;
@@ -104,10 +103,6 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
             ]);
         } catch (PDOException $e) {
             error_log("Database error in addProjectMember: " . $e->getMessage());
-            // Check for duplicate key violation (user already a member)
-            if (str_contains($e->getMessage(), 'duplicate key') || str_contains($e->getMessage(), 'Duplicate entry')) {
-                throw new ProjectMembersRepoException(ProjectMembersRepoException::MEMBER_ALREADY_EXISTS);
-            }
             throw new ProjectMembersRepoException(ProjectMembersRepoException::FAILED_TO_ADD_MEMBER);
         }
     }
@@ -127,9 +122,8 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
                 'userId' => $userId
             ]);
 
-            if ($stmt->rowCount() === 0) {
+            if ($stmt->rowCount() === 0)
                 throw new ProjectMembersRepoException(ProjectMembersRepoException::MEMBER_NOT_FOUND);
-            }
         } catch (PDOException $e) {
             error_log("Database error in promoteProjectMember: " . $e->getMessage());
             throw new ProjectMembersRepoException(ProjectMembersRepoException::FAILED_TO_UPDATE_ROLE);
@@ -154,9 +148,8 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
                 'userId' => $userId
             ]);
 
-            if ($stmt->rowCount() === 0) {
+            if ($stmt->rowCount() === 0)
                 throw new ProjectMembersRepoException(ProjectMembersRepoException::MEMBER_NOT_FOUND);
-            }
         } catch (PDOException $e) {
             error_log("Database error in removeProjectMember: " . $e->getMessage());
             throw new ProjectMembersRepoException(ProjectMembersRepoException::FAILED_TO_REMOVE_MEMBER);
@@ -233,10 +226,6 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
                 $this->connection->rollBack();
             }
             error_log("Database error in joinProjectByInviteCode: " . $e->getMessage());
-            // Check if user is already a member
-            if (str_contains($e->getMessage(), 'duplicate key') || str_contains($e->getMessage(), 'Duplicate entry')) {
-                throw new ProjectMembersRepoException(ProjectMembersRepoException::MEMBER_ALREADY_EXISTS);
-            }
             throw new ProjectMembersRepoException(ProjectMembersRepoException::FAILED_TO_ADD_MEMBER);
         }
     }
@@ -267,7 +256,7 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
         }
     }
 
-    public function deleteProjectInviteCode(int $projectId, int $inviteId): bool
+    public function deleteProjectInviteCode(int $projectId, int $inviteId): void
     {
         try {
             $stmt = $this->connection->prepare('
@@ -280,7 +269,8 @@ final class ProjectMembersRepository extends BaseRepository implements ProjectMe
                 'projectId' => $projectId
             ]);
 
-            return $stmt->rowCount() > 0;
+            if ($stmt->rowCount() === 0)
+                throw new ProjectMembersRepoException(ProjectMembersRepoException::INVITE_NOT_FOUND);
         } catch (PDOException $e) {
             error_log("Database error in deleteProjectInviteCode: " . $e->getMessage());
             throw new ProjectMembersRepoException(ProjectMembersRepoException::FAILED_TO_DELETE_INVITE);
