@@ -6,6 +6,7 @@ use App\Dto\UserIdentityDto;
 use App\Models\Enums\AccessRole;
 use App\Models\Enums\UserRole;
 use App\Services\Exceptions\AuthException;
+use App\Services\Exceptions\ServiceException;
 use App\Services\Exceptions\ValidationException;
 use App\Services\Interfaces\AuthServiceInterface;
 use App\Repositories\Interfaces\AuthRepositoryInterface;
@@ -25,14 +26,24 @@ final readonly class AuthService implements AuthServiceInterface
     //region Auth
     public function login(string $email, string $password): void
     {
+        // Retrieve user auth data by email (id and password only)
+        $auth = ServiceException::handleRepoCall(
+            fn() => $this->authRepo->findAuthByEmail($email),
+            AuthException::class,
+            __FUNCTION__
+        );
 
-        $auth = $this->authRepo->findAuthByEmail($email);
-        if ($auth === null)
-            throw new AuthException(AuthException::INVALID_CREDENTIALS);
-        if (!password_verify($password, $auth->passwordHash))
+        // Verify password
+        if ($auth === null || !password_verify($password, $auth->passwordHash))
             throw new AuthException(AuthException::INVALID_CREDENTIALS);
 
-        $identity = $this->userRepo->findUserIdentityById($auth->id);
+        // Upon successful authentication, retrieve full user identity and set session data
+        $identity = ServiceException::handleRepoCall(
+            fn() => $this->userRepo->findUserIdentityById($auth->id),
+            AuthException::class,
+            __FUNCTION__
+        );
+
         $this->setSessionData($identity);
     }
 
@@ -65,17 +76,34 @@ final readonly class AuthService implements AuthServiceInterface
         if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])\S{12,64}$/', $password))
             throw new ValidationException(ValidationException::PASSWORD_INVALID);
 
-        // username/email are already taken
-        if ($this->userRepo->existsByUsername($username))
+        // username are already taken
+        $usernameExists = ServiceException::handleRepoCall(
+            fn() => $this->userRepo->existsByUsername($username),
+            ValidationException::class,
+            __FUNCTION__
+        );
+        if ($usernameExists)
             throw new ValidationException(ValidationException::USERNAME_TAKEN);
-        if ($this->userRepo->existsByEmail($email))
+
+        // email are already taken
+        $emailExists = ServiceException::handleRepoCall(
+            fn() => $this->userRepo->existsByEmail($email),
+            ValidationException::class,
+            __FUNCTION__
+        );
+        if ($emailExists)
             throw new ValidationException(ValidationException::EMAIL_TAKEN);
 
         // failed attempt creating the new user
-        $identity = $this->authRepo->createUser($username, $email, password_hash($password, PASSWORD_DEFAULT));
+        $identity = ServiceException::handleRepoCall(
+            fn() => $this->authRepo->createUser($username, $email, password_hash($password, PASSWORD_DEFAULT)),
+            ValidationException::class,
+            __FUNCTION__
+        );
         if ($identity === null)
             throw new ValidationException(ValidationException::REGISTRATION_FAILED);
 
+        // Successful registration, log in the new user
         $this->setSessionData($identity);
     }
     //endregion Auth
@@ -94,12 +122,16 @@ final readonly class AuthService implements AuthServiceInterface
         if (!isset($_SESSION['auth']))
             throw new AuthException(AuthException::PROJECT_ACCESS_DENIED);
 
-        $userRole = $this->authRepo->findUserProjectRole($projectId, (int)$_SESSION['auth']['userId']);
+        // PROJECT AUTHORIZATION: Check user's role in the project
+        $userRole = ServiceException::handleRepoCall(
+            fn() => $this->authRepo->findUserProjectRole($projectId, (int)$_SESSION['auth']['userId']),
+            AuthException::class,
+            __FUNCTION__
+        );
 
+        // If user is not a member of the project, or has insufficient permissions, deny access
         if ($userRole === null)
             throw new AuthException(AuthException::PROJECT_ACCESS_DENIED);
-
-        // Convert UserRole to AccessRole logic for comparison
         if ($routeReqAccess->value > $userRole->toAccessRole()->value)
             throw new AuthException(AuthException::PROJECT_INSUFFICIENT_PERMISSIONS);
 
@@ -113,7 +145,7 @@ final readonly class AuthService implements AuthServiceInterface
     }
     //endregion Router
 
-    
+
     /** Sets session auth data for logged in or newly registered user */
     private function setSessionData(UserIdentityDto $user): void
     {
