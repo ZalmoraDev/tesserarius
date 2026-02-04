@@ -7,9 +7,6 @@ use App\Services\Exceptions\TaskException;
 
 interface TaskServiceInterface
 {
-    // TODO: Add throw annotations when exceptions are implemented
-    // TODO: Maybe return a DTO array insead of Model
-
     /** Retrieves all tasks for a given project.
      * @return Task[] for all tasks in the project
      * @throws TaskException on failure

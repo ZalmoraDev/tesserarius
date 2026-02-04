@@ -7,9 +7,17 @@ use App\Controllers\{Api\TaskApiController,
     AuthController,
     ProjectMembersController,
     UserController,
-    ProjectController};
+    ProjectController
+};
 use App\Services\{AuthService, ProjectMembersService, ProjectService, TaskService, UserService};
 use App\Repositories\{AuthRepository, ProjectMembersRepository, ProjectRepository, TaskRepository, UserRepository};
+
+// -------------------- Error reporting --------------------
+// (Uncomment for debugging)
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
+
 
 // -------------------- Session & .env config --------------------
 // Start session if not already started
@@ -25,7 +33,8 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 /** vlucas/phpdotenv, set up environment variables, autoload /.env file
- * @see https://packagist.org/packages/vlucas/phpdotenv */
+ * @see https://packagist.org/packages/vlucas/phpdotenv
+ */
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 $dotenv->required([

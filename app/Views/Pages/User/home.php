@@ -1,11 +1,11 @@
 <?php
 
 use App\Core\Csrf;
-use App\Views\Components\projectHomeTabComp;
+use App\Views\Components\ProjectHomeTabComp;
 
 /** @var array $data /app/Core/View.php View::render*/
 
-$projectTab = new projectHomeTabComp();
+$projectTab = new ProjectHomeTabComp();
 
 // variables injected and path redirected by
 // UserController::homeView

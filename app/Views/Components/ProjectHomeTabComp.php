@@ -5,7 +5,7 @@ namespace App\Views\Components;
 use App\Core\Escaper;
 use App\Dto\ProjectListItemDto;
 
-class projectHomeTabComp
+class ProjectHomeTabComp
 {
     public function printProjectsTabs(ProjectListItemDto $project): string
     {

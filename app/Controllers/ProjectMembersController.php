@@ -22,7 +22,6 @@ final readonly class ProjectMembersController
 
 
     //region POST Requests
-
     /** POST /project-members/create-invite/{$projectId}, handles the creation of a project invite */
     public function handleInviteCreation(int $projectId): void
     {
