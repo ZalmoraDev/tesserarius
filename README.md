@@ -96,7 +96,7 @@
 - **Error Responses**: JSON error messages with appropriate HTTP status codes (403, 400, 500)
 
 ### Legal & Accessibility
-s
+
 **WCAG 2.1 Compliance (Level AA):**
 - **Semantic HTML**: Proper use of headings, articles, sections, aria-labels, alt-text ([settings page](/app/Views/Pages/User/settings.php))
 - **Color Contrast**: Text colors meet minimum 4.5:1 contrast ratio (See list below)
