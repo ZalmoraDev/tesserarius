@@ -6,7 +6,7 @@ use DateTimeImmutable;
 use JsonSerializable;
 
 /** 1:1 mapping to 'project_invites' DB table */
-final readonly class ProjectInvite implements JsonSerializable
+final readonly class ProjectInvite
 {
     public function __construct(
 
@@ -19,19 +19,5 @@ final readonly class ProjectInvite implements JsonSerializable
         public DateTimeImmutable  $createdAt,
     )
     {
-    }
-
-    // TODO: Remove depending on JS use
-    public function jsonSerialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'projectId' => $this->projectId,
-            'inviteCode' => $this->inviteCode,
-            'expiresAt' => $this->expiresAt->format(DATE_ATOM),
-            'activatedAt' => $this->activatedAt?->format(DATE_ATOM),
-            'createdBy' => $this->createdBy,
-            'createdAt' => $this->createdAt->format(DATE_ATOM),
-        ];
     }
 }

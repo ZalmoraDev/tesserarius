@@ -2,7 +2,7 @@
 
 namespace App\Models\Enums;
 
-/** Used in router comparisons for access control.
+/** Used in Router comparisons for access control.
  * Uses UserRole and adds non-project access roles (Anyone, Authenticated) */
 enum AccessRole: int
 {

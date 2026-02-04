@@ -2,7 +2,11 @@
 
 namespace App\Dto;
 
-/** DTO containing  */
+/**
+ * BASE: User model
+ *
+ * Used for authentication against DB stored password hash
+ */
 final readonly class UserAuthDto
 {
     public function __construct(

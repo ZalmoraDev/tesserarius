@@ -2,7 +2,11 @@
 
 namespace App\Dto;
 
-/** DTO containing basic user identity information */
+/**
+ * BASE: User model
+ *
+ * Used for identifying user information without sensitive data
+ */
 final readonly class UserIdentityDto
 {
     public function __construct(

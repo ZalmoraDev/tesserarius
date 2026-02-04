@@ -58,8 +58,6 @@ final class Router
                     $this->authService->denyAuthenticatedOnAuthRoutes($handler['action'][1]);
 
                     // Checks if accessing a project route, validate if user has access with required role or higher
-                    // Store the user's project role in session for use in project views AS A STRING, else clear it
-                    // Uses string instead of UserRole, otherwise every single route including POST would need to import UserRole enum
                     if ($pathParams['projectId'] ?? false) {
                         $userProjectRole = $this->authService->requireProjectAccess((int)$pathParams['projectId'], $routeReqAccess);
                         $_SESSION['auth']['projectRole'] = $userProjectRole->value;
@@ -67,7 +65,7 @@ final class Router
                         unset($_SESSION['auth']['projectRole']);
                     }
 
-                    // Upon POST -> verify CSRF token. If not valid, exit with 403 (handled in Csrf::Verify)
+                    // Upon POST -> verify CSRF token. If not valid, exit 403 (handled in Csrf::Verify)
                     if ($_SERVER['REQUEST_METHOD'] === 'POST')
                         Csrf::requireVerification($_POST['csrf'] ?? null);
 
@@ -78,25 +76,27 @@ final class Router
                 } catch (AuthException $e) {
                     if ($e->getMessage() === AuthException::ALREADY_LOGGED_IN) {
                         $_SESSION['flash_info'][] = $e->getMessage();
-                        header('Location: /', true, 302);
-                        exit;
+                        $redirect = '/';
+                    } else {
+                        $_SESSION['flash_errors'][] = $e->getMessage();
+                        switch ($e->getMessage()) {
+                            case AuthException::PROJECT_ACCESS_DENIED:
+                            case AuthException::PROJECT_INSUFFICIENT_PERMISSIONS:
+                                $redirect = '/';
+                                break;
+                            // Named for clarity
+                            case AuthException::REQUIRES_LOGIN:
+                            case AuthException::CSRF_TOKEN_MISMATCH:
+                            default:
+                                $redirect = '/login';
+                                break;
+                        }
                     }
-
-                    $_SESSION['flash_errors'][] = $e->getMessage();
-                    switch ($e->getMessage()) {
-                        case AuthException::REQUIRES_LOGIN:
-                        case AuthException::CSRF_TOKEN_MISMATCH:
-                            header('Location: /login', true, 302);
-                            exit;
-                        case AuthException::PROJECT_ACCESS_DENIED:
-                        case AuthException::PROJECT_INSUFFICIENT_PERMISSIONS:
-                            header('Location: /', true, 302);
-                            exit;
-                        default:
-                            header('Location: /login', true, 302);
-                            exit;
-                    }
+                } catch (\Exception) {
+                    $_SESSION['flash_errors'][] = "An unexpected error occurred.";
+                    $redirect = '/';
                 }
+                header("Location: $redirect", true, 302);
         }
     }
 }

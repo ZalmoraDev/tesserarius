@@ -9,10 +9,4 @@ final readonly class Escaper
     {
         return htmlspecialchars($string ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
-
-    public static function js(string $string): string
-    {
-        // TODO: Implement if needed
-        return '';
-    }
 }

@@ -23,7 +23,7 @@ final class Routes
     {
         return FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
             // Retrieve controllers and use them as conciser abbreviations in route handler definitions
-            // Array mapvalues retrieved from index.php when initializing Routes class
+            // Array mapping values retrieved from index.php when initializing Routes class
             $auth = $this->controllers['auth'];
             $project = $this->controllers['project'];
             $projectMembers = $this->controllers['projectMembers'];
@@ -67,9 +67,8 @@ final class Routes
 
 
             //region API Routes
-            $r->get('/api/project/{projectId:\d+}/tasks', $this->route([$taskApi, 'getAllProjectTasks'], AccessRole::Member));
+            // TaskApiController routes
             $r->post('/api/task/create', $this->route([$taskApi, 'handleCreation'], AccessRole::Member));
-            $r->post('/api/project/{projectId:\d+}/task/create', $this->route([$taskApi, 'handleCreation'], AccessRole::Member));
             $r->post('/api/task/edit', $this->route([$taskApi, 'handleEdit'], AccessRole::Member));
             $r->post('/api/task/delete', $this->route([$taskApi, 'handleDeletion'], AccessRole::Member));
             //endregion
@@ -78,7 +77,8 @@ final class Routes
 
     /** Helper-object to create conciser route auth guard objects
      * @param array $action [controllerClass OBJ, 'classMethod' STRING]
-     * @param AccessRole $accessRole Minimum access role required to access route */
+     * @param AccessRole $accessRole Minimum access role required to access route
+     */
     private function route(array $action, AccessRole $accessRole): array
     {
         return [

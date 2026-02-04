@@ -16,7 +16,7 @@ final readonly class View
             'viewFile' => __DIR__ . '/../Views/Pages/' . $view,
             'viewTitle' => $title,
 
-            // projectRole imported as string, since otherwise each route would need to import UserRole enum
+            // projectRole imported as string, since otherwise each Routes route for Router would need to import UserRole enum
             'user' => [
                 'id' => $_SESSION['auth']['userId'] ?? null,
                 'username' => $_SESSION['auth']['username'] ?? null,
@@ -54,7 +54,7 @@ final readonly class View
         return " | " . $_ENV['SITE_NAME'];
     }
 
-    /** Handles conditional additions to views, such as toast notifications or extra navbar elements on project views */
+    /** Add toast notifications to the view if there are any flash messages. */
     private static function addToastNotifications($data): void
     {
         // Render toast component if there are flash messages to show

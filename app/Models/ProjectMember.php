@@ -7,7 +7,7 @@ use DateTimeImmutable;
 use JsonSerializable;
 
 /** 1:1 mapping to 'project_members' DB table */
-final readonly class ProjectMember implements JsonSerializable
+final readonly class ProjectMember
 {
     public function __construct(
 
@@ -17,10 +17,5 @@ final readonly class ProjectMember implements JsonSerializable
         public DateTimeImmutable $joinedAt
     )
     {
-    }
-
-    public function jsonSerialize(): array
-    {
-        return get_object_vars($this);
     }
 }
