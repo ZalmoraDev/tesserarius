@@ -46,40 +46,18 @@ final readonly class TaskService implements TaskServiceInterface
         if (strlen($description) > 1000) {
             throw new TaskException("Task description must not exceed 1000 characters");
         }
-        $description = empty($description) ? null : $description;
-
-        // Status and priority are already enums from the Task object
-        $statusEnum = $task->status;
-        $priorityEnum = $task->priority;
-
-        // Due date is already DateTimeImmutable or null from the Task object
-        $dueDateObj = $task->dueDate;
 
         // Validate assignee (if provided, it should be a valid user ID > 0)
-        $assigneeId = $task->assigneeId;
-        if (is_int($assigneeId) && $assigneeId <= 0) {
+        if (is_int($task->assigneeId) && $task->assigneeId <= 0) {
             throw new TaskException("Invalid assignee ID");
         }
 
         try {
-            return $this->taskRepo->createTask(
-                $task->projectId,
-                $title,
-                $description,
-                $statusEnum,
-                $priorityEnum,
-                $creatorId,
-                $assigneeId,
-                $dueDateObj
-            );
+            // Pass the Task object directly to repository
+            return $this->taskRepo->createTask($task, $creatorId);
         } catch (TaskRepositoryException $e) {
             throw new TaskException("Failed to create task: " . $e->getMessage());
         }
-    }
-
-    public function editTask(int $taskId, string $newColumn): bool
-    {
-        return $this->taskRepo->changeTaskStatus($taskId, $newColumn);
     }
 
     public function updateTask(Task $task): Task
@@ -103,31 +81,15 @@ final readonly class TaskService implements TaskServiceInterface
         if (strlen($description) > 1000) {
             throw new TaskException("Task description must not exceed 1000 characters");
         }
-        $description = empty($description) ? null : $description;
-
-        // Status and priority are already enums from the Task object
-        $statusEnum = $task->status;
-        $priorityEnum = $task->priority;
-
-        // Due date is already DateTimeImmutable or null from the Task object
-        $dueDateObj = $task->dueDate;
 
         // Validate assignee (if provided, it should be a valid user ID > 0)
-        $assigneeId = $task->assigneeId;
-        if (is_int($assigneeId) && $assigneeId <= 0) {
+        if (is_int($task->assigneeId) && $task->assigneeId <= 0) {
             throw new TaskException("Invalid assignee ID");
         }
 
         try {
-            return $this->taskRepo->updateTask(
-                $task->id,
-                $title,
-                $description,
-                $statusEnum,
-                $priorityEnum,
-                $assigneeId,
-                $dueDateObj
-            );
+            // Pass the Task object directly to repository
+            return $this->taskRepo->updateTask($task);
         } catch (TaskRepositoryException $e) {
             throw new TaskException("Failed to update task: " . $e->getMessage());
         }

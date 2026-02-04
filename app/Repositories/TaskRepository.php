@@ -51,26 +51,24 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
     }
 
     public function createTask(
-        int $projectId,
-        string $title,
-        ?string $description,
-        TaskStatus $status,
-        TaskPriority $priority,
-        int $creatorId,
-        ?int $assigneeId,
-        ?DateTimeImmutable $dueDate
+        Task $task,
+        int  $creatorId
     ): Task
     {
         try {
             $stmt = $this->connection->prepare("
                 INSERT INTO tasks (project_id, title, description, status, priority, created_by, assignee_id, due_date, created_at)
                 VALUES (:project_id, :title, :description, :status, :priority, :created_by, :assignee_id, :due_date, NOW())
-                RETURNING task_id, project_id, title, description, status, priority, created_by, assignee_id, created_at, due_date
+                RETURNING task_id, created_at
             ");
 
-            $statusValue = $status->value;
-            $priorityValue = $priority->value;
-            $dueDateStr = $dueDate ? $dueDate->format('Y-m-d H:i:s') : null;
+            $projectId = $task->projectId;
+            $title = $task->title;
+            $description = $task->description;
+            $statusValue = $task->status->value;
+            $priorityValue = $task->priority->value;
+            $assigneeId = $task->assigneeId;
+            $dueDateStr = $task->dueDate?->format('Y-m-d H:i:s');
 
             $stmt->bindParam(':project_id', $projectId, PDO::PARAM_INT);
             $stmt->bindParam(':title', $title, PDO::PARAM_STR);
@@ -88,17 +86,18 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                 throw new TaskRepositoryException("Failed to create task");
             }
 
+            // Return new Task with input data + database-generated fields
             return new Task(
-                (int)$data['task_id'],
-                (int)$data['project_id'],
-                $data['title'],
-                $data['description'],
-                TaskStatus::from($data['status']),
-                TaskPriority::from($data['priority']),
-                (int)$data['created_by'],
-                $data['assignee_id'] ? (int)$data['assignee_id'] : null,
-                new DateTimeImmutable($data['created_at']),
-                $data['due_date'] ? new DateTimeImmutable($data['due_date']) : null
+                id: (int)$data['task_id'],
+                projectId: $task->projectId,
+                title: $task->title,
+                description: $task->description,
+                status: $task->status,
+                priority: $task->priority,
+                creatorId: $creatorId,
+                assigneeId: $task->assigneeId,
+                creationDate: new DateTimeImmutable($data['created_at']),
+                dueDate: $task->dueDate
             );
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());
@@ -121,15 +120,7 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
         }
     }
 
-    public function updateTask(
-        int $taskId,
-        string $title,
-        ?string $description,
-        TaskStatus $status,
-        TaskPriority $priority,
-        ?int $assigneeId,
-        ?DateTimeImmutable $dueDate
-    ): Task
+    public function updateTask(Task $task): Task
     {
         try {
             $stmt = $this->connection->prepare("
@@ -141,12 +132,15 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
                     assignee_id = :assignee_id, 
                     due_date = :due_date
                 WHERE task_id = :task_id
-                RETURNING task_id, project_id, title, description, status, priority, created_by, assignee_id, created_at, due_date
             ");
 
-            $statusValue = $status->value;
-            $priorityValue = $priority->value;
-            $dueDateStr = $dueDate ? $dueDate->format('Y-m-d H:i:s') : null;
+            $taskId = $task->id;
+            $title = $task->title;
+            $description = $task->description;
+            $statusValue = $task->status->value;
+            $priorityValue = $task->priority->value;
+            $assigneeId = $task->assigneeId;
+            $dueDateStr = $task->dueDate?->format('Y-m-d H:i:s');
 
             $stmt->bindParam(':task_id', $taskId, PDO::PARAM_INT);
             $stmt->bindParam(':title', $title, PDO::PARAM_STR);
@@ -156,25 +150,14 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
             $stmt->bindParam(':assignee_id', $assigneeId, PDO::PARAM_INT);
             $stmt->bindParam(':due_date', $dueDateStr, PDO::PARAM_STR);
 
-            $stmt->execute();
-            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+            $success = $stmt->execute();
 
-            if (!$data) {
+            if (!$success) {
                 throw new TaskRepositoryException("Failed to update task");
             }
 
-            return new Task(
-                (int)$data['task_id'],
-                (int)$data['project_id'],
-                $data['title'],
-                $data['description'],
-                TaskStatus::from($data['status']),
-                TaskPriority::from($data['priority']),
-                (int)$data['created_by'],
-                $data['assignee_id'] ? (int)$data['assignee_id'] : null,
-                new DateTimeImmutable($data['created_at']),
-                $data['due_date'] ? new DateTimeImmutable($data['due_date']) : null
-            );
+            // Return the same task object since all fields are already up-to-date
+            return $task;
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());
             throw new TaskRepositoryException("Failed to update task: " . $e->getMessage());

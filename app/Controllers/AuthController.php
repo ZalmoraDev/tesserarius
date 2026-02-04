@@ -6,12 +6,9 @@ use App\Core\View;
 use App\Services\Exceptions\AuthException;
 use App\Services\Exceptions\ValidationException;
 use App\Services\Interfaces\AuthServiceInterface;
+use Exception;
 
-/** Controller handling user authentication actions:
- * - GET: Displaying login and signup pages
- * - POST: Processing login and signup form submissions
- * - POST: Handling user logout
- */
+/** Controller handling user authentication & authorization */
 final readonly class AuthController
 {
     private AuthServiceInterface $authService;
@@ -22,6 +19,7 @@ final readonly class AuthController
     }
 
     //region GET Requests
+
     /** GET /login, acts as login page */
     public function loginPage(): void
     {
@@ -46,13 +44,16 @@ final readonly class AuthController
                 $_POST['password'] ?? ''
             );
             $_SESSION['flash_successes'][] = "You are now logged in.";
-            header("Location: /", true, 302);
-            exit;
+            $redirect = '/';
         } catch (AuthException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
-            header("Location: /login", true, 302);
-            exit;
+            $redirect = '/login';
+        } catch (Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
+            $redirect = '/login';
         }
+        header("Location: $redirect", true, 302);
+        exit;
     }
 
     /** POST /auth/signup, processes signup form submission */
@@ -68,13 +69,16 @@ final readonly class AuthController
                 $_POST['password_confirm'] ?? ''
             );
             $_SESSION['flash_successes'][] = "Welcome " . $username . "! Your account has been created.";
-            header("Location: /", true, 302);
-            exit;
+            $redirect = '/';
         } catch (ValidationException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
-            header("Location: /signup", true, 302);
-            exit;
+            $redirect = '/login';
+        } catch (Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
+            $redirect = '/login';
         }
+        header("Location: $redirect", true, 302);
+        exit;
     }
 
     /** POST /auth/logout, serves logout action */

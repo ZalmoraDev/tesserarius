@@ -13,7 +13,8 @@ use App\Services\Interfaces\TaskServiceInterface;
 use DateTimeImmutable;
 use Exception;
 
-class TaskApiController extends BaseApiController
+/** Controller handling API requests related to tasks */
+final class TaskApiController extends BaseApiController
 {
     private TaskServiceInterface $taskService;
 
@@ -24,6 +25,7 @@ class TaskApiController extends BaseApiController
     }
 
     //region POST Requests
+    /** POST /api/tasks/create, handles task creation */
     public function handleCreation(): void
     {
         try {
@@ -40,11 +42,12 @@ class TaskApiController extends BaseApiController
             $this->jsonError(403, $e->getMessage());
         } catch (TaskException $e) {
             $this->jsonError(400, $e->getMessage());
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->jsonError(500, 'An unexpected error occurred');
         }
     }
 
+    /** POST /api/tasks/edit, handles task editing/updating */
     public function handleEdit(): void
     {
         try {
@@ -66,6 +69,7 @@ class TaskApiController extends BaseApiController
         }
     }
 
+    /** POST /api/tasks/delete, handles task deletion */
     public function handleDeletion(): void
     {
         try {
@@ -89,8 +93,8 @@ class TaskApiController extends BaseApiController
 
     //region Helpers
     /**
-     * Since all POST requests come through a modal popup form with the same fields,
-     * we can extract the task data from the same $_POST in a single method.
+     * Since all POST requests to this controller come through a modal popup form with the same fields,
+     * we can extract the task data once from the same $_POST, instead of doing so multiple times.
      * @return Task extracted from POST data (some fields may be empty, to be validated/filled later)
      */
     private function extractTaskFromPost(): Task
@@ -102,8 +106,8 @@ class TaskApiController extends BaseApiController
             projectId: filter_var($_POST['project_id'] ?? 0, FILTER_VALIDATE_INT) ?: 0,
             title: trim($_POST['title'] ?? ''),
             description: trim($_POST['description'] ?? ''),
-            status: TaskStatus::tryFrom($_POST['status'] ?? '') ?? TaskStatus::ToDo,
-            priority: TaskPriority::tryFrom($_POST['priority'] ?? '') ?? TaskPriority::Medium,
+            status: TaskStatus::tryFrom($_POST['status'] ?? '') ?? TaskStatus::Backlog,
+            priority: TaskPriority::tryFrom($_POST['priority'] ?? '') ?? TaskPriority::None,
             creatorId: 0, // Will be set by service
             assigneeId: is_int($assigneeId) ? $assigneeId : null,
             creationDate: new DateTimeImmutable(), // Placeholder

@@ -4,14 +4,13 @@ namespace App\Controllers\Api;
 
 use App\Core\Csrf;
 use App\Models\Enums\AccessRole;
-use App\Models\Enums\UserRole;
 use App\Services\Exceptions\AuthException;
 use App\Services\Interfaces\AuthServiceInterface;
 
 /**
- * Base class for API controllers that provides authentication and authorization helpers.
- * Ensures that API endpoints validate user access in real-time, preventing deleted/removed users
- * from performing actions via AJAX without page refresh.
+ * Base class for API controllers handling Router-style authentication and authorization.
+ * Ensures that access to endpoints are validated, preventing deleted/removed users
+ * from performing actions via AJAX without page refresh, which Router cannot handle.
  */
 abstract class BaseApiController
 {
@@ -22,23 +21,15 @@ abstract class BaseApiController
         $this->authService = $authService;
     }
 
-    /**
-     * Performs common security checks for API endpoints:
-     * - Sets JSON response header
-     * - Verifies CSRF token
-     * - Validates user authentication
-     * - Optionally validates project access with required role
-     *
-     * @param int|null $projectId Optional project ID to validate access for
-     * @param AccessRole $requiredRole Required access role for the project (default: Member)
-     * @throws AuthException if CSRF verification, authentication, or project access fails
+    //region Auth
+    /** Validates the request for authentication and project access
+     * @throws AuthException if authentication or authorization fails
      */
-    protected function authenticateRequest(?int $projectId, AccessRole $requiredRole): void
+    protected function authenticateRequest(int $projectId, AccessRole $requiredRole): void
     {
-        // Set JSON response header
         header('Content-Type: application/json');
 
-        // Verify CSRF token
+        // Verify CSRF token (Router does not handle this for API requests)
         Csrf::requireVerification($_POST['csrf'] ?? null);
 
         // Get current user ID from session
@@ -48,18 +39,15 @@ abstract class BaseApiController
             exit;
         }
 
-        // If project ID is provided, validate project access
-        if ($projectId !== null) {
-            $this->authService->requireProjectAccess($projectId, $requiredRole);
-        }
+        // Check if user has required access to the project
+        $this->authService->requireProjectAccess($projectId, $requiredRole);
     }
+    //endregion
 
 
-    /**
-     * Returns a JSON error response with appropriate HTTP status code
-     *
-     * @param int $statusCode HTTP status code
-     * @param string $errorMessage Error message to return
+    //region Helper Methods
+
+    /** Returns a JSON error response with appropriate HTTP status code
      */
     protected function jsonError(int $statusCode, string $errorMessage): void
     {
@@ -67,15 +55,12 @@ abstract class BaseApiController
         echo json_encode(['success' => false, 'error' => $errorMessage]);
     }
 
-    /**
-     * Returns a JSON success response
-     *
-     * @param int $statusCode HTTP status code
-     * @param array $data Data to return in the response
+    /** Returns a JSON success response with appropriate HTTP status code
      */
     protected function jsonSuccess(int $statusCode, array $data): void
     {
         http_response_code($statusCode);
         echo json_encode(array_merge(['success' => true], $data));
     }
+    //endregion
 }

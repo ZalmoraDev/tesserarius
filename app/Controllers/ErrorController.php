@@ -7,6 +7,7 @@ use App\Core\View;
  * - GET: display 404/405 pages */
 final readonly class ErrorController
 {
+    //region GET Requests
     /** 404 Not Found */
     public function notFound(): void
     {
@@ -20,4 +21,5 @@ final readonly class ErrorController
         http_response_code(405);
         View::render('Error/404.html', "405 Not Allowed");
     }
+    //endregion
 }

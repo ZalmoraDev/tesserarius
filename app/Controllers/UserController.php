@@ -22,8 +22,7 @@ final readonly class UserController
         $this->projectService = $projectService;
     }
 
-    // -------------------- GET Requests --------------------
-
+    //region GET Requests
     /** GET /, Home page for logged-in users */
     public function homePage()
     {
@@ -35,13 +34,16 @@ final readonly class UserController
         ]);
     }
 
+    /** GET /settings, User account settings page */
     public function settingsPage()
     {
         View::render('/User/settings.php', "Settings" . View::addSiteName());
     }
+    //endregion
 
-    // -------------------- POST Requests --------------------
 
+    //region POST Requests
+    /** POST /settings/edit, Handle user account edit form submission */
     public function handleEdit(): void
     {
         try {
@@ -52,11 +54,14 @@ final readonly class UserController
             $_SESSION['flash_successes'][] = "Account updated successfully.";
         } catch (ValidationException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
+        } catch (\Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
         }
         header("Location: /settings", true, 302);
         exit;
     }
 
+    /** POST /settings/delete, Handle user account deletion form submission */
     public function handleDeletion(): void
     {
         try {
@@ -64,12 +69,15 @@ final readonly class UserController
                 $_POST['confirm_username'] ?? ''
             );
             $_SESSION['flash_successes'][] = "Account deleted successfully.";
-            header("Location: /login", true, 302);
-            exit;
+            $redirect = "/login";
         } catch (AuthException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
-            header("Location: /settings", true, 302);
-            exit;
+            $redirect = "/settings";
+        } catch (\Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
+            $redirect = "/settings";
         }
+        header("Location: $redirect", true, 302);
+        exit;
     }
 }

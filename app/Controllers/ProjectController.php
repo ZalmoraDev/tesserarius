@@ -3,10 +3,12 @@
 namespace App\Controllers;
 
 use App\Core\View;
+use Exception;
 use App\Services\{Exceptions\ProjectException,
     Interfaces\ProjectServiceInterface,
     Interfaces\TaskServiceInterface,
-    ProjectMembersService};
+    ProjectMembersService
+};
 
 /** Controller handling project requests
  * - GET: Displaying project creation, viewing, and editing pages
@@ -24,8 +26,7 @@ final readonly class ProjectController
         $this->taskService = $taskService;
     }
 
-    // -------------------- GET Requests --------------------
-
+    //region GET Requests
     /** GET /projects/create, serves project creation page */
     public function showCreate()
     {
@@ -59,10 +60,10 @@ final readonly class ProjectController
             'invites' => $invites,
         ]);
     }
+    //endregion
 
 
-    // -------------------- POST Requests --------------------
-
+    //region POST Requests
     /** POST /project/create, handles project creation form submission */
     public function handleCreate()
     {
@@ -72,13 +73,16 @@ final readonly class ProjectController
                 $_POST['description'] ?? ''
             );
             $_SESSION['flash_successes'][] = "Project created successfully.";
-            header("Location: /project/view/" . $id, true, 302);
-            exit;
+            $redirect = "/project/view/" . $id;
         } catch (ProjectException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
-            header("Location: /project/create", true, 302);
-            exit;
+            $redirect = "/project/create";
+        } catch (Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
+            $redirect = "/project/create";
         }
+        header("Location: $redirect", true, 302);
+        exit;
     }
 
     /** POST /project/edit/{$projectId}, handles the creation of a project invite */
@@ -93,6 +97,8 @@ final readonly class ProjectController
             $_SESSION['flash_successes'][] = "Project updated successfully.";
         } catch (ProjectException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
+        } catch (\Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
         }
         header("Location: /project/edit/" . $projectId, true, 302);
         exit;
@@ -107,12 +113,16 @@ final readonly class ProjectController
                 $_POST['confirm_name'] ?? ''
             );
             $_SESSION['flash_successes'][] = "Project deleted successfully.";
-            header("Location: /", true, 302);
-            exit;
+            $redirect = "/";
         } catch (ProjectException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
-            header("Location: /project/edit/" . $projectId, true, 302);
-            exit;
+            $redirect = "/project/edit/" . $projectId;
+        } catch (\Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
+            $redirect = "/project/edit/" . $projectId;
         }
+        header("Location: $redirect" . $projectId, true, 302);
+        exit;
     }
+    //endregion
 }

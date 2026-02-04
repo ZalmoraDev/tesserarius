@@ -28,7 +28,6 @@ interface TaskServiceInterface
      * @return bool true on success, false on failure
      * @throws TaskException on failure
      */
-    public function editTask(int $taskId, string $newColumn): bool;
 
     /** Updates a task.
      * @param Task $task Task model with updated form data

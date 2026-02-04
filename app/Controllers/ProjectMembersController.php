@@ -19,10 +19,8 @@ final readonly class ProjectMembersController
         $this->projectMemberService = $projectMembersService;
     }
 
-    // -------------------- GET Requests --------------------
 
-    // -------------------- POST Requests --------------------
-
+    //region POST Requests
     /** POST /project-members/create-invite/{$projectId}, handles the creation of a project invite */
     public function handleInviteCreation(int $projectId): void
     {
@@ -34,6 +32,8 @@ final readonly class ProjectMembersController
             );
         } catch (ProjectMembersException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
+        } catch (\Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
         }
         header("Location: /project/edit/" . $projectId, true, 302);
         exit;
@@ -47,6 +47,8 @@ final readonly class ProjectMembersController
             $_SESSION['flash_successes'][] = 'Invite deleted successfully.';
         } catch (ProjectMembersException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
+        } catch (\Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
         }
         header("Location: /project/edit/" . $projectId, true, 302);
         exit;
@@ -58,22 +60,30 @@ final readonly class ProjectMembersController
         try {
             $joinedProjectId = $this->projectMemberService->joinProjectByInviteCode($_POST['invite_code']);
             $_SESSION['flash_successes'][] = 'Successfully joined project.';
-            header("Location: /project/view/" . $joinedProjectId, true, 302);
-            exit;
+            $redirect = "/project/view/" . $joinedProjectId;
         } catch (ProjectMembersException $e) {
             $_SESSION['flash_errors'][] = $e->getMessage();
-            header("Location: /", true, 302);
-            exit;
+            $redirect = "/";
+        } catch (\Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
+            $redirect = "/";
         }
+        header("Location: $redirect", true, 302);
+        exit;
     }
 
     /** POST /project-members/promote/{$projectId}/{$memberId}, handles promoting a project member.
      * Doesn't throw exceptions, as authorization for Owner is done by router.php. */
     public function handleMemberPromote(int $projectId, int $memberId): void
     {
-        $this->projectMemberService->promoteProjectMember($projectId, $memberId);
-        $_SESSION['flash_successes'][] = 'Member promoted successfully.';
-        header("Location: /project/edit/" . $projectId, true, 302);
+        try {
+            $this->projectMemberService->promoteProjectMember($projectId, $memberId);
+            $_SESSION['flash_successes'][] = 'Member promoted successfully.';
+        } catch (\Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
+        }
+        $redirect = "/project/edit/" . $projectId;
+        header("Location: $redirect", true, 302);
         exit;
     }
 
@@ -81,9 +91,14 @@ final readonly class ProjectMembersController
      * Doesn't throw exceptions, as authorization for Owner is done by router.php. */
     public function handleMemberDemote(int $projectId, int $memberId): void
     {
-        $this->projectMemberService->demoteProjectMember($projectId, $memberId);
-        $_SESSION['flash_successes'][] = 'Member demoted successfully.';
-        header("Location: /project/edit/" . $projectId, true, 302);
+        try {
+            $this->projectMemberService->demoteProjectMember($projectId, $memberId);
+            $_SESSION['flash_successes'][] = 'Member demoted successfully.';
+        } catch (\Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
+        }
+        $redirect = "/project/edit/" . $projectId;
+        header("Location: $redirect", true, 302);
         exit;
     }
 
@@ -91,9 +106,15 @@ final readonly class ProjectMembersController
      * Doesn't throw exceptions, as authorization for Admin/Owner is done by router.php. */
     public function handleMemberRemoval(int $projectId, int $memberId): void
     {
-        $this->projectMemberService->removeProjectMember($projectId, $memberId);
-        $_SESSION['flash_successes'][] = 'Member removed successfully.';
-        header("Location: /project/edit/" . $projectId, true, 302);
+        try {
+            $this->projectMemberService->removeProjectMember($projectId, $memberId);
+            $_SESSION['flash_successes'][] = 'Member removed successfully.';
+        } catch (\Exception) {
+            $_SESSION['flash_errors'][] = "An unexpected error occurred.";
+        }
+        $redirect = "/project/edit/" . $projectId;
+        header("Location: $redirect", true, 302);
         exit;
     }
+    //endregion
 }
