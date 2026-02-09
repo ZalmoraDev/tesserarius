@@ -1,15 +1,8 @@
-<div align="center" style="background-color: rgba(255, 185, 0, 0.1);
-border: 1px solid #FFB900; border-radius: 16px; padding: 4px 6px 6px;
-width: fit-content; margin-left: auto; margin-right: auto;">
+<div align="center">
 <h1 style="margin-top: 0; padding: 0;">
    <img src="public/assets/icons/logo/logoW.svg" alt="Tesserarius Logo" style="height: 48px; width: auto; vertical-align: middle; margin-bottom: 12px; margin-right: -14px;">
    Tesserarius
 </h1>
-
-<p style="margin-top: -20px; margin-bottom: 0;">
-<b>🛡️ Collaborative Task Manager 🐘</b><br>
-<em>PHP, JavaScript & PostgreSQL</em>
-</p>
 </div>
 
 ![Edit Project View](docs/edit.png)
@@ -18,7 +11,7 @@ width: fit-content; margin-left: auto; margin-right: auto;">
 ![PostgreSQL](https://img.shields.io/badge/postgresql-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-0db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-38B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)<br>
-
+🛡️ Collaborative Task Manager 🐘PHP, JavaScript & PostgreSQL
 <h2 align="center">🚀 Prerequisites & Running</h2>
 
 ### Running
