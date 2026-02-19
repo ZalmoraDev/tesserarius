@@ -10,7 +10,8 @@
 ![PHP](https://img.shields.io/badge/php-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/postgresql-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-0db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/tailwindcss-38B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)<br>
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-38B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![NGINX](https://img.shields.io/badge/nginx-009639.svg?style=for-the-badge&logo=nginx&logoColor=white)    
 🛡️ Collaborative Task Manager 🐘PHP, JavaScript & PostgreSQL
 <h2 align="center">🚀 Prerequisites & Running</h2>
 
@@ -139,3 +140,4 @@
   management,[CSRF](/app/Core/Csrf.php) & [CSP](/app/Core/Csp.php) protection
 - **Data Minimization**: Only essential data collected (username, email, password hash) - no tracking or third-party
   data sharing
+
